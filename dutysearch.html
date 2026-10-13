@@ -16,7 +16,6 @@
       padding: 0;
       color: #0f172a;
     }
-    /* Header Bar */
     .top-navbar {
       background: #1e3a8a;
       color: #ffffff;
@@ -48,14 +47,11 @@
       background: rgba(255,255,255,0.22);
       color: #ffffff;
     }
-
     .main-container {
       max-width: 1200px;
       margin: 28px auto;
       padding: 0 16px;
     }
-
-    /* Search Box */
     .search-card {
       background: #ffffff;
       border-radius: 16px;
@@ -119,16 +115,12 @@
     .btn-search:hover {
       background: #1d4ed8;
     }
-
-    /* Status Message */
     .status-msg {
       text-align: center;
       padding: 40px 20px;
       color: #64748b;
       font-size: 16px;
     }
-
-    /* Table View for Desktop */
     .table-container {
       background: #ffffff;
       border-radius: 14px;
@@ -179,8 +171,6 @@
       align-items: center;
       gap: 4px;
     }
-
-    /* Mobile Cards View */
     .mobile-cards {
       display: none;
       grid-template-columns: 1fr;
@@ -291,6 +281,18 @@
       }
     }
 
+    // Helper function to safely read fields irrespective of case or naming
+    function getVal(row, possibleKeys) {
+      const rowKeys = Object.keys(row);
+      for (const pk of possibleKeys) {
+        const found = rowKeys.find(k => k.trim().toLowerCase() === pk.toLowerCase());
+        if (found && row[found] !== undefined && row[found] !== null && String(row[found]).trim() !== '') {
+          return String(row[found]).trim();
+        }
+      }
+      return '-';
+    }
+
     function performSearch() {
       const q = document.getElementById('searchInput').value.trim();
       const status = document.getElementById('statusMessage');
@@ -308,84 +310,94 @@
       status.style.display = 'block';
       status.innerHTML = '<i class="fa-solid fa-spinner fa-spin fa-2x" style="color:#2563eb; margin-bottom:12px;"></i><br>Fetching records... Please wait.';
 
-      fetch(`${SCRIPT_URL}?q=${encodeURIComponent(q)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (!data || data.length === 0) {
-            status.style.display = 'block';
-            status.innerHTML = '❌ No records found for the given search query.';
-            return;
-          }
+      // Adding redirect follow for Google Apps Script
+      fetch(`${SCRIPT_URL}?q=${encodeURIComponent(q)}`, {
+        method: 'GET',
+        mode: 'cors',
+        redirect: 'follow'
+      })
+      .then(res => res.json())
+      .then(data => {
+        // Handle array or wrapped response like { data: [...] }
+        const records = Array.isArray(data) ? data : (data.records || data.data || data.results || []);
 
-          status.style.display = 'none';
-
-          let tableHtml = '';
-          let cardsHtml = '';
-
-          data.forEach(row => {
-            const time = row['Timestamp'] || '-';
-            const name = row['NAME'] || '-';
-            const pen = row['PEN NUMBER'] || '-';
-            const rank = row['RANK'] || '-';
-            const office = row['OFFICE'] || '-';
-            const phone = row['MOBILE NUMBER'] || '';
-            const dutyDate = row['DATE'] || '-';
-            const session = row['SESSION'] || '-';
-            const glNo = row['GL NUMBER'] || '-';
-            const course = row['NAME OF COURSE'] || '-';
-
-            tableHtml += `
-              <tr>
-                <td><small style="color:#64748b;">${time}</small></td>
-                <td><b>${name}</b></td>
-                <td><span class="tag-badge">${pen}</span></td>
-                <td>${rank}</td>
-                <td>${office}</td>
-                <td>${phone ? `<a href="tel:${phone}" class="phone-btn"><i class="fa-solid fa-phone"></i> ${phone}</a>` : '-'}</td>
-                <td><b>${dutyDate}</b></td>
-                <td>${session}</td>
-                <td>${glNo}</td>
-                <td><span class="tag-badge" style="background:#fef3c7; color:#b45309;">${course}</span></td>
-              </tr>
-            `;
-
-            cardsHtml += `
-              <div class="duty-card">
-                <div class="card-header-row">
-                  <div>
-                    <div class="card-name">${name}</div>
-                    <small style="color:#64748b;">${rank} | PEN: ${pen}</small>
-                  </div>
-                  <span class="tag-badge" style="background:#fef3c7; color:#b45309;">${course}</span>
-                </div>
-                <div class="card-row"><b>Office:</b> <span>${office}</span></div>
-                <div class="card-row"><b>Duty Date:</b> <span>${dutyDate}</span></div>
-                <div class="card-row"><b>Session:</b> <span>${session}</span></div>
-                <div class="card-row"><b>GL Number:</b> <span>${glNo}</span></div>
-                ${phone ? `
-                  <div style="margin-top: 6px;">
-                    <a href="tel:${phone}" class="phone-btn" style="background:#ecfdf5; padding:6px 12px; border-radius:6px; border:1px solid #a7f3d0;">
-                      <i class="fa-solid fa-phone"></i> Call ${phone}
-                    </a>
-                  </div>
-                ` : ''}
-              </div>
-            `;
-          });
-
-          tBody.innerHTML = tableHtml;
-          mobileCards.innerHTML = cardsHtml;
-
-          if (window.innerWidth > 768) {
-            tableBox.style.display = 'block';
-          } else {
-            mobileCards.style.display = 'grid';
-          }
-        })
-        .catch(err => {
+        if (!records || records.length === 0) {
           status.style.display = 'block';
-          status.innerHTML = '⚠️ Failed to fetch records: ' + err.message;
+          status.innerHTML = '❌ No records found for the given search query.';
+          return;
+        }
+
+        status.style.display = 'none';
+
+        let tableHtml = '';
+        let cardsHtml = '';
+
+        records.forEach(row => {
+          const time = getVal(row, ['Timestamp', 'time', 'date_time']);
+          const name = getVal(row, ['NAME', 'Name', 'Officer Name', 'Officer']);
+          const pen = getVal(row, ['PEN NUMBER', 'PEN', 'pen_number', 'Pen No']);
+          const rank = getVal(row, ['RANK', 'Rank', 'Designation']);
+          const office = getVal(row, ['OFFICE', 'Office', 'Station', 'Unit']);
+          const phone = getVal(row, ['MOBILE NUMBER', 'Mobile', 'Phone', 'Contact']);
+          const dutyDate = getVal(row, ['DATE', 'Duty Date', 'DutyDate']);
+          const session = getVal(row, ['SESSION', 'Session', 'Shift']);
+          const glNo = getVal(row, ['GL NUMBER', 'GL NO', 'GL Number', 'GL']);
+          const course = getVal(row, ['NAME OF COURSE', 'Course', 'Duty', 'Course Name', 'Duty Name']);
+
+          const cleanPhone = phone !== '-' ? phone.replace(/[^0-9]/g, '') : '';
+
+          tableHtml += `
+            <tr>
+              <td><small style="color:#64748b;">${time}</small></td>
+              <td><b>${name}</b></td>
+              <td><span class="tag-badge">${pen}</span></td>
+              <td>${rank}</td>
+              <td>${office}</td>
+              <td>${cleanPhone ? `<a href="tel:${cleanPhone}" class="phone-btn"><i class="fa-solid fa-phone"></i> ${phone}</a>` : phone}</td>
+              <td><b>${dutyDate}</b></td>
+              <td>${session}</td>
+              <td>${glNo}</td>
+              <td><span class="tag-badge" style="background:#fef3c7; color:#b45309;">${course}</span></td>
+            </tr>
+          `;
+
+          cardsHtml += `
+            <div class="duty-card">
+              <div class="card-header-row">
+                <div>
+                  <div class="card-name">${name}</div>
+                  <small style="color:#64748b;">${rank} | PEN: ${pen}</small>
+                </div>
+                <span class="tag-badge" style="background:#fef3c7; color:#b45309;">${course}</span>
+              </div>
+              <div class="card-row"><b>Office:</b> <span>${office}</span></div>
+              <div class="card-row"><b>Duty Date:</b> <span>${dutyDate}</span></div>
+              <div class="card-row"><b>Session:</b> <span>${session}</span></div>
+              <div class="card-row"><b>GL Number:</b> <span>${glNo}</span></div>
+              ${cleanPhone ? `
+                <div style="margin-top: 6px;">
+                  <a href="tel:${cleanPhone}" class="phone-btn" style="background:#ecfdf5; padding:6px 12px; border-radius:6px; border:1px solid #a7f3d0;">
+                    <i class="fa-solid fa-phone"></i> Call ${phone}
+                  </a>
+                </div>
+              ` : ''}
+            </div>
+          `;
         });
+
+        tBody.innerHTML = tableHtml;
+        mobileCards.innerHTML = cardsHtml;
+
+        if (window.innerWidth > 768) {
+          tableBox.style.display = 'block';
+        } else {
+          mobileCards.style.display = 'grid';
+        }
+      })
+      .catch(err => {
+        status.style.display = 'block';
+        status.innerHTML = '⚠️ Failed to fetch records: ' + err.message + '<br><small style="color:#94a3b8;">Make sure your Apps Script Web App is deployed with Access set to "Anyone".</small>';
+      });
     }
   </script>
 </body>
