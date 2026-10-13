@@ -131,19 +131,22 @@
       color: #475569;
       line-height: 1.6;
       margin-bottom: 12px;
+      word-break: break-all;
     }
     .card-actions {
       display: flex;
+      flex-wrap: wrap;
       gap: 8px;
       margin-top: 10px;
     }
     .btn-action {
       flex: 1;
+      min-width: 80px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 10px 0;
+      padding: 9px 0;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
@@ -165,6 +168,19 @@
     .btn-wa:hover {
       background: #dcfce7;
     }
+    .btn-email {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    .btn-email:hover {
+      background: #fee2e2;
+    }
+    .btn-link {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+    }
   </style>
 </head>
 <body>
@@ -175,7 +191,7 @@
     
     <div class="search-wrapper">
       <i class="fa-solid fa-magnifying-glass search-icon"></i>
-      <input type="text" id="searchInput" class="search-input" placeholder="തിരയുക (പേര്, ഓഫീസ്, ഫോൺ നമ്പർ...)" oninput="filterAndDisplay()">
+      <input type="text" id="searchInput" class="search-input" placeholder="തിരയുക (പേര്, ഓഫീസ്, ഫോൺ, ഇമെയിൽ...)" oninput="filterAndDisplay()">
     </div>
 
     <div class="category-title"><i class="fa-solid fa-layer-group"></i> കാറ്റഗറി തിരഞ്ഞെടുക്കുക:</div>
@@ -207,7 +223,6 @@
 
       if (!rows || rows.length < 2) return;
 
-      // ഹെഡർ പരിശോധിക്കുന്നു
       const headerRow = rows[0].c;
       let headers = headerRow.map(c => c && (c.v !== null || c.f) ? String(c.f || c.v).trim().toLowerCase() : '');
 
@@ -217,6 +232,8 @@
       const unitIdx = getIdx(['unit', 'site name', 'office']);
       const nameIdx = getIdx(['name']);
       const desigIdx = getIdx(['designation', 'rank']);
+      const linkIdx = getIdx(['link', 'url', 'website']);
+      const emailColIdx = getIdx(['email', 'mail']);
 
       const categoriesSet = new Set();
 
@@ -230,16 +247,24 @@
         const unit = val(unitIdx);
         const personName = val(nameIdx);
         const desig = val(desigIdx);
+        const webLink = val(linkIdx);
 
-        // വരിയിലുള്ള എല്ലാ സെല്ലുകളും പരിശോധിച്ച് യഥാർത്ഥ ഫോൺ നമ്പർ കണ്ടെത്തുന്നു
+        // ഫോൺ നമ്പറും ഇമെയിൽ ഐഡിയും കൃത്യമായി കണ്ടുപിടിക്കുന്നു
         let phoneNum = '';
+        let emailId = val(emailColIdx);
+
         for (let j = 0; j < c.length; j++) {
           let cellText = (c[j] && (c[j].f || c[j].v !== null)) ? String(c[j].f || c[j].v).trim() : '';
+
+          // ഇമെയിൽ പരിശോധന
+          if (!emailId && cellText.includes('@') && cellText.includes('.')) {
+            emailId = cellText;
+          }
+
+          // ഫോൺ നമ്പർ പരിശോധന (Active പോലുള്ള വാക്കുകൾ ഒഴിവാക്കുന്നു)
           let digitsOnly = cellText.replace(/[^0-9]/g, '');
-          // 10 അക്ക മൊബൈൽ നമ്പറോ അല്ലെങ്കിൽ 7+ അക്കമുള്ള ലാൻഡ്‌ലൈനോ കണ്ടെത്തുന്നു
-          if (digitsOnly.length >= 7 && digitsOnly.length <= 12) {
+          if (!phoneNum && digitsOnly.length >= 7 && digitsOnly.length <= 12) {
             phoneNum = digitsOnly;
-            break;
           }
         }
 
@@ -253,6 +278,8 @@
           personName,
           desig,
           phone: phoneNum,
+          email: emailId,
+          link: webLink,
           title: displayTitle
         });
       }
@@ -304,6 +331,7 @@
         item.unit.toLowerCase().includes(query) ||
         item.category.toLowerCase().includes(query) ||
         item.phone.includes(query) ||
+        (item.email && item.email.toLowerCase().includes(query)) ||
         item.desig.toLowerCase().includes(query)
       ) : true;
       return matchCat && matchQuery;
@@ -327,18 +355,25 @@
           <div class="card-sub">
             ${item.unit ? `🏢 <b>Unit:</b> ${item.unit}<br>` : ''}
             ${item.desig ? `💼 <b>Designation:</b> ${item.desig}<br>` : ''}
-            ${item.phone ? `📞 <b>Phone:</b> ${item.phone}` : ''}
+            ${item.phone ? `📞 <b>Phone:</b> ${item.phone}<br>` : ''}
+            ${item.email ? `✉️ <b>Email:</b> ${item.email}` : ''}
           </div>
         </div>
         
-        ${item.phone ? `
-          <div class="card-actions">
+        <div class="card-actions">
+          ${item.phone ? `
             <a href="tel:${item.phone}" class="btn-action btn-call"><i class="fa-solid fa-phone"></i> Call</a>
             ${item.phone.length === 10 ? `
               <a href="https://wa.me/91${item.phone}" target="_blank" class="btn-action btn-wa"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
             ` : ''}
-          </div>
-        ` : ''}
+          ` : ''}
+          ${item.email ? `
+            <a href="mailto:${item.email}" class="btn-action btn-email"><i class="fa-solid fa-envelope"></i> Email</a>
+          ` : ''}
+          ${item.link ? `
+            <a href="${item.link}" target="_blank" class="btn-action btn-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visit</a>
+          ` : ''}
+        </div>
       </div>
     `).join('');
   }
