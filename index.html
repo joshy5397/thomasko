@@ -5,29 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ഡയറക്ടറി & ഡാഷ്‌ബോർഡ്</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f1f5f9;
       margin: 0;
       padding: 16px;
-      color: #1e293b;
+      color: #0f172a;
     }
     .container {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: auto;
       background: #ffffff;
       padding: 24px;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
     }
     h2 {
       margin-top: 0;
-      color: #0f172a;
+      color: #1e3a8a;
       font-size: 24px;
     }
     .search-box {
       width: 100%;
-      box-sizing: border-box;
       padding: 12px 16px;
       font-size: 15px;
       border: 1px solid #cbd5e1;
@@ -37,28 +39,38 @@
     }
     .search-box:focus {
       border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
     }
     .table-container {
       overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
+      min-width: 600px;
     }
     th, td {
-      border: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e2e8f0;
       padding: 12px 14px;
       font-size: 14px;
     }
     th {
-      background: #f1f5f9;
+      background: #f8fafc;
       font-weight: 600;
       color: #334155;
+      position: sticky;
+      top: 0;
     }
     tr:hover {
       background: #f8fafc;
+    }
+    .phone-link {
+      color: #16a34a;
+      text-decoration: none;
+      font-weight: 600;
     }
     .loading {
       text-align: center;
@@ -71,8 +83,8 @@
 <body>
 
 <div class="container">
-  <h2>ഡയറക്ടറി</h2>
-  <input type="text" id="searchInput" class="search-box" placeholder="തിരയുക (Search)..." onkeyup="filterTable()">
+  <h2>ലൈവ് ഡയറക്ടറി</h2>
+  <input type="text" id="searchInput" class="search-box" placeholder="തിരയുക (Search by Category, Station, Phone...)" onkeyup="filterTable()">
   
   <div id="loading" class="loading">വിവരങ്ങൾ ശേഖരിക്കുന്നു... ദയവായി കാത്തിരിക്കുക.</div>
   
@@ -86,41 +98,60 @@
 
 <script>
   const SHEET_ID = '1pqVwS9RBS4bYOXvVVVzF406qUna4MwvHxq_1ElBJZ5Q';
-  const SHEET_NAME = 'Sheet1'; 
+  const SHEET_NAME = 'Sheet1';
 
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
+  // headers=0 നൽകുന്നതിലൂടെ ആദ്യത്തെ വരി മുതലുള്ള എല്ലാ ഡാറ്റയും യാതൊരു തടസ്സവുമില്ലാതെ കൃത്യമായി ലഭിക്കുന്നു
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}&headers=0`;
 
   fetch(url)
     .then(res => res.text())
     .then(data => {
-      const json = JSON.parse(data.substr(47).slice(0, -2));
-      const cols = json.table.cols;
-      const rows = json.table.rows;
+      const match = data.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\);/);
+      if (!match) throw new Error("Invalid response format");
+      
+      const json = JSON.parse(match[1]);
+      const rawRows = json.table.rows;
 
-      // ഹെഡർ നിർമ്മാണം
+      if (!rawRows || rawRows.length === 0) {
+        document.getElementById('loading').innerText = 'ഷീറ്റിൽ വിവരങ്ങൾ ഒന്നും ലഭ്യമല്ല.';
+        return;
+      }
+
+      // ആദ്യത്തെ റോ ഹെഡർ ആയി എടുക്കുന്നു
+      const firstRow = rawRows[0].c;
       let headHtml = '<tr>';
-      cols.forEach(col => {
-        headHtml += `<th>${col.label || ''}</th>`;
+      firstRow.forEach((cell, idx) => {
+        const val = cell ? (cell.f || cell.v || '') : '';
+        headHtml += `<th>${val || 'Column ' + (idx + 1)}</th>`;
       });
       headHtml += '</tr>';
       document.getElementById('tableHead').innerHTML = headHtml;
 
-      // ഡാറ്റാ വരികൾ
+      // തുടർന്നുള്ള വരികൾ ടേബിളിലേക്ക് ചേർക്കുന്നു
       let bodyHtml = '';
-      rows.forEach(row => {
+      for (let i = 1; i < rawRows.length; i++) {
+        const rowCells = rawRows[i].c;
+        if (!rowCells || rowCells.every(c => !c || c.v === null || c.v === '')) continue; // പൂർണ്ണമായി ബ്ലാങ്ക് ആയ വരികൾ ഒഴിവാക്കുന്നു
+
         bodyHtml += '<tr>';
-        row.c.forEach(cell => {
-          bodyHtml += `<td>${cell ? (cell.f || cell.v || '') : ''}</td>`;
+        rowCells.forEach(cell => {
+          let val = cell ? (cell.f || cell.v || '') : '';
+          
+          // ഫോൺ നമ്പർ ആണെങ്കിൽ നേരിട്ട് ക്ലിക്ക് ചെയ്ത് വിളിക്കാൻ തക്കവിധം ലിങ്ക് നൽകുന്നു
+          if (/^\d{10}$/.test(String(val).trim())) {
+            val = `<a class="phone-link" href="tel:${val}">📞 ${val}</a>`;
+          }
+          bodyHtml += `<td>${val}</td>`;
         });
         bodyHtml += '</tr>';
-      });
+      }
       document.getElementById('tableBody').innerHTML = bodyHtml;
 
       document.getElementById('loading').style.display = 'none';
       document.getElementById('dataTable').style.display = 'table';
     })
     .catch(err => {
-      document.getElementById('loading').innerHTML = 'ഡാറ്റ ലഭ്യമായില്ല. ഗൂഗിൾ ഷീറ്റിന്റെ Share Permission "Anyone with the link can view" ആണെന്ന് ഉറപ്പുവരുത്തുക.';
+      document.getElementById('loading').innerHTML = 'ഡാറ്റ ലോഡ് ചെയ്യുന്നതിൽ തടസ്സം നേരിട്ടു: ' + err.message;
       console.error(err);
     });
 
