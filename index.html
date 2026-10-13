@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ഡയറക്ടറി & ഹെൽപ്പ് ഡെസ്ക്</title>
+  <title>ഡയറക്ടറി & കോൺടാക്റ്റുകൾ</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     * {
@@ -11,28 +11,27 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     body {
-      background: #f8fafc;
+      background: #f1f5f9;
       margin: 0;
       padding: 16px;
-      color: #1e293b;
+      color: #0f172a;
     }
     .container {
-      max-width: 900px;
+      max-width: 1000px;
       margin: auto;
     }
     .header-section {
       background: #ffffff;
       padding: 24px;
       border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
       margin-bottom: 20px;
-      text-align: center;
     }
     h2 {
       margin: 0 0 16px 0;
       color: #1e3a8a;
       font-size: 24px;
-      font-weight: 700;
+      text-align: center;
     }
     .search-wrapper {
       position: relative;
@@ -42,16 +41,14 @@
       width: 100%;
       padding: 14px 20px 14px 44px;
       font-size: 16px;
-      border: 2px solid #e2e8f0;
+      border: 2px solid #cbd5e1;
       border-radius: 12px;
       outline: none;
-      transition: all 0.2s ease;
       background: #f8fafc;
     }
     .search-input:focus {
       border-color: #2563eb;
       background: #ffffff;
-      box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
     }
     .search-icon {
       position: absolute;
@@ -62,40 +59,34 @@
       font-size: 18px;
     }
     .category-title {
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 13px;
+      font-weight: 700;
       color: #64748b;
       margin-bottom: 10px;
-      text-align: left;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
     .category-pills {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      justify-content: flex-start;
     }
     .pill {
-      padding: 10px 18px;
-      border-radius: 24px;
-      font-size: 14px;
+      padding: 9px 16px;
+      border-radius: 20px;
+      font-size: 13px;
       font-weight: 600;
       border: 1px solid #cbd5e1;
       background: #ffffff;
       color: #334155;
       cursor: pointer;
-      transition: all 0.2s ease;
     }
     .pill:hover {
-      background: #f1f5f9;
-      border-color: #94a3b8;
+      background: #e2e8f0;
     }
     .pill.active {
       background: #2563eb;
       color: #ffffff;
       border-color: #2563eb;
-      box-shadow: 0 2px 8px rgba(37,99,235,0.25);
     }
     .status-msg {
       text-align: center;
@@ -103,26 +94,20 @@
       color: #64748b;
       font-size: 16px;
     }
-    /* Directory Cards */
     .results-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
       gap: 16px;
     }
     .card {
       background: #ffffff;
       border-radius: 14px;
       padding: 18px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
       border: 1px solid #e2e8f0;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     }
     .card-badge {
       display: inline-block;
@@ -135,16 +120,17 @@
       margin-bottom: 8px;
       align-self: flex-start;
     }
-    .card-name {
-      font-size: 17px;
+    .card-title {
+      font-size: 18px;
       font-weight: 700;
       color: #0f172a;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .card-sub {
       font-size: 13px;
-      color: #64748b;
-      margin-bottom: 14px;
+      color: #475569;
+      line-height: 1.5;
+      margin-bottom: 12px;
     }
     .card-actions {
       display: flex;
@@ -159,26 +145,24 @@
       gap: 6px;
       padding: 10px 0;
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       text-decoration: none;
-      transition: background 0.2s ease;
     }
     .btn-call {
       background: #ecfdf5;
       color: #059669;
       border: 1px solid #a7f3d0;
     }
-    .btn-call:hover {
-      background: #d1fae5;
-    }
     .btn-wa {
       background: #f0fdf4;
       color: #16a34a;
       border: 1px solid #bbf7d0;
     }
-    .btn-wa:hover {
-      background: #dcfce7;
+    .btn-link {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
     }
   </style>
 </head>
@@ -186,17 +170,15 @@
 
 <div class="container">
   <div class="header-section">
-    <h2><i class="fa-solid fa-address-book"></i> ഡയറക്ടറി & കോൺടാക്റ്റുകൾ</h2>
+    <h2><i class="fa-solid fa-address-book"></i> ഡയറക്ടറി</h2>
     
     <div class="search-wrapper">
       <i class="fa-solid fa-magnifying-glass search-icon"></i>
-      <input type="text" id="searchInput" class="search-input" placeholder="പേര്, ഓഫീസ്, ഫോൺ നമ്പർ എന്നിവ തിരയുക..." oninput="onSearchChange()">
+      <input type="text" id="searchInput" class="search-input" placeholder="തിരയുക (പേര്, ഓഫീസ്, ഫോൺ നമ്പർ...)" oninput="filterAndDisplay()">
     </div>
 
     <div class="category-title"><i class="fa-solid fa-layer-group"></i> കാറ്റഗറി തിരഞ്ഞെടുക്കുക:</div>
-    <div class="category-pills" id="categoryContainer">
-      <!-- Categories dynamically load here -->
-    </div>
+    <div class="category-pills" id="categoryContainer"></div>
   </div>
 
   <div id="statusMessage" class="status-msg">
@@ -218,53 +200,56 @@
     .then(res => res.text())
     .then(data => {
       const match = data.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\);/);
-      if (!match) throw new Error("Format error");
+      if (!match) return;
       const json = JSON.parse(match[1]);
-      const rawRows = json.table.rows;
+      const rows = json.table.rows;
 
-      if (!rawRows || rawRows.length < 2) {
-        document.getElementById('statusMessage').innerText = 'ഷീറ്റിൽ വിവരങ്ങൾ ലഭ്യമല്ല.';
-        return;
-      }
-
-      // Headers identify
-      const headers = rawRows[0].c.map(c => (c && (c.v || c.f) ? String(c.v || c.f).trim().toLowerCase() : ''));
-      
-      const catIdx = headers.findIndex(h => h.includes('category') && !h.includes('sub'));
-      const unitIdx = headers.findIndex(h => h.includes('unit') || h.includes('site'));
-      const nameIdx = headers.findIndex(h => h.includes('name'));
-      const desigIdx = headers.findIndex(h => h.includes('designation') || h.includes('desig') || h.includes('rank'));
-      const phoneIdx = headers.findIndex(h => h.includes('phone') || h.includes('mobile') || h.includes('numbe') || h.includes('contact'));
+      if (!rows || rows.length < 2) return;
 
       const categoriesSet = new Set();
 
-      for (let i = 1; i < rawRows.length; i++) {
-        const row = rawRows[i].c;
-        if (!row || row.every(c => !c || c.v === null || c.v === '')) continue;
+      // വരികൾ നേരിട്ട് റീഡ് ചെയ്യുന്നു
+      for (let i = 1; i < rows.length; i++) {
+        const c = rows[i].c;
+        if (!c || c.every(cell => !cell || cell.v === null || cell.v === '')) continue;
 
-        const getVal = (idx) => (idx !== -1 && row[idx]) ? (row[idx].f || row[idx].v || '') : '';
+        const val = (idx) => (c[idx] && (c[idx].f || c[idx].v !== null)) ? String(c[idx].f || c[idx].v).trim() : '';
 
-        const category = getVal(catIdx) || 'OTHER';
-        const unit = getVal(unitIdx);
-        const name = getVal(nameIdx);
-        const designation = getVal(desigIdx);
-        const phone = String(getVal(phoneIdx)).replace(/[^0-9]/g, '');
+        // നിരകൾ: 0=Category, 1=SubCategory, 2=SiteName, 3=Link, 4=Unit, 5=Name, 6=Designation, 7=Phone1, 8=Phone2
+        const category = val(0) || 'OTHER';
+        const subCategory = val(1);
+        const siteName = val(2);
+        const link = val(3);
+        const unit = val(4);
+        const personName = val(5);
+        const desig = val(6);
+        const phone1 = val(7);
+        const phone2 = val(8);
+
+        // പ്രധാന ഫോൺ നമ്പർ കണ്ടെത്തുന്നു
+        let activePhone = phone2 || phone1;
+        let cleanPhone = activePhone.replace(/[^0-9]/g, '');
+
+        // പ്രധാന തലക്കെട്ട്
+        let displayTitle = personName || siteName || unit || subCategory || 'വിവരങ്ങൾ';
 
         if (category) categoriesSet.add(category);
 
         directoryData.push({
           category,
+          subCategory,
+          siteName,
+          link,
           unit,
-          name: name || unit || 'Contact',
-          designation,
-          phone
+          personName,
+          desig,
+          phone: cleanPhone,
+          rawPhone: activePhone,
+          title: displayTitle
         });
       }
 
-      // Render Categories
       renderCategories(Array.from(categoriesSet));
-      
-      // Initially guide the user
       document.getElementById('statusMessage').innerHTML = '👆 മുകളിൽ ഒരു <b>കാറ്റഗറി ക്ലിക്ക് ചെയ്യുക</b> അല്ലെങ്കിൽ <b>തിരയുക</b>.';
     })
     .catch(err => {
@@ -292,16 +277,11 @@
     filterAndDisplay();
   }
 
-  function onSearchChange() {
-    filterAndDisplay();
-  }
-
   function filterAndDisplay() {
     const query = document.getElementById('searchInput').value.trim().toLowerCase();
     const grid = document.getElementById('resultsGrid');
     const statusMsg = document.getElementById('statusMessage');
 
-    // If nothing selected and no query, show helper prompt
     if (!selectedCategory && !query) {
       grid.style.display = 'none';
       statusMsg.style.display = 'block';
@@ -312,13 +292,12 @@
     const filtered = directoryData.filter(item => {
       const matchCat = selectedCategory ? item.category === selectedCategory : true;
       const matchQuery = query ? (
-        item.name.toLowerCase().includes(query) ||
+        item.title.toLowerCase().includes(query) ||
         item.unit.toLowerCase().includes(query) ||
         item.category.toLowerCase().includes(query) ||
         item.phone.includes(query) ||
-        item.designation.toLowerCase().includes(query)
+        item.desig.toLowerCase().includes(query)
       ) : true;
-
       return matchCat && matchQuery;
     });
 
@@ -336,18 +315,23 @@
       <div class="card">
         <div>
           <span class="card-badge">${item.category}</span>
-          <div class="card-name">${item.name}</div>
+          <div class="card-title">${item.title}</div>
           <div class="card-sub">
-            ${item.unit ? `🏢 ${item.unit}<br>` : ''}
-            ${item.designation ? `💼 ${item.designation}` : ''}
+            ${item.unit ? `🏢 <b>Unit:</b> ${item.unit}<br>` : ''}
+            ${item.desig ? `💼 <b>Designation:</b> ${item.desig}<br>` : ''}
+            ${item.rawPhone ? `📞 <b>Phone:</b> ${item.rawPhone}` : ''}
           </div>
         </div>
-        ${item.phone ? `
-          <div class="card-actions">
+        
+        <div class="card-actions">
+          ${item.phone ? `
             <a href="tel:${item.phone}" class="btn-action btn-call"><i class="fa-solid fa-phone"></i> Call</a>
             <a href="https://wa.me/91${item.phone.slice(-10)}" target="_blank" class="btn-action btn-wa"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
-          </div>
-        ` : ''}
+          ` : ''}
+          ${item.link ? `
+            <a href="${item.link}" target="_blank" class="btn-action btn-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visit</a>
+          ` : ''}
+        </div>
       </div>
     `).join('');
   }
