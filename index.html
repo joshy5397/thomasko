@@ -1,29 +1,317 @@
-┌── LISSY
-                                  ├── JOSEPH
-                                  ├── LISSY
-                   ┌── GEORGE ────┼── KOCHUMARY
-                   │              ├── THOMAS
-                   │              └── LEENA
-                   │
-                   ├── XAVIER
-                   │
-                   │              ┌── JOSE
-                   │              ├── SEBY
-                   ├── SELEENA ───┼── FRANCIS
-                   │              ├── MARYKUTTY
-                   │              └── SILY
-                   │
-                   │              ┌── JOSE
-                   ├── THOMAS ────┼── JOSHY
-                   │              └── (മക്കൾ...)
-OUSEPH ────────────┤
-                   │              ┌── BIJU
-                   ├── RAPHEL ────┼── MANJU
-                   │              └── TOJU
-                   │
-                   │              ┌── SIJO
-                   ├── ANTONY ────┼── ALPHY
-                   │              └── RENSY
-                   │
-                   │              ┌── DENY
-                   └── DOMINY ────┴── VINEETH
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ഫാമിലി ട്രീ (കുടുംബവൃക്ഷം)</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      background: #f8fafc;
+      margin: 0;
+      padding: 16px;
+      color: #0f172a;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+    h2 {
+      margin: 0 0 16px 0;
+      color: #1e3a8a;
+      text-align: center;
+      font-size: 24px;
+    }
+    .search-wrapper {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 14px 20px 14px 44px;
+      font-size: 16px;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      outline: none;
+      background: #f8fafc;
+    }
+    .search-input:focus {
+      border-color: #2563eb;
+      background: #ffffff;
+    }
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 18px;
+    }
+    .tree-controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .btn-ctrl {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #334155;
+    }
+    .btn-ctrl:hover {
+      background: #e2e8f0;
+    }
+    /* Tree Structure Styling */
+    .tree-container {
+      padding: 10px 0;
+    }
+    ul.tree, ul.tree ul {
+      list-style-type: none;
+      padding-left: 24px;
+      margin: 0;
+      position: relative;
+    }
+    ul.tree ul::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 12px;
+      bottom: 12px;
+      border-left: 2px dashed #cbd5e1;
+    }
+    ul.tree li {
+      margin: 8px 0;
+      position: relative;
+    }
+    ul.tree li::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: -12px;
+      width: 12px;
+      border-top: 2px dashed #cbd5e1;
+    }
+    .node-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .node-card:hover {
+      border-color: #3b82f6;
+      background: #eff6ff;
+    }
+    /* Generation Tags & Colors */
+    .gen-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 6px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+    .gen-1 .node-card { border-color: #1e3a8a; background: #eff6ff; color: #1e3a8a; font-size: 17px; }
+    .gen-1 .gen-badge { background: #1e3a8a; color: white; }
+
+    .gen-2 .node-card { border-color: #0284c7; }
+    .gen-2 .gen-badge { background: #e0f2fe; color: #0284c7; }
+
+    .gen-3 .node-card { border-color: #059669; }
+    .gen-3 .gen-badge { background: #d1fae5; color: #059669; }
+
+    .gen-4 .node-card { border-color: #d97706; }
+    .gen-4 .gen-badge { background: #fef3c7; color: #d97706; }
+
+    .toggle-icon {
+      font-size: 12px;
+      color: #64748b;
+      margin-left: 4px;
+      transition: transform 0.2s;
+    }
+    .collapsed > ul {
+      display: none;
+    }
+    .collapsed .toggle-icon {
+      transform: rotate(-90deg);
+    }
+    .highlight .node-card {
+      background: #fef08a !important;
+      border-color: #ca8a04 !important;
+      color: #854d0e !important;
+      box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
+    }
+    .status-msg {
+      text-align: center;
+      padding: 30px;
+      color: #64748b;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2><i class="fa-solid fa-sitemap"></i> കുടുംബവൃക്ഷം (Family Tree)</h2>
+
+  <div class="search-wrapper">
+    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+    <input type="text" id="searchInput" class="search-input" placeholder="കുടുംബാംഗങ്ങളുടെ പേര് തിരയുക..." oninput="searchTree()">
+  </div>
+
+  <div class="tree-controls">
+    <button class="btn-ctrl" onclick="expandAll()"><i class="fa-solid fa-plus"></i> Expand All</button>
+    <button class="btn-ctrl" onclick="collapseAll()"><i class="fa-solid fa-minus"></i> Collapse All</button>
+  </div>
+
+  <div id="status" class="status-msg">വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു... ദയവായി കാത്തിരിക്കുക.</div>
+  <div id="treeContainer" class="tree-container"></div>
+</div>
+
+<script>
+  const SHEET_ID = '1sfz7C3ujn6pQQky8W4YY5YAFobe7mNWrU6hfIgcDKF0';
+  const SHEET_NAME = 'Sheet1';
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}&headers=0`;
+
+  let treeData = null;
+
+  fetch(url)
+    .then(res => res.text())
+    .then(data => {
+      const match = data.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\);/);
+      if (!match) throw new Error("Invalid response");
+      const json = JSON.parse(match[1]);
+      const rows = json.table.rows;
+
+      if (!rows || rows.length < 2) {
+        document.getElementById('status').innerText = 'ഷീറ്റിൽ ഡാറ്റ ലഭ്യമല്ല.';
+        return;
+      }
+
+      // Generation Headers
+      const colHeaders = rows[0].c.map(c => c && (c.v !== null || c.f) ? String(c.f || c.v).trim().toUpperCase() : '');
+
+      // Tree structure builder
+      let root = {};
+
+      for (let i = 1; i < rows.length; i++) {
+        const c = rows[i].c;
+        if (!c || c.every(cell => !cell || cell.v === null || cell.v === '')) continue;
+
+        let currentLevel = root;
+        for (let col = 0; col < c.length; col++) {
+          let name = (c[col] && (c[col].f || c[col].v !== null)) ? String(c[col].f || c[col].v).trim() : '';
+          if (!name) break;
+
+          let headerName = colHeaders[col] || `GEN ${col + 1}`;
+
+          if (!currentLevel[name]) {
+            currentLevel[name] = {
+              _gen: col + 1,
+              _badge: headerName,
+              _children: {}
+            };
+          }
+          currentLevel = currentLevel[name]._children;
+        }
+      }
+
+      treeData = root;
+      renderTree(root);
+      document.getElementById('status').style.display = 'none';
+    })
+    .catch(err => {
+      document.getElementById('status').innerText = 'ഡാറ്റ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല: ' + err.message;
+    });
+
+  function buildTreeHtml(nodeObj) {
+    let keys = Object.keys(nodeObj);
+    if (keys.length === 0) return '';
+
+    let html = '<ul>';
+    keys.forEach(key => {
+      const node = nodeObj[key];
+      const hasChildren = Object.keys(node._children).length > 0;
+      const genClass = `gen-${node._gen}`;
+
+      html += `<li class="${genClass}" data-name="${key.toLowerCase()}">`;
+      html += `  <div class="node-card" onclick="toggleNode(this)">
+                   <span class="gen-badge">${node._badge}</span>
+                   <span>${key}</span>
+                   ${hasChildren ? '<i class="fa-solid fa-chevron-down toggle-icon"></i>' : ''}
+                 </div>`;
+      if (hasChildren) {
+        html += buildTreeHtml(node._children);
+      }
+      html += '</li>';
+    });
+    html += '</ul>';
+    return html;
+  }
+
+  function renderTree(root) {
+    const container = document.getElementById('treeContainer');
+    let html = '<ul class="tree">' + buildTreeHtml(root).replace(/^<ul>|<\/ul>$/g, '') + '</ul>';
+    container.innerHTML = html;
+  }
+
+  function toggleNode(card) {
+    const li = card.closest('li');
+    li.classList.toggle('collapsed');
+  }
+
+  function expandAll() {
+    document.querySelectorAll('#treeContainer li').forEach(li => li.classList.remove('collapsed'));
+  }
+
+  function collapseAll() {
+    document.querySelectorAll('#treeContainer li').forEach(li => {
+      if (li.querySelector('ul')) li.classList.add('collapsed');
+    });
+    // First generation open ആയി വെക്കുന്നു
+    document.querySelectorAll('#treeContainer > ul > li').forEach(li => li.classList.remove('collapsed'));
+  }
+
+  function searchTree() {
+    const query = document.getElementById('searchInput').value.trim().toLowerCase();
+    const allLis = document.querySelectorAll('#treeContainer li');
+
+    allLis.forEach(li => {
+      li.classList.remove('highlight');
+    });
+
+    if (!query) return;
+
+    expandAll();
+
+    allLis.forEach(li => {
+      const name = li.getAttribute('data-name');
+      if (name && name.includes(query)) {
+        li.classList.add('highlight');
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
