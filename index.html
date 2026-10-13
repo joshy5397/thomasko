@@ -129,7 +129,7 @@
     .card-sub {
       font-size: 13px;
       color: #475569;
-      line-height: 1.5;
+      line-height: 1.6;
       margin-bottom: 12px;
     }
     .card-actions {
@@ -154,15 +154,16 @@
       color: #059669;
       border: 1px solid #a7f3d0;
     }
+    .btn-call:hover {
+      background: #d1fae5;
+    }
     .btn-wa {
       background: #f0fdf4;
       color: #16a34a;
       border: 1px solid #bbf7d0;
     }
-    .btn-link {
-      background: #eff6ff;
-      color: #2563eb;
-      border: 1px solid #bfdbfe;
+    .btn-wa:hover {
+      background: #dcfce7;
     }
   </style>
 </head>
@@ -206,45 +207,52 @@
 
       if (!rows || rows.length < 2) return;
 
+      // ഹെഡർ പരിശോധിക്കുന്നു
+      const headerRow = rows[0].c;
+      let headers = headerRow.map(c => c && (c.v !== null || c.f) ? String(c.f || c.v).trim().toLowerCase() : '');
+
+      const getIdx = (terms) => headers.findIndex(h => terms.some(t => h.includes(t)));
+
+      const catIdx = getIdx(['category']);
+      const unitIdx = getIdx(['unit', 'site name', 'office']);
+      const nameIdx = getIdx(['name']);
+      const desigIdx = getIdx(['designation', 'rank']);
+
       const categoriesSet = new Set();
 
-      // വരികൾ നേരിട്ട് റീഡ് ചെയ്യുന്നു
       for (let i = 1; i < rows.length; i++) {
         const c = rows[i].c;
         if (!c || c.every(cell => !cell || cell.v === null || cell.v === '')) continue;
 
-        const val = (idx) => (c[idx] && (c[idx].f || c[idx].v !== null)) ? String(c[idx].f || c[idx].v).trim() : '';
+        const val = (idx) => (idx !== -1 && c[idx] && (c[idx].f || c[idx].v !== null)) ? String(c[idx].f || c[idx].v).trim() : '';
 
-        // നിരകൾ: 0=Category, 1=SubCategory, 2=SiteName, 3=Link, 4=Unit, 5=Name, 6=Designation, 7=Phone1, 8=Phone2
-        const category = val(0) || 'OTHER';
-        const subCategory = val(1);
-        const siteName = val(2);
-        const link = val(3);
-        const unit = val(4);
-        const personName = val(5);
-        const desig = val(6);
-        const phone1 = val(7);
-        const phone2 = val(8);
+        const category = val(catIdx) || 'OTHER';
+        const unit = val(unitIdx);
+        const personName = val(nameIdx);
+        const desig = val(desigIdx);
 
-        // പ്രധാന ഫോൺ നമ്പർ കണ്ടെത്തുന്നു
-        let activePhone = phone2 || phone1;
-        let cleanPhone = activePhone.replace(/[^0-9]/g, '');
+        // വരിയിലുള്ള എല്ലാ സെല്ലുകളും പരിശോധിച്ച് യഥാർത്ഥ ഫോൺ നമ്പർ കണ്ടെത്തുന്നു
+        let phoneNum = '';
+        for (let j = 0; j < c.length; j++) {
+          let cellText = (c[j] && (c[j].f || c[j].v !== null)) ? String(c[j].f || c[j].v).trim() : '';
+          let digitsOnly = cellText.replace(/[^0-9]/g, '');
+          // 10 അക്ക മൊബൈൽ നമ്പറോ അല്ലെങ്കിൽ 7+ അക്കമുള്ള ലാൻഡ്‌ലൈനോ കണ്ടെത്തുന്നു
+          if (digitsOnly.length >= 7 && digitsOnly.length <= 12) {
+            phoneNum = digitsOnly;
+            break;
+          }
+        }
 
-        // പ്രധാന തലക്കെട്ട്
-        let displayTitle = personName || siteName || unit || subCategory || 'വിവരങ്ങൾ';
+        let displayTitle = personName || unit || 'വിവരങ്ങൾ';
 
         if (category) categoriesSet.add(category);
 
         directoryData.push({
           category,
-          subCategory,
-          siteName,
-          link,
           unit,
           personName,
           desig,
-          phone: cleanPhone,
-          rawPhone: activePhone,
+          phone: phoneNum,
           title: displayTitle
         });
       }
@@ -319,19 +327,18 @@
           <div class="card-sub">
             ${item.unit ? `🏢 <b>Unit:</b> ${item.unit}<br>` : ''}
             ${item.desig ? `💼 <b>Designation:</b> ${item.desig}<br>` : ''}
-            ${item.rawPhone ? `📞 <b>Phone:</b> ${item.rawPhone}` : ''}
+            ${item.phone ? `📞 <b>Phone:</b> ${item.phone}` : ''}
           </div>
         </div>
         
-        <div class="card-actions">
-          ${item.phone ? `
+        ${item.phone ? `
+          <div class="card-actions">
             <a href="tel:${item.phone}" class="btn-action btn-call"><i class="fa-solid fa-phone"></i> Call</a>
-            <a href="https://wa.me/91${item.phone.slice(-10)}" target="_blank" class="btn-action btn-wa"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
-          ` : ''}
-          ${item.link ? `
-            <a href="${item.link}" target="_blank" class="btn-action btn-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visit</a>
-          ` : ''}
-        </div>
+            ${item.phone.length === 10 ? `
+              <a href="https://wa.me/91${item.phone}" target="_blank" class="btn-action btn-wa"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+            ` : ''}
+          </div>
+        ` : ''}
       </div>
     `).join('');
   }
