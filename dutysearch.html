@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ml">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ഡ്യൂട്ടി സെർച്ച് പോർട്ടൽ | Duty Search</title>
+  <title>Duty Search Portal</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     * {
@@ -16,7 +16,7 @@
       padding: 0;
       color: #0f172a;
     }
-    /* Top Header Bar */
+    /* Header Bar */
     .top-navbar {
       background: #1e3a8a;
       color: #ffffff;
@@ -46,7 +46,7 @@
     }
     .back-btn:hover {
       background: rgba(255,255,255,0.22);
-      color: #fff;
+      color: #ffffff;
     }
 
     .main-container {
@@ -55,7 +55,7 @@
       padding: 0 16px;
     }
 
-    /* Search Box Section */
+    /* Search Box */
     .search-card {
       background: #ffffff;
       border-radius: 16px;
@@ -128,7 +128,7 @@
       font-size: 16px;
     }
 
-    /* Desktop Table View */
+    /* Table View for Desktop */
     .table-container {
       background: #ffffff;
       border-radius: 14px;
@@ -180,7 +180,7 @@
       gap: 4px;
     }
 
-    /* Mobile Responsive Cards */
+    /* Mobile Cards View */
     .mobile-cards {
       display: none;
       grid-template-columns: 1fr;
@@ -229,27 +229,25 @@
       color: #475569;
     }
     .card-row b {
-      width: 110px;
+      width: 130px;
       color: #334155;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Bar -->
   <div class="top-navbar">
-    <h1><i class="fa-solid fa-clipboard-user"></i> ഡ്യൂട്ടി സെർച്ച് പോർട്ടൽ</h1>
-    <a href="index.html" class="back-btn"><i class="fa-solid fa-home"></i> ഹോം പേജ്</a>
+    <h1><i class="fa-solid fa-clipboard-user"></i> Duty Search Portal</h1>
+    <a href="index.html" class="back-btn"><i class="fa-solid fa-home"></i> Home</a>
   </div>
 
   <div class="main-container">
-    <!-- Search Box -->
     <div class="search-card">
-      <span class="search-label">മൊബൈൽ നമ്പർ / PEN / പേര് നൽകി തിരയുക:</span>
+      <span class="search-label">Search by Mobile Number, PEN, or Name:</span>
       <div class="search-form">
         <div class="search-input-wrapper">
           <i class="fa-solid fa-magnifying-glass search-icon"></i>
-          <input type="text" id="searchInput" class="search-input" placeholder="ഉദാ: 9446331086 അല്ലെങ്കിൽ പേര്..." onkeypress="handleEnter(event)">
+          <input type="text" id="searchInput" class="search-input" placeholder="e.g. 9446331086 or Name..." onkeypress="handleEnter(event)">
         </div>
         <button class="btn-search" onclick="performSearch()">
           <i class="fa-solid fa-magnifying-glass"></i> Search
@@ -257,33 +255,30 @@
       </div>
     </div>
 
-    <!-- Status message -->
     <div id="statusMessage" class="status-msg">
-      മുകളിൽ മൊബൈൽ നമ്പറോ പേരോ നൽകി <b>Search</b> ക്ലിക്ക് ചെയ്യുക.
+      Enter Mobile Number, PEN, or Name above and click <b>Search</b>.
     </div>
 
-    <!-- Desktop Table View -->
     <div class="table-container" id="tableContainer">
       <table>
         <thead>
           <tr>
-            <th>തീയതി & സമയം</th>
-            <th>പേര്</th>
-            <th>PEN NO</th>
-            <th>റാങ്ക്</th>
-            <th>ഓഫീസ് / സ്റ്റേഷൻ</th>
-            <th>മൊബൈൽ നമ്പർ</th>
-            <th>ഡ്യൂട്ടി തീയതി</th>
-            <th>സെഷൻ</th>
-            <th>GL NO</th>
-            <th>കോഴ്സ് / ഡ്യൂട്ടി</th>
+            <th>Timestamp</th>
+            <th>Name</th>
+            <th>PEN Number</th>
+            <th>Rank</th>
+            <th>Office / Station</th>
+            <th>Mobile Number</th>
+            <th>Duty Date</th>
+            <th>Session</th>
+            <th>GL Number</th>
+            <th>Course / Duty Name</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
       </table>
     </div>
 
-    <!-- Mobile Cards View -->
     <div class="mobile-cards" id="mobileCards"></div>
   </div>
 
@@ -304,29 +299,27 @@
       const tBody = document.getElementById('tableBody');
 
       if (!q) {
-        alert('ദയവായി തിരയാനുള്ള നമ്പർ അല്ലെങ്കിൽ പേര് നൽകുക.');
+        alert('Please enter a Mobile Number, PEN, or Name to search.');
         return;
       }
 
       tableBox.style.display = 'none';
       mobileCards.style.display = 'none';
       status.style.display = 'block';
-      status.innerHTML = '<i class="fa-solid fa-spinner fa-spin fa-2x" style="color:#2563eb; margin-bottom:12px;"></i><br>വിവരങ്ങൾ ശേഖരിക്കുന്നു... ദയവായി കാത്തിരിക്കുക.';
+      status.innerHTML = '<i class="fa-solid fa-spinner fa-spin fa-2x" style="color:#2563eb; margin-bottom:12px;"></i><br>Fetching records... Please wait.';
 
       fetch(`${SCRIPT_URL}?q=${encodeURIComponent(q)}`)
         .then(res => res.json())
         .then(data => {
           if (!data || data.length === 0) {
             status.style.display = 'block';
-            status.innerHTML = '❌ ഈ നമ്പറിൽ/പേരിൽ വിവരങ്ങൾ ഒന്നും കണ്ടെത്താൻ കഴിഞ്ഞില്ല.';
+            status.innerHTML = '❌ No records found for the given search query.';
             return;
           }
 
           status.style.display = 'none';
 
-          // Table HTML (Desktop)
           let tableHtml = '';
-          // Mobile Cards HTML
           let cardsHtml = '';
 
           data.forEach(row => {
@@ -341,7 +334,6 @@
             const glNo = row['GL NUMBER'] || '-';
             const course = row['NAME OF COURSE'] || '-';
 
-            // Desktop Row
             tableHtml += `
               <tr>
                 <td><small style="color:#64748b;">${time}</small></td>
@@ -349,7 +341,7 @@
                 <td><span class="tag-badge">${pen}</span></td>
                 <td>${rank}</td>
                 <td>${office}</td>
-                <td>${phone ? `<a href="tel:${phone}" class="phone-btn">📞 ${phone}</a>` : '-'}</td>
+                <td>${phone ? `<a href="tel:${phone}" class="phone-btn"><i class="fa-solid fa-phone"></i> ${phone}</a>` : '-'}</td>
                 <td><b>${dutyDate}</b></td>
                 <td>${session}</td>
                 <td>${glNo}</td>
@@ -357,7 +349,6 @@
               </tr>
             `;
 
-            // Mobile Card
             cardsHtml += `
               <div class="duty-card">
                 <div class="card-header-row">
@@ -367,14 +358,14 @@
                   </div>
                   <span class="tag-badge" style="background:#fef3c7; color:#b45309;">${course}</span>
                 </div>
-                <div class="card-row"><b>ഓഫീസ്:</b> <span>${office}</span></div>
-                <div class="card-row"><b>തീയതി:</b> <span>${dutyDate}</span></div>
-                <div class="card-row"><b>സെഷൻ:</b> <span>${session}</span></div>
-                <div class="card-row"><b>GL NO:</b> <span>${glNo}</span></div>
+                <div class="card-row"><b>Office:</b> <span>${office}</span></div>
+                <div class="card-row"><b>Duty Date:</b> <span>${dutyDate}</span></div>
+                <div class="card-row"><b>Session:</b> <span>${session}</span></div>
+                <div class="card-row"><b>GL Number:</b> <span>${glNo}</span></div>
                 ${phone ? `
                   <div style="margin-top: 6px;">
                     <a href="tel:${phone}" class="phone-btn" style="background:#ecfdf5; padding:6px 12px; border-radius:6px; border:1px solid #a7f3d0;">
-                      📞 ${phone} വിളിക്കുക
+                      <i class="fa-solid fa-phone"></i> Call ${phone}
                     </a>
                   </div>
                 ` : ''}
@@ -393,7 +384,7 @@
         })
         .catch(err => {
           status.style.display = 'block';
-          status.innerHTML = '⚠️ ഡാറ്റ ലോഡ് ചെയ്യുന്നതിൽ തടസ്സം നേരിട്ടു: ' + err.message;
+          status.innerHTML = '⚠️ Failed to fetch records: ' + err.message;
         });
     }
   </script>
