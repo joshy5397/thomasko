@@ -141,12 +141,12 @@
     }
     .btn-action {
       flex: 1;
-      min-width: 80px;
+      min-width: 85px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 9px 0;
+      padding: 9px 4px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
@@ -181,6 +181,9 @@
       color: #2563eb;
       border: 1px solid #bfdbfe;
     }
+    .btn-link:hover {
+      background: #dbeafe;
+    }
   </style>
 </head>
 <body>
@@ -191,7 +194,7 @@
     
     <div class="search-wrapper">
       <i class="fa-solid fa-magnifying-glass search-icon"></i>
-      <input type="text" id="searchInput" class="search-input" placeholder="തിരയുക (പേര്, ഓഫീസ്, ഫോൺ, ഇമെയിൽ...)" oninput="filterAndDisplay()">
+      <input type="text" id="searchInput" class="search-input" placeholder="തിരയുക (പേര്, ഓഫീസ്, ഫോൺ, ലിങ്ക്...)" oninput="filterAndDisplay()">
     </div>
 
     <div class="category-title"><i class="fa-solid fa-layer-group"></i> കാറ്റഗറി തിരഞ്ഞെടുക്കുക:</div>
@@ -213,6 +216,16 @@
   let directoryData = [];
   let selectedCategory = '';
 
+  // ലിങ്കിൽ https:// ഉറപ്പുവരുത്താനുള്ള ഫംഗ്ഷൻ
+  function sanitizeUrl(str) {
+    if (!str) return '';
+    str = str.trim();
+    if (!str.startsWith('http://') && !str.startsWith('https://')) {
+      return 'https://' + str;
+    }
+    return str;
+  }
+
   fetch(url)
     .then(res => res.text())
     .then(data => {
@@ -229,7 +242,8 @@
       const getIdx = (terms) => headers.findIndex(h => terms.some(t => h.includes(t)));
 
       const catIdx = getIdx(['category']);
-      const unitIdx = getIdx(['unit', 'site name', 'office']);
+      const siteIdx = getIdx(['site name']);
+      const unitIdx = getIdx(['unit', 'office']);
       const nameIdx = getIdx(['name']);
       const desigIdx = getIdx(['designation', 'rank']);
       const linkIdx = getIdx(['link', 'url', 'website']);
@@ -244,36 +258,47 @@
         const val = (idx) => (idx !== -1 && c[idx] && (c[idx].f || c[idx].v !== null)) ? String(c[idx].f || c[idx].v).trim() : '';
 
         const category = val(catIdx) || 'OTHER';
+        const siteName = val(siteIdx);
         const unit = val(unitIdx);
         const personName = val(nameIdx);
         const desig = val(desigIdx);
-        const webLink = val(linkIdx);
-
-        // ഫോൺ നമ്പറും ഇമെയിൽ ഐഡിയും കൃത്യമായി കണ്ടുപിടിക്കുന്നു
-        let phoneNum = '';
+        let webLink = val(linkIdx);
         let emailId = val(emailColIdx);
+        let phoneNum = '';
 
+        // വരിയിലെ മുഴുവൻ കോളങ്ങളും പരിശോധിച്ച് ലിങ്ക്, ഫോൺ, ഇമെയിൽ എന്നിവ കണ്ടുപിടിക്കുന്നു
         for (let j = 0; j < c.length; j++) {
           let cellText = (c[j] && (c[j].f || c[j].v !== null)) ? String(c[j].f || c[j].v).trim() : '';
 
-          // ഇമെയിൽ പരിശോധന
+          // വെബ്സൈറ്റ് ലിങ്ക് സ്കാൻ ചെയ്യൽ
+          if (!webLink && (cellText.startsWith('http') || cellText.includes('.gov.in') || cellText.includes('.nic.in') || cellText.includes('.com') || cellText.includes('.in/'))) {
+            webLink = cellText;
+          }
+
+          // ഇമെയിൽ സ്കാൻ ചെയ്യൽ
           if (!emailId && cellText.includes('@') && cellText.includes('.')) {
             emailId = cellText;
           }
 
-          // ഫോൺ നമ്പർ പരിശോധന (Active പോലുള്ള വാക്കുകൾ ഒഴിവാക്കുന്നു)
+          // ഫോൺ നമ്പർ സ്കാൻ ചെയ്യൽ
           let digitsOnly = cellText.replace(/[^0-9]/g, '');
           if (!phoneNum && digitsOnly.length >= 7 && digitsOnly.length <= 12) {
             phoneNum = digitsOnly;
           }
         }
 
-        let displayTitle = personName || unit || 'വിവരങ്ങൾ';
+        // ലിങ്ക് വാലിഡേറ്റ് ചെയ്യുന്നു
+        if (webLink) {
+          webLink = sanitizeUrl(webLink);
+        }
+
+        let displayTitle = siteName || personName || unit || 'വിവരങ്ങൾ';
 
         if (category) categoriesSet.add(category);
 
         directoryData.push({
           category,
+          siteName,
           unit,
           personName,
           desig,
@@ -332,6 +357,7 @@
         item.category.toLowerCase().includes(query) ||
         item.phone.includes(query) ||
         (item.email && item.email.toLowerCase().includes(query)) ||
+        (item.link && item.link.toLowerCase().includes(query)) ||
         item.desig.toLowerCase().includes(query)
       ) : true;
       return matchCat && matchQuery;
@@ -371,7 +397,7 @@
             <a href="mailto:${item.email}" class="btn-action btn-email"><i class="fa-solid fa-envelope"></i> Email</a>
           ` : ''}
           ${item.link ? `
-            <a href="${item.link}" target="_blank" class="btn-action btn-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visit</a>
+            <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="btn-action btn-link"><i class="fa-solid fa-globe"></i> Website</a>
           ` : ''}
         </div>
       </div>
