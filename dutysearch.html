@@ -3,22 +3,399 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>വെബ് ആപ്പ്</title>
+  <title>ഡ്യൂട്ടി സെർച്ച് പോർട്ടൽ | Duty Search</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    body, html {
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background: #f1f5f9;
       margin: 0;
       padding: 0;
-      height: 100%;
-      overflow: hidden;
+      color: #0f172a;
     }
-    iframe {
-      border: none;
+    /* Top Header Bar */
+    .top-navbar {
+      background: #1e3a8a;
+      color: #ffffff;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .top-navbar h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .back-btn {
+      color: #e2e8f0;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.12);
+      transition: all 0.2s;
+    }
+    .back-btn:hover {
+      background: rgba(255,255,255,0.22);
+      color: #fff;
+    }
+
+    .main-container {
+      max-width: 1200px;
+      margin: 28px auto;
+      padding: 0 16px;
+    }
+
+    /* Search Box Section */
+    .search-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      margin-bottom: 24px;
+      border: 1px solid #e2e8f0;
+    }
+    .search-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .search-form {
+      display: flex;
+      gap: 12px;
+    }
+    .search-input-wrapper {
+      position: relative;
+      flex: 1;
+    }
+    .search-input {
       width: 100%;
-      height: 100%;
+      padding: 14px 18px 14px 44px;
+      font-size: 16px;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      outline: none;
+      background: #f8fafc;
+      transition: border-color 0.2s ease;
+    }
+    .search-input:focus {
+      border-color: #2563eb;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 18px;
+    }
+    .btn-search {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 0 28px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s ease;
+    }
+    .btn-search:hover {
+      background: #1d4ed8;
+    }
+
+    /* Status Message */
+    .status-msg {
+      text-align: center;
+      padding: 40px 20px;
+      color: #64748b;
+      font-size: 16px;
+    }
+
+    /* Desktop Table View */
+    .table-container {
+      background: #ffffff;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+      display: none;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      min-width: 900px;
+    }
+    th {
+      background: #f8fafc;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 14px 16px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    td {
+      padding: 14px 16px;
+      font-size: 13.5px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+    }
+    tr:hover td {
+      background: #f8fafc;
+    }
+    .tag-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+    .phone-btn {
+      color: #16a34a;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Mobile Responsive Cards */
+    .mobile-cards {
+      display: none;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 768px) {
+      .table-container {
+        display: none !important;
+      }
+      .mobile-cards {
+        display: grid;
+      }
+      .search-form {
+        flex-direction: column;
+      }
+      .btn-search {
+        padding: 14px;
+        justify-content: center;
+      }
+    }
+    .duty-card {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 18px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 8px;
+    }
+    .card-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+    .card-row {
+      display: flex;
+      font-size: 13px;
+      color: #475569;
+    }
+    .card-row b {
+      width: 110px;
+      color: #334155;
     }
   </style>
 </head>
 <body>
-  <iframe src="https://script.google.com/macros/s/AKfycbzUlgaXbQrEGJkD0BG5DHrQxMciTAe0YQMDvOrjjJfyvrOzkQak1rWV1-ePz8sim5_vaQ/exec" allowfullscreen></iframe>
+
+  <!-- Top Bar -->
+  <div class="top-navbar">
+    <h1><i class="fa-solid fa-clipboard-user"></i> ഡ്യൂട്ടി സെർച്ച് പോർട്ടൽ</h1>
+    <a href="index.html" class="back-btn"><i class="fa-solid fa-home"></i> ഹോം പേജ്</a>
+  </div>
+
+  <div class="main-container">
+    <!-- Search Box -->
+    <div class="search-card">
+      <span class="search-label">മൊബൈൽ നമ്പർ / PEN / പേര് നൽകി തിരയുക:</span>
+      <div class="search-form">
+        <div class="search-input-wrapper">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="searchInput" class="search-input" placeholder="ഉദാ: 9446331086 അല്ലെങ്കിൽ പേര്..." onkeypress="handleEnter(event)">
+        </div>
+        <button class="btn-search" onclick="performSearch()">
+          <i class="fa-solid fa-magnifying-glass"></i> Search
+        </button>
+      </div>
+    </div>
+
+    <!-- Status message -->
+    <div id="statusMessage" class="status-msg">
+      മുകളിൽ മൊബൈൽ നമ്പറോ പേരോ നൽകി <b>Search</b> ക്ലിക്ക് ചെയ്യുക.
+    </div>
+
+    <!-- Desktop Table View -->
+    <div class="table-container" id="tableContainer">
+      <table>
+        <thead>
+          <tr>
+            <th>തീയതി & സമയം</th>
+            <th>പേര്</th>
+            <th>PEN NO</th>
+            <th>റാങ്ക്</th>
+            <th>ഓഫീസ് / സ്റ്റേഷൻ</th>
+            <th>മൊബൈൽ നമ്പർ</th>
+            <th>ഡ്യൂട്ടി തീയതി</th>
+            <th>സെഷൻ</th>
+            <th>GL NO</th>
+            <th>കോഴ്സ് / ഡ്യൂട്ടി</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Mobile Cards View -->
+    <div class="mobile-cards" id="mobileCards"></div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUlgaXbQrEGJkD0BG5DHrQxMciTAe0YQMDvOrjjJfyvrOzkQak1rWV1-ePz8sim5_vaQ/exec';
+
+    function handleEnter(e) {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    }
+
+    function performSearch() {
+      const q = document.getElementById('searchInput').value.trim();
+      const status = document.getElementById('statusMessage');
+      const tableBox = document.getElementById('tableContainer');
+      const mobileCards = document.getElementById('mobileCards');
+      const tBody = document.getElementById('tableBody');
+
+      if (!q) {
+        alert('ദയവായി തിരയാനുള്ള നമ്പർ അല്ലെങ്കിൽ പേര് നൽകുക.');
+        return;
+      }
+
+      tableBox.style.display = 'none';
+      mobileCards.style.display = 'none';
+      status.style.display = 'block';
+      status.innerHTML = '<i class="fa-solid fa-spinner fa-spin fa-2x" style="color:#2563eb; margin-bottom:12px;"></i><br>വിവരങ്ങൾ ശേഖരിക്കുന്നു... ദയവായി കാത്തിരിക്കുക.';
+
+      fetch(`${SCRIPT_URL}?q=${encodeURIComponent(q)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data || data.length === 0) {
+            status.style.display = 'block';
+            status.innerHTML = '❌ ഈ നമ്പറിൽ/പേരിൽ വിവരങ്ങൾ ഒന്നും കണ്ടെത്താൻ കഴിഞ്ഞില്ല.';
+            return;
+          }
+
+          status.style.display = 'none';
+
+          // Table HTML (Desktop)
+          let tableHtml = '';
+          // Mobile Cards HTML
+          let cardsHtml = '';
+
+          data.forEach(row => {
+            const time = row['Timestamp'] || '-';
+            const name = row['NAME'] || '-';
+            const pen = row['PEN NUMBER'] || '-';
+            const rank = row['RANK'] || '-';
+            const office = row['OFFICE'] || '-';
+            const phone = row['MOBILE NUMBER'] || '';
+            const dutyDate = row['DATE'] || '-';
+            const session = row['SESSION'] || '-';
+            const glNo = row['GL NUMBER'] || '-';
+            const course = row['NAME OF COURSE'] || '-';
+
+            // Desktop Row
+            tableHtml += `
+              <tr>
+                <td><small style="color:#64748b;">${time}</small></td>
+                <td><b>${name}</b></td>
+                <td><span class="tag-badge">${pen}</span></td>
+                <td>${rank}</td>
+                <td>${office}</td>
+                <td>${phone ? `<a href="tel:${phone}" class="phone-btn">📞 ${phone}</a>` : '-'}</td>
+                <td><b>${dutyDate}</b></td>
+                <td>${session}</td>
+                <td>${glNo}</td>
+                <td><span class="tag-badge" style="background:#fef3c7; color:#b45309;">${course}</span></td>
+              </tr>
+            `;
+
+            // Mobile Card
+            cardsHtml += `
+              <div class="duty-card">
+                <div class="card-header-row">
+                  <div>
+                    <div class="card-name">${name}</div>
+                    <small style="color:#64748b;">${rank} | PEN: ${pen}</small>
+                  </div>
+                  <span class="tag-badge" style="background:#fef3c7; color:#b45309;">${course}</span>
+                </div>
+                <div class="card-row"><b>ഓഫീസ്:</b> <span>${office}</span></div>
+                <div class="card-row"><b>തീയതി:</b> <span>${dutyDate}</span></div>
+                <div class="card-row"><b>സെഷൻ:</b> <span>${session}</span></div>
+                <div class="card-row"><b>GL NO:</b> <span>${glNo}</span></div>
+                ${phone ? `
+                  <div style="margin-top: 6px;">
+                    <a href="tel:${phone}" class="phone-btn" style="background:#ecfdf5; padding:6px 12px; border-radius:6px; border:1px solid #a7f3d0;">
+                      📞 ${phone} വിളിക്കുക
+                    </a>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          });
+
+          tBody.innerHTML = tableHtml;
+          mobileCards.innerHTML = cardsHtml;
+
+          if (window.innerWidth > 768) {
+            tableBox.style.display = 'block';
+          } else {
+            mobileCards.style.display = 'grid';
+          }
+        })
+        .catch(err => {
+          status.style.display = 'block';
+          status.innerHTML = '⚠️ ഡാറ്റ ലോഡ് ചെയ്യുന്നതിൽ തടസ്സം നേരിട്ടു: ' + err.message;
+        });
+    }
+  </script>
 </body>
 </html>
