@@ -3,164 +3,353 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ഡയറക്ടറി & ഡാഷ്‌ബോർഡ്</title>
+  <title>ഡയറക്ടറി & ഹെൽപ്പ് ഡെസ്ക്</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: #f1f5f9;
+      background: #f8fafc;
       margin: 0;
       padding: 16px;
-      color: #0f172a;
+      color: #1e293b;
     }
     .container {
-      max-width: 1200px;
+      max-width: 900px;
       margin: auto;
+    }
+    .header-section {
       background: #ffffff;
       padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+      text-align: center;
     }
     h2 {
-      margin-top: 0;
+      margin: 0 0 16px 0;
       color: #1e3a8a;
       font-size: 24px;
+      font-weight: 700;
     }
-    .search-box {
-      width: 100%;
-      padding: 12px 16px;
-      font-size: 15px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
+    .search-wrapper {
+      position: relative;
       margin-bottom: 20px;
-      outline: none;
     }
-    .search-box:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
-    }
-    .table-container {
-      overflow-x: auto;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-    }
-    table {
+    .search-input {
       width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      min-width: 600px;
-    }
-    th, td {
-      border-bottom: 1px solid #e2e8f0;
-      padding: 12px 14px;
-      font-size: 14px;
-    }
-    th {
-      background: #f8fafc;
-      font-weight: 600;
-      color: #334155;
-      position: sticky;
-      top: 0;
-    }
-    tr:hover {
-      background: #f8fafc;
-    }
-    .phone-link {
-      color: #16a34a;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .loading {
-      text-align: center;
-      padding: 40px;
+      padding: 14px 20px 14px 44px;
       font-size: 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      outline: none;
+      transition: all 0.2s ease;
+      background: #f8fafc;
+    }
+    .search-input:focus {
+      border-color: #2563eb;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+    }
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 18px;
+    }
+    .category-title {
+      font-size: 14px;
+      font-weight: 600;
       color: #64748b;
+      margin-bottom: 10px;
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-start;
+    }
+    .pill {
+      padding: 10px 18px;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .pill:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+    .pill.active {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+    }
+    .status-msg {
+      text-align: center;
+      padding: 30px;
+      color: #64748b;
+      font-size: 16px;
+    }
+    /* Directory Cards */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+    .card-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #eff6ff;
+      color: #2563eb;
+      margin-bottom: 8px;
+      align-self: flex-start;
+    }
+    .card-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+    .card-sub {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 14px;
+    }
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .btn-action {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s ease;
+    }
+    .btn-call {
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #a7f3d0;
+    }
+    .btn-call:hover {
+      background: #d1fae5;
+    }
+    .btn-wa {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+    .btn-wa:hover {
+      background: #dcfce7;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>ലൈവ് ഡയറക്ടറി</h2>
-  <input type="text" id="searchInput" class="search-box" placeholder="തിരയുക (Search by Category, Station, Phone...)" onkeyup="filterTable()">
-  
-  <div id="loading" class="loading">വിവരങ്ങൾ ശേഖരിക്കുന്നു... ദയവായി കാത്തിരിക്കുക.</div>
-  
-  <div class="table-container">
-    <table id="dataTable" style="display: none;">
-      <thead id="tableHead"></thead>
-      <tbody id="tableBody"></tbody>
-    </table>
+  <div class="header-section">
+    <h2><i class="fa-solid fa-address-book"></i> ഡയറക്ടറി & കോൺടാക്റ്റുകൾ</h2>
+    
+    <div class="search-wrapper">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input type="text" id="searchInput" class="search-input" placeholder="പേര്, ഓഫീസ്, ഫോൺ നമ്പർ എന്നിവ തിരയുക..." oninput="onSearchChange()">
+    </div>
+
+    <div class="category-title"><i class="fa-solid fa-layer-group"></i> കാറ്റഗറി തിരഞ്ഞെടുക്കുക:</div>
+    <div class="category-pills" id="categoryContainer">
+      <!-- Categories dynamically load here -->
+    </div>
   </div>
+
+  <div id="statusMessage" class="status-msg">
+    വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു...
+  </div>
+
+  <div class="results-grid" id="resultsGrid" style="display: none;"></div>
 </div>
 
 <script>
   const SHEET_ID = '1pqVwS9RBS4bYOXvVVVzF406qUna4MwvHxq_1ElBJZ5Q';
   const SHEET_NAME = 'Sheet1';
-
-  // headers=0 നൽകുന്നതിലൂടെ ആദ്യത്തെ വരി മുതലുള്ള എല്ലാ ഡാറ്റയും യാതൊരു തടസ്സവുമില്ലാതെ കൃത്യമായി ലഭിക്കുന്നു
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}&headers=0`;
+
+  let directoryData = [];
+  let selectedCategory = '';
 
   fetch(url)
     .then(res => res.text())
     .then(data => {
       const match = data.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\);/);
-      if (!match) throw new Error("Invalid response format");
-      
+      if (!match) throw new Error("Format error");
       const json = JSON.parse(match[1]);
       const rawRows = json.table.rows;
 
-      if (!rawRows || rawRows.length === 0) {
-        document.getElementById('loading').innerText = 'ഷീറ്റിൽ വിവരങ്ങൾ ഒന്നും ലഭ്യമല്ല.';
+      if (!rawRows || rawRows.length < 2) {
+        document.getElementById('statusMessage').innerText = 'ഷീറ്റിൽ വിവരങ്ങൾ ലഭ്യമല്ല.';
         return;
       }
 
-      // ആദ്യത്തെ റോ ഹെഡർ ആയി എടുക്കുന്നു
-      const firstRow = rawRows[0].c;
-      let headHtml = '<tr>';
-      firstRow.forEach((cell, idx) => {
-        const val = cell ? (cell.f || cell.v || '') : '';
-        headHtml += `<th>${val || 'Column ' + (idx + 1)}</th>`;
-      });
-      headHtml += '</tr>';
-      document.getElementById('tableHead').innerHTML = headHtml;
+      // Headers identify
+      const headers = rawRows[0].c.map(c => (c && (c.v || c.f) ? String(c.v || c.f).trim().toLowerCase() : ''));
+      
+      const catIdx = headers.findIndex(h => h.includes('category') && !h.includes('sub'));
+      const unitIdx = headers.findIndex(h => h.includes('unit') || h.includes('site'));
+      const nameIdx = headers.findIndex(h => h.includes('name'));
+      const desigIdx = headers.findIndex(h => h.includes('designation') || h.includes('desig') || h.includes('rank'));
+      const phoneIdx = headers.findIndex(h => h.includes('phone') || h.includes('mobile') || h.includes('numbe') || h.includes('contact'));
 
-      // തുടർന്നുള്ള വരികൾ ടേബിളിലേക്ക് ചേർക്കുന്നു
-      let bodyHtml = '';
+      const categoriesSet = new Set();
+
       for (let i = 1; i < rawRows.length; i++) {
-        const rowCells = rawRows[i].c;
-        if (!rowCells || rowCells.every(c => !c || c.v === null || c.v === '')) continue; // പൂർണ്ണമായി ബ്ലാങ്ക് ആയ വരികൾ ഒഴിവാക്കുന്നു
+        const row = rawRows[i].c;
+        if (!row || row.every(c => !c || c.v === null || c.v === '')) continue;
 
-        bodyHtml += '<tr>';
-        rowCells.forEach(cell => {
-          let val = cell ? (cell.f || cell.v || '') : '';
-          
-          // ഫോൺ നമ്പർ ആണെങ്കിൽ നേരിട്ട് ക്ലിക്ക് ചെയ്ത് വിളിക്കാൻ തക്കവിധം ലിങ്ക് നൽകുന്നു
-          if (/^\d{10}$/.test(String(val).trim())) {
-            val = `<a class="phone-link" href="tel:${val}">📞 ${val}</a>`;
-          }
-          bodyHtml += `<td>${val}</td>`;
+        const getVal = (idx) => (idx !== -1 && row[idx]) ? (row[idx].f || row[idx].v || '') : '';
+
+        const category = getVal(catIdx) || 'OTHER';
+        const unit = getVal(unitIdx);
+        const name = getVal(nameIdx);
+        const designation = getVal(desigIdx);
+        const phone = String(getVal(phoneIdx)).replace(/[^0-9]/g, '');
+
+        if (category) categoriesSet.add(category);
+
+        directoryData.push({
+          category,
+          unit,
+          name: name || unit || 'Contact',
+          designation,
+          phone
         });
-        bodyHtml += '</tr>';
       }
-      document.getElementById('tableBody').innerHTML = bodyHtml;
 
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('dataTable').style.display = 'table';
+      // Render Categories
+      renderCategories(Array.from(categoriesSet));
+      
+      // Initially guide the user
+      document.getElementById('statusMessage').innerHTML = '👆 മുകളിൽ ഒരു <b>കാറ്റഗറി ക്ലിക്ക് ചെയ്യുക</b> അല്ലെങ്കിൽ <b>തിരയുക</b>.';
     })
     .catch(err => {
-      document.getElementById('loading').innerHTML = 'ഡാറ്റ ലോഡ് ചെയ്യുന്നതിൽ തടസ്സം നേരിട്ടു: ' + err.message;
-      console.error(err);
+      document.getElementById('statusMessage').innerText = 'ഡാറ്റ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല: ' + err.message;
     });
 
-  function filterTable() {
-    const input = document.getElementById("searchInput").value.toLowerCase();
-    const rows = document.getElementById("tableBody").getElementsByTagName("tr");
-    for (let i = 0; i < rows.length; i++) {
-      rows[i].style.display = rows[i].innerText.toLowerCase().includes(input) ? "" : "none";
+  function renderCategories(categories) {
+    const container = document.getElementById('categoryContainer');
+    let html = '';
+    categories.forEach(cat => {
+      html += `<button class="pill" onclick="selectCategory('${cat}', this)">${cat}</button>`;
+    });
+    container.innerHTML = html;
+  }
+
+  function selectCategory(cat, btn) {
+    if (selectedCategory === cat) {
+      selectedCategory = '';
+      btn.classList.remove('active');
+    } else {
+      selectedCategory = cat;
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
     }
+    filterAndDisplay();
+  }
+
+  function onSearchChange() {
+    filterAndDisplay();
+  }
+
+  function filterAndDisplay() {
+    const query = document.getElementById('searchInput').value.trim().toLowerCase();
+    const grid = document.getElementById('resultsGrid');
+    const statusMsg = document.getElementById('statusMessage');
+
+    // If nothing selected and no query, show helper prompt
+    if (!selectedCategory && !query) {
+      grid.style.display = 'none';
+      statusMsg.style.display = 'block';
+      statusMsg.innerHTML = '👆 മുകളിൽ ഒരു <b>കാറ്റഗറി ക്ലിക്ക് ചെയ്യുക</b> അല്ലെങ്കിൽ <b>തിരയുക</b>.';
+      return;
+    }
+
+    const filtered = directoryData.filter(item => {
+      const matchCat = selectedCategory ? item.category === selectedCategory : true;
+      const matchQuery = query ? (
+        item.name.toLowerCase().includes(query) ||
+        item.unit.toLowerCase().includes(query) ||
+        item.category.toLowerCase().includes(query) ||
+        item.phone.includes(query) ||
+        item.designation.toLowerCase().includes(query)
+      ) : true;
+
+      return matchCat && matchQuery;
+    });
+
+    if (filtered.length === 0) {
+      grid.style.display = 'none';
+      statusMsg.style.display = 'block';
+      statusMsg.innerText = 'വിവരങ്ങൾ ഒന്നും കണ്ടെത്താൻ കഴിഞ്ഞില്ല.';
+      return;
+    }
+
+    statusMsg.style.display = 'none';
+    grid.style.display = 'grid';
+
+    grid.innerHTML = filtered.map(item => `
+      <div class="card">
+        <div>
+          <span class="card-badge">${item.category}</span>
+          <div class="card-name">${item.name}</div>
+          <div class="card-sub">
+            ${item.unit ? `🏢 ${item.unit}<br>` : ''}
+            ${item.designation ? `💼 ${item.designation}` : ''}
+          </div>
+        </div>
+        ${item.phone ? `
+          <div class="card-actions">
+            <a href="tel:${item.phone}" class="btn-action btn-call"><i class="fa-solid fa-phone"></i> Call</a>
+            <a href="https://wa.me/91${item.phone.slice(-10)}" target="_blank" class="btn-action btn-wa"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+          </div>
+        ` : ''}
+      </div>
+    `).join('');
   }
 </script>
 
