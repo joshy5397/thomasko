@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ഫാമിലി ട്രീ (കുടുംബവൃക്ഷം)</title>
+  <title>കുടുംബവൃക്ഷം (Horizontal Family Tree)</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     * {
@@ -11,35 +11,38 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     body {
-      background: #f8fafc;
+      background: #f1f5f9;
       margin: 0;
       padding: 16px;
       color: #0f172a;
     }
-    .container {
-      max-width: 900px;
-      margin: auto;
+    .top-panel {
+      position: sticky;
+      top: 10px;
+      z-index: 100;
       background: #ffffff;
-      padding: 24px;
+      padding: 18px 24px;
       border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      max-width: 900px;
+      margin: 0 auto 20px auto;
     }
     h2 {
-      margin: 0 0 16px 0;
+      margin: 0 0 14px 0;
       color: #1e3a8a;
       text-align: center;
-      font-size: 24px;
+      font-size: 22px;
     }
     .search-wrapper {
       position: relative;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
     }
     .search-input {
       width: 100%;
-      padding: 14px 20px 14px 44px;
-      font-size: 16px;
+      padding: 12px 18px 12px 42px;
+      font-size: 15px;
       border: 2px solid #cbd5e1;
-      border-radius: 12px;
+      border-radius: 10px;
       outline: none;
       background: #f8fafc;
     }
@@ -49,121 +52,190 @@
     }
     .search-icon {
       position: absolute;
-      left: 16px;
+      left: 14px;
       top: 50%;
       transform: translateY(-50%);
       color: #94a3b8;
-      font-size: 18px;
+      font-size: 16px;
     }
-    .tree-controls {
+    .controls {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 16px;
     }
+    .legend {
+      display: flex;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-first { background: #1e3a8a; color: white; padding: 2px 8px; border-radius: 6px; }
+    .badge-second { background: #0284c7; color: white; padding: 2px 8px; border-radius: 6px; }
+    .badge-third { background: #059669; color: white; padding: 2px 8px; border-radius: 6px; }
+    .badge-fourth { background: #d97706; color: white; padding: 2px 8px; border-radius: 6px; }
+
     .btn-ctrl {
       background: #f1f5f9;
       border: 1px solid #cbd5e1;
-      padding: 8px 14px;
+      padding: 7px 14px;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       color: #334155;
     }
-    .btn-ctrl:hover {
-      background: #e2e8f0;
-    }
-    /* Tree Structure Styling */
-    .tree-container {
-      padding: 10px 0;
-    }
-    ul.tree, ul.tree ul {
-      list-style-type: none;
-      padding-left: 24px;
-      margin: 0;
-      position: relative;
-    }
-    ul.tree ul::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 12px;
-      bottom: 12px;
-      border-left: 2px dashed #cbd5e1;
-    }
-    ul.tree li {
-      margin: 8px 0;
-      position: relative;
-    }
-    ul.tree li::before {
-      content: '';
-      position: absolute;
-      top: 18px;
-      left: -12px;
-      width: 12px;
-      border-top: 2px dashed #cbd5e1;
-    }
-    .node-card {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
+    .btn-ctrl:hover { background: #e2e8f0; }
+
+    /* Horizontal Tree Layout (Left to Right) */
+    .tree-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: visible;
+      padding: 20px;
       background: #ffffff;
-      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+      min-height: 450px;
+    }
+    .tree-h, .tree-h ul {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin: 0;
+      padding: 0 0 0 35px;
+      position: relative;
+      list-style: none;
+    }
+    .tree-h > li {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      position: relative;
+    }
+    /* Horizontal lines connecting Left to Right */
+    .tree-h ul::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      bottom: 50%;
+      border-left: 2px solid #94a3b8;
+    }
+    .tree-h li::before {
+      content: '';
+      position: absolute;
+      left: -35px;
+      width: 35px;
+      height: 2px;
+      background-color: #94a3b8;
+      top: 50%;
+    }
+    .tree-h li:first-child::after, .tree-h li:last-child::after {
+      content: '';
+      position: absolute;
+      left: -35px;
+      border-left: 2px solid #94a3b8;
+      width: 0;
+    }
+    .tree-h li:first-child::after {
+      top: 50%;
+      bottom: 0;
+    }
+    .tree-h li:last-child::after {
+      top: 0;
+      bottom: 50%;
+    }
+    .tree-h li:only-child::after {
+      display: none;
+    }
+    .tree-h li > .node-card {
+      margin-right: 35px;
+      position: relative;
+    }
+    .tree-h li:has(> ul) > .node-card::after {
+      content: '';
+      position: absolute;
+      right: -35px;
+      top: 50%;
+      width: 35px;
+      height: 2px;
+      background-color: #94a3b8;
+    }
+
+    /* Node Box Design */
+    .node-card {
+      min-width: 130px;
+      padding: 10px 14px;
+      background: #ffffff;
       border-radius: 10px;
-      font-size: 15px;
-      font-weight: 600;
+      border: 2px solid #cbd5e1;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
       cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
       transition: all 0.2s ease;
+      white-space: nowrap;
       user-select: none;
     }
     .node-card:hover {
-      border-color: #3b82f6;
-      background: #eff6ff;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.18);
+      border-color: #2563eb;
     }
-    /* Generation Tags & Colors */
-    .gen-badge {
+    .node-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .node-gen {
       font-size: 10px;
       font-weight: 700;
-      padding: 3px 6px;
-      border-radius: 6px;
+      padding: 2px 6px;
+      border-radius: 4px;
       text-transform: uppercase;
     }
-    .gen-1 .node-card { border-color: #1e3a8a; background: #eff6ff; color: #1e3a8a; font-size: 17px; }
-    .gen-1 .gen-badge { background: #1e3a8a; color: white; }
 
-    .gen-2 .node-card { border-color: #0284c7; }
-    .gen-2 .gen-badge { background: #e0f2fe; color: #0284c7; }
+    /* Generation Specific Styles */
+    .gen-1 > .node-card { border-color: #1e3a8a; background: #eff6ff; }
+    .gen-1 .node-gen { background: #1e3a8a; color: white; }
 
-    .gen-3 .node-card { border-color: #059669; }
-    .gen-3 .gen-badge { background: #d1fae5; color: #059669; }
+    .gen-2 > .node-card { border-color: #0284c7; }
+    .gen-2 .node-gen { background: #e0f2fe; color: #0284c7; }
 
-    .gen-4 .node-card { border-color: #d97706; }
-    .gen-4 .gen-badge { background: #fef3c7; color: #d97706; }
+    .gen-3 > .node-card { border-color: #059669; }
+    .gen-3 .node-gen { background: #d1fae5; color: #059669; }
 
-    .toggle-icon {
-      font-size: 12px;
-      color: #64748b;
-      margin-left: 4px;
-      transition: transform 0.2s;
-    }
+    .gen-4 > .node-card { border-color: #d97706; }
+    .gen-4 .node-gen { background: #fef3c7; color: #d97706; }
+
+    /* Collapsible */
     .collapsed > ul {
-      display: none;
+      display: none !important;
+    }
+    .toggle-icon {
+      font-size: 11px;
+      color: #64748b;
+      margin-left: auto;
     }
     .collapsed .toggle-icon {
       transform: rotate(-90deg);
     }
-    .highlight .node-card {
+    .highlight > .node-card {
       background: #fef08a !important;
       border-color: #ca8a04 !important;
       color: #854d0e !important;
-      box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
+      transform: scale(1.04);
+      box-shadow: 0 0 12px rgba(202, 138, 4, 0.4);
     }
     .status-msg {
       text-align: center;
-      padding: 30px;
+      padding: 40px;
       color: #64748b;
       font-size: 16px;
     }
@@ -171,21 +243,31 @@
 </head>
 <body>
 
-<div class="container">
-  <h2><i class="fa-solid fa-sitemap"></i> കുടുംബവൃക്ഷം (Family Tree)</h2>
-
+<div class="top-panel">
+  <h2><i class="fa-solid fa-sitemap"></i> കുടുംബവൃക്ഷം</h2>
+  
   <div class="search-wrapper">
     <i class="fa-solid fa-magnifying-glass search-icon"></i>
     <input type="text" id="searchInput" class="search-input" placeholder="കുടുംബാംഗങ്ങളുടെ പേര് തിരയുക..." oninput="searchTree()">
   </div>
 
-  <div class="tree-controls">
-    <button class="btn-ctrl" onclick="expandAll()"><i class="fa-solid fa-plus"></i> Expand All</button>
-    <button class="btn-ctrl" onclick="collapseAll()"><i class="fa-solid fa-minus"></i> Collapse All</button>
+  <div class="controls">
+    <div class="legend">
+      <span class="badge-first">FIRST</span>
+      <span class="badge-second">SECOND</span>
+      <span class="badge-third">THIRD</span>
+      <span class="badge-fourth">FOURTH</span>
+    </div>
+    <div>
+      <button class="btn-ctrl" onclick="expandAll()"><i class="fa-solid fa-expand"></i> Expand All</button>
+      <button class="btn-ctrl" onclick="collapseAll()"><i class="fa-solid fa-compress"></i> Collapse All</button>
+    </div>
   </div>
+</div>
 
+<div class="tree-wrapper">
   <div id="status" class="status-msg">വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു... ദയവായി കാത്തിരിക്കുക.</div>
-  <div id="treeContainer" class="tree-container"></div>
+  <div id="treeContainer"></div>
 </div>
 
 <script>
@@ -208,10 +290,8 @@
         return;
       }
 
-      // Generation Headers
       const colHeaders = rows[0].c.map(c => c && (c.v !== null || c.f) ? String(c.f || c.v).trim().toUpperCase() : '');
 
-      // Tree structure builder
       let root = {};
 
       for (let i = 1; i < rows.length; i++) {
@@ -256,9 +336,11 @@
 
       html += `<li class="${genClass}" data-name="${key.toLowerCase()}">`;
       html += `  <div class="node-card" onclick="toggleNode(this)">
-                   <span class="gen-badge">${node._badge}</span>
-                   <span>${key}</span>
-                   ${hasChildren ? '<i class="fa-solid fa-chevron-down toggle-icon"></i>' : ''}
+                   <span class="node-gen">${node._badge}</span>
+                   <div class="node-name">
+                     <span>${key}</span>
+                     ${hasChildren ? '<i class="fa-solid fa-chevron-right toggle-icon"></i>' : ''}
+                   </div>
                  </div>`;
       if (hasChildren) {
         html += buildTreeHtml(node._children);
@@ -271,7 +353,7 @@
 
   function renderTree(root) {
     const container = document.getElementById('treeContainer');
-    let html = '<ul class="tree">' + buildTreeHtml(root).replace(/^<ul>|<\/ul>$/g, '') + '</ul>';
+    let html = '<ul class="tree-h">' + buildTreeHtml(root).replace(/^<ul>|<\/ul>$/g, '') + '</ul>';
     container.innerHTML = html;
   }
 
@@ -288,7 +370,6 @@
     document.querySelectorAll('#treeContainer li').forEach(li => {
       if (li.querySelector('ul')) li.classList.add('collapsed');
     });
-    // First generation open ആയി വെക്കുന്നു
     document.querySelectorAll('#treeContainer > ul > li').forEach(li => li.classList.remove('collapsed'));
   }
 
@@ -296,10 +377,7 @@
     const query = document.getElementById('searchInput').value.trim().toLowerCase();
     const allLis = document.querySelectorAll('#treeContainer li');
 
-    allLis.forEach(li => {
-      li.classList.remove('highlight');
-    });
-
+    allLis.forEach(li => li.classList.remove('highlight'));
     if (!query) return;
 
     expandAll();
