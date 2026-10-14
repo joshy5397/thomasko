@@ -10,7 +10,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     html, body {
       height: 100%;
@@ -42,7 +42,6 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      letter-spacing: 0.3px;
     }
     .nav-actions {
       display: flex;
@@ -84,7 +83,7 @@
       display: block;
     }
 
-    /* Bottom Visitor Counter Footer */
+    /* Bottom Dual Stats Footer */
     .site-footer {
       background: #ffffff;
       border-top: 1px solid #cbd5e1;
@@ -92,13 +91,19 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 8px;
+      gap: 18px;
       font-size: 13px;
       font-weight: 700;
       color: #334155;
       flex-shrink: 0;
+      flex-wrap: wrap;
     }
-    .site-footer img {
+    .stat-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .stat-item img {
       vertical-align: middle;
       border-radius: 4px;
     }
@@ -112,7 +117,6 @@
       <i class="fa-solid fa-clipboard-user"></i> Duty Search
     </h1>
     <div class="nav-actions">
-      <!-- റീഫ്രഷ് ചെയ്യാനുള്ള ബട്ടൺ -->
       <button class="nav-btn" onclick="reloadFrame()" title="Refresh Portal">
         <i class="fa-solid fa-arrows-rotate"></i> Refresh
       </button>
@@ -132,14 +136,22 @@
     </iframe>
   </div>
 
-  <!-- Visitor Counter Footer -->
+  <!-- Visitor & Searches Dual Footer -->
   <div class="site-footer">
-    <span><i class="fa-solid fa-users"></i> Total Visits:</span>
-    <img src="https://api.visitorbadge.io/api/visitors?path=joshy5397.dutysearch&countColor=%231e3a8a&labelColor=%2364748b" alt="Visitors Count" />
+    <!-- സന്ദർശകരുടെ എണ്ണം (Total Visits) -->
+    <div class="stat-item">
+      <span><i class="fa-solid fa-users" style="color: #2563eb;"></i> Total Visits:</span>
+      <img id="visitsBadge" src="https://api.visitorbadge.io/api/visitors?path=joshy5397.dutysearch.visits&countColor=%231e3a8a&labelColor=%2364748b" alt="Total Visits" />
+    </div>
+
+    <!-- സെർച്ച് ചെയ്ത ആകെ എണ്ണം (Total Searches) -->
+    <div class="stat-item">
+      <span><i class="fa-solid fa-magnifying-glass" style="color: #16a34a;"></i> Total Searches:</span>
+      <img id="searchesBadge" src="https://api.visitorbadge.io/api/visitors?path=joshy5397.dutysearch.searches&countColor=%2316a34a&labelColor=%2364748b" alt="Total Searches" />
+    </div>
   </div>
 
   <script>
-    // പേജ് തനിയെ റീലോഡ് ചെയ്യാനുള്ള സ്ക്രിപ്റ്റ്
     function reloadFrame() {
       var frame = document.getElementById('dutyFrame');
       var btnIcon = document.querySelector('.nav-btn i.fa-arrows-rotate');
@@ -149,6 +161,17 @@
         if (btnIcon) btnIcon.classList.remove('fa-spin');
       }, 1000);
     }
+
+    // Apps Script ഫ്രെയിമിൽ നിന്ന് Search നടക്കുമ്പോൾ Searches കൗണ്ട് തനിയെ അപ്ഡേറ്റ് ചെയ്യുന്നു
+    window.addEventListener('message', function(event) {
+      if (event.data === 'SEARCH_TRIGGERED') {
+        var searchesBadge = document.getElementById('searchesBadge');
+        if (searchesBadge) {
+          // പുതിയ കൗണ്ട് റിഫ്രഷ് ചെയ്യാനായി ഇമേജ് റീലോഡ് ചെയ്യുന്നു
+          searchesBadge.src = 'https://api.visitorbadge.io/api/visitors?path=joshy5397.dutysearch.searches&countColor=%2316a34a&labelColor=%2364748b&t=' + new Date().getTime();
+        }
+      }
+    });
   </script>
 
 </body>
