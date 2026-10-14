@@ -10,34 +10,39 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     html, body {
       height: 100%;
       width: 100%;
-      background: #f8fafc;
-      /* Pull-to-refresh തിരികെ പ്രവർത്തനക്ഷമമാക്കാൻ */
+      background: #f1f5f9;
+      display: flex;
+      flex-direction: column;
       overscroll-behavior-y: auto;
     }
+
+    /* Top Navigation Header */
     .top-navbar {
       background: #1e3a8a;
       color: #ffffff;
-      padding: 12px 16px;
+      padding: 12px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
       position: sticky;
       top: 0;
       z-index: 100;
+      flex-shrink: 0;
     }
     .top-navbar h1 {
       margin: 0;
-      font-size: 17px;
-      font-weight: 700;
+      font-size: 18px;
+      font-weight: 800;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      letter-spacing: 0.3px;
     }
     .nav-actions {
       display: flex;
@@ -48,26 +53,29 @@
       color: #e2e8f0;
       text-decoration: none;
       font-size: 13px;
-      font-weight: 600;
-      padding: 6px 12px;
+      font-weight: 700;
+      padding: 7px 12px;
       border-radius: 8px;
-      background: rgba(255,255,255,0.15);
-      border: none;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       transition: all 0.2s;
     }
     .nav-btn:hover {
-      background: rgba(255,255,255,0.25);
+      background: rgba(255, 255, 255, 0.28);
       color: #ffffff;
     }
+
+    /* Iframe Wrapper */
     .frame-container {
+      flex: 1;
       width: 100%;
-      height: calc(100vh - 54px);
       position: relative;
       -webkit-overflow-scrolling: touch;
+      background: #f1f5f9;
     }
     iframe {
       width: 100%;
@@ -75,21 +83,46 @@
       border: none;
       display: block;
     }
+
+    /* Bottom Visitor Counter Footer */
+    .site-footer {
+      background: #ffffff;
+      border-top: 1px solid #cbd5e1;
+      padding: 8px 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      flex-shrink: 0;
+    }
+    .site-footer img {
+      vertical-align: middle;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
 
+  <!-- Top Bar -->
   <div class="top-navbar">
-    <h1><i class="fa-solid fa-clipboard-user"></i> Duty Search</h1>
+    <h1>
+      <i class="fa-solid fa-clipboard-user"></i> Duty Search
+    </h1>
     <div class="nav-actions">
-      <!-- ഒറ്റ ക്ലിക്കിൽ ആപ്പ് റീലോഡ് ചെയ്യാനുള്ള ബട്ടൺ -->
-      <button class="nav-btn" onclick="reloadFrame()" title="Refresh Page">
+      <!-- റീഫ്രഷ് ചെയ്യാനുള്ള ബട്ടൺ -->
+      <button class="nav-btn" onclick="reloadFrame()" title="Refresh Portal">
         <i class="fa-solid fa-arrows-rotate"></i> Refresh
       </button>
-      <a href="index.html" class="nav-btn"><i class="fa-solid fa-home"></i> Home</a>
+      <a href="index.html" class="nav-btn" title="Home">
+        <i class="fa-solid fa-house"></i> Home
+      </a>
     </div>
   </div>
 
+  <!-- Apps Script Embed Frame -->
   <div class="frame-container">
     <iframe 
       id="dutyFrame"
@@ -99,10 +132,22 @@
     </iframe>
   </div>
 
+  <!-- Visitor Counter Footer -->
+  <div class="site-footer">
+    <span><i class="fa-solid fa-users"></i> Total Visits:</span>
+    <img src="https://api.visitorbadge.io/api/visitors?path=joshy5397.dutysearch&countColor=%231e3a8a&labelColor=%2364748b" alt="Visitors Count" />
+  </div>
+
   <script>
+    // പേജ് തനിയെ റീലോഡ് ചെയ്യാനുള്ള സ്ക്രിപ്റ്റ്
     function reloadFrame() {
       var frame = document.getElementById('dutyFrame');
+      var btnIcon = document.querySelector('.nav-btn i.fa-arrows-rotate');
+      if (btnIcon) btnIcon.classList.add('fa-spin');
       frame.src = frame.src;
+      setTimeout(function() {
+        if (btnIcon) btnIcon.classList.remove('fa-spin');
+      }, 1000);
     }
   </script>
 
