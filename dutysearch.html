@@ -20,8 +20,6 @@
       flex-direction: column;
       overscroll-behavior-y: auto;
     }
-
-    /* Top Navigation Header */
     .top-navbar {
       background: #1e3a8a;
       color: #ffffff;
@@ -67,8 +65,6 @@
       background: rgba(255, 255, 255, 0.28);
       color: #ffffff;
     }
-
-    /* Iframe Wrapper */
     .frame-container {
       flex: 1;
       width: 100%;
@@ -82,36 +78,10 @@
       border: none;
       display: block;
     }
-
-    /* Bottom Dual Stats Footer */
-    .site-footer {
-      background: #ffffff;
-      border-top: 1px solid #cbd5e1;
-      padding: 8px 16px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 18px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #334155;
-      flex-shrink: 0;
-      flex-wrap: wrap;
-    }
-    .stat-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .stat-item img {
-      vertical-align: middle;
-      border-radius: 4px;
-    }
   </style>
 </head>
 <body>
 
-  <!-- Top Bar -->
   <div class="top-navbar">
     <h1>
       <i class="fa-solid fa-clipboard-user"></i> Duty Search
@@ -126,7 +96,6 @@
     </div>
   </div>
 
-  <!-- Apps Script Embed Frame -->
   <div class="frame-container">
     <iframe 
       id="dutyFrame"
@@ -134,21 +103,6 @@
       allow="clipboard-write"
       allowfullscreen>
     </iframe>
-  </div>
-
-  <!-- Visitor & Searches Dual Footer -->
-  <div class="site-footer">
-    <!-- സന്ദർശകരുടെ എണ്ണം (Total Visits) -->
-    <div class="stat-item">
-      <span><i class="fa-solid fa-users" style="color: #2563eb;"></i> Total Visits:</span>
-      <img id="visitsBadge" src="https://api.visitorbadge.io/api/visitors?path=joshy5397.dutysearch.visits&countColor=%231e3a8a&labelColor=%2364748b" alt="Total Visits" />
-    </div>
-
-    <!-- സെർച്ച് ചെയ്ത ആകെ എണ്ണം (Total Searches) -->
-    <div class="stat-item">
-      <span><i class="fa-solid fa-magnifying-glass" style="color: #16a34a;"></i> Total Searches:</span>
-      <img id="searchesBadge" src="https://api.visitorbadge.io/api/visitors?path=joshy5397.dutysearch.searches&countColor=%2316a34a&labelColor=%2364748b" alt="Total Searches" />
-    </div>
   </div>
 
   <script>
@@ -161,17 +115,6 @@
         if (btnIcon) btnIcon.classList.remove('fa-spin');
       }, 1000);
     }
-
-    // Apps Script ഫ്രെയിമിൽ നിന്ന് Search നടക്കുമ്പോൾ Searches കൗണ്ട് തനിയെ അപ്ഡേറ്റ് ചെയ്യുന്നു
-    window.addEventListener('message', function(event) {
-      if (event.data === 'SEARCH_TRIGGERED') {
-        var searchesBadge = document.getElementById('searchesBadge');
-        if (searchesBadge) {
-          // പുതിയ കൗണ്ട് റിഫ്രഷ് ചെയ്യാനായി ഇമേജ് റീലോഡ് ചെയ്യുന്നു
-          searchesBadge.src = 'https://api.visitorbadge.io/api/visitors?path=joshy5397.dutysearch.searches&countColor=%2316a34a&labelColor=%2364748b&t=' + new Date().getTime();
-        }
-      }
-    });
   </script>
 
 </body>
