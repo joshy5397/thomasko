@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Duty Search Portal</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
@@ -15,49 +15,59 @@
     html, body {
       height: 100%;
       width: 100%;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
       background: #f8fafc;
+      /* Pull-to-refresh തിരികെ പ്രവർത്തനക്ഷമമാക്കാൻ */
+      overscroll-behavior-y: auto;
     }
     .top-navbar {
       background: #1e3a8a;
       color: #ffffff;
-      padding: 12px 20px;
+      padding: 12px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-      z-index: 10;
-      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     .top-navbar h1 {
       margin: 0;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
-    .back-btn {
+    .nav-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .nav-btn {
       color: #e2e8f0;
       text-decoration: none;
       font-size: 13px;
       font-weight: 600;
-      padding: 6px 14px;
+      padding: 6px 12px;
       border-radius: 8px;
       background: rgba(255,255,255,0.15);
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
       transition: all 0.2s;
     }
-    .back-btn:hover {
+    .nav-btn:hover {
       background: rgba(255,255,255,0.25);
       color: #ffffff;
     }
-    .frame-wrapper {
-      flex: 1;
+    .frame-container {
       width: 100%;
-      height: 100%;
+      height: calc(100vh - 54px);
       position: relative;
+      -webkit-overflow-scrolling: touch;
     }
     iframe {
       width: 100%;
@@ -70,16 +80,31 @@
 <body>
 
   <div class="top-navbar">
-    <h1><i class="fa-solid fa-clipboard-user"></i> Duty Search Portal</h1>
-    <a href="index.html" class="back-btn"><i class="fa-solid fa-home"></i> Home</a>
+    <h1><i class="fa-solid fa-clipboard-user"></i> Duty Search</h1>
+    <div class="nav-actions">
+      <!-- ഒറ്റ ക്ലിക്കിൽ ആപ്പ് റീലോഡ് ചെയ്യാനുള്ള ബട്ടൺ -->
+      <button class="nav-btn" onclick="reloadFrame()" title="Refresh Page">
+        <i class="fa-solid fa-arrows-rotate"></i> Refresh
+      </button>
+      <a href="index.html" class="nav-btn"><i class="fa-solid fa-home"></i> Home</a>
+    </div>
   </div>
 
-  <div class="frame-wrapper">
+  <div class="frame-container">
     <iframe 
+      id="dutyFrame"
       src="https://script.google.com/macros/s/AKfycbzUlgaXbQrEGJkD0BG5DHrQxMciTAe0YQMDvOrjjJfyvrOzkQak1rWV1-ePz8sim5_vaQ/exec" 
+      allow="clipboard-write"
       allowfullscreen>
     </iframe>
   </div>
+
+  <script>
+    function reloadFrame() {
+      var frame = document.getElementById('dutyFrame');
+      frame.src = frame.src;
+    }
+  </script>
 
 </body>
 </html>
