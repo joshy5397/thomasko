@@ -128,6 +128,7 @@
       border-radius: 10px; margin-bottom: 22px; text-align: center;
     }
 
+    /* Dashboard Metrics Cards */
     .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px; }
     .metric-card {
       background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 16px;
@@ -139,6 +140,7 @@
     .metric-card h4 { margin: 0; font-size: 13px; text-transform: uppercase; opacity: 0.9; }
     .metric-card .val { font-size: 28px; font-weight: 800; margin-top: 6px; }
 
+    /* Purpose Badges */
     .purpose-summary {
       display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; background: #f8fafc;
       padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1;
@@ -157,8 +159,9 @@
     .purpose-stat.active-badge span { color: #fef08a !important; }
     .purpose-stat span { color: #2563eb; font-size: 14px; margin-left: 5px; font-weight: 800; }
 
+    /* Filter Panel (3 Columns for Office, Purpose, Status) */
     .filter-panel { background: #f8fafc; border: 1px solid #cbd5e1; padding: 16px; border-radius: 8px; margin-bottom: 18px; }
-    .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 14px; }
+    .filter-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 14px; }
     .dropdown-check-list { position: relative; }
     .dropdown-check-list .anchor {
       position: relative; cursor: pointer; display: block; padding: 10px 12px; border: 2px solid #94a3b8;
@@ -189,6 +192,7 @@
     .date-range-box span { font-size: 12.5px; font-weight: 700; color: #334155; }
     .btn-actions { display: flex; gap: 8px; }
 
+    /* Table & Controls */
     .table-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13.5px; font-weight: 600; color: #334155; }
     .table-top-bar select { width: auto; display: inline-block; padding: 5px 8px; font-size: 13px; }
 
@@ -215,21 +219,9 @@
       text-align: center;
       transition: all 0.2s;
     }
-    .status-select-pending {
-      background-color: #fef08a;
-      color: #854d0e;
-      border-color: #ca8a04;
-    }
-    .status-select-approved, .status-select-created {
-      background-color: #bbf7d0;
-      color: #166534;
-      border-color: #16a34a;
-    }
-    .status-select-rejected {
-      background-color: #fecaca;
-      color: #991b1b;
-      border-color: #dc2626;
-    }
+    .status-select-pending { background-color: #fef08a; color: #854d0e; border-color: #ca8a04; }
+    .status-select-approved, .status-select-created { background-color: #bbf7d0; color: #166534; border-color: #16a34a; }
+    .status-select-rejected { background-color: #fecaca; color: #991b1b; border-color: #dc2626; }
 
     .pagination-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 13.5px; color: #334155; }
     .pagination-controls { display: flex; gap: 5px; }
@@ -237,16 +229,102 @@
     .page-btn:hover:not(:disabled) { background: #2563eb; color: white; border-color: #2563eb; }
     .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .page-btn.active { background: #1e40af; color: white; border-color: #1e40af; }
+
+    /* Custom In-page Password Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(2px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-card {
+      background: #ffffff;
+      width: 90%;
+      max-width: 380px;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+      border: 1px solid #cbd5e1;
+      text-align: center;
+      animation: popIn 0.2s ease-out;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .modal-card h3 {
+      margin: 0 0 10px 0;
+      color: #1e3a8a;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .modal-card p {
+      margin: 0 0 16px 0;
+      font-size: 13.5px;
+      color: #475569;
+    }
+    .modal-card input[type="password"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #2563eb;
+      border-radius: 7px;
+      font-size: 15px;
+      box-sizing: border-box;
+      outline: none;
+      margin-bottom: 18px;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+    .modal-btn-group {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-modal-confirm {
+      flex: 1;
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-modal-cancel {
+      flex: 1;
+      background: #e2e8f0;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Custom In-page Password Modal (No Browser Prompt) -->
+  <div id="passwordModal" class="modal-overlay">
+    <div class="modal-card">
+      <h3>🔑 Admin Authentication</h3>
+      <p id="modalPromptText">Enter password to change status:</p>
+      <input type="password" id="modalPasswordInput" placeholder="Admin Password" onkeydown="if(event.key==='Enter') submitPasswordModal()">
+      <div class="modal-btn-group">
+        <button type="button" class="btn-modal-confirm" onclick="submitPasswordModal()">Confirm</button>
+        <button type="button" class="btn-modal-cancel" onclick="closePasswordModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
 
   <div class="container">
     <div class="header-banner">
       <h2>MULTI PURPOSE PORTAL</h2>
     </div>
 
-    <!-- Navigation Tabs -->
     <div class="tab-bar">
       <button class="tab-btn active" id="tabBtnForm" onclick="switchTab('form')">📝 Form Entry</button>
       <button class="tab-btn" id="tabBtnDash" onclick="switchTab('dash')">📊 Dashboard & Records</button>
@@ -356,10 +434,10 @@
         <h4 style="margin: 0 0 8px 0; color: #1e3a8a;">Purpose Breakdown (Click any purpose to filter):</h4>
         <div class="purpose-summary" id="purposeSummaryBox"></div>
 
-        <!-- Filter Panel -->
+        <!-- Filter Panel (3 Dropdowns: Office, Purpose, Status) -->
         <div class="filter-panel">
           
-          <div class="filter-grid">
+          <div class="filter-grid-3">
             <div>
               <label>Filter by Office (Multi-select):</label>
               <div id="officeCheckList" class="dropdown-check-list">
@@ -373,6 +451,15 @@
               <div id="purposeCheckList" class="dropdown-check-list">
                 <span class="anchor" onclick="toggleDropdown('purposeCheckList')">Select Purposes</span>
                 <ul class="items" id="filterPurposeList"></ul>
+              </div>
+            </div>
+
+            <!-- STATUS FILTER ADDED -->
+            <div>
+              <label>Filter by Status (Multi-select):</label>
+              <div id="statusCheckList" class="dropdown-check-list">
+                <span class="anchor" onclick="toggleDropdown('statusCheckList')">Select Statuses</span>
+                <ul class="items" id="filterStatusList"></ul>
               </div>
             </div>
           </div>
@@ -465,6 +552,9 @@
     let globalPurposeCounts = {};
     let masterPurposesList = [];
     let availableStatuses = ["PENDING", "APPROVED", "CREATED", "REJECTED"];
+
+    // Modal state
+    let pendingStatusChange = null;
 
     const MALAYALAM_REGEX = /[\u0D00-\u0D7F]/;
     const GENERAL_UNSUPPORTED_CHARS = /[^\x20-\x7E]/;
@@ -830,12 +920,15 @@
     function setupFilterOptions() {
       var offices = new Set();
       var purposes = new Set(masterPurposesList);
+      var statuses = new Set(availableStatuses);
 
       allDashboardRows.forEach(function(r) {
         if (r[2]) offices.add(r[2].toString().trim());
         if (r[9]) purposes.add(r[9].toString().trim());
+        if (r[11]) statuses.add(r[11].toString().trim().toUpperCase());
       });
 
+      // 1. Office Filter
       var officeList = document.getElementById('filterOfficeList');
       officeList.innerHTML = "";
       Array.from(offices).sort().forEach(function(o) {
@@ -844,12 +937,22 @@
         officeList.appendChild(li);
       });
 
+      // 2. Purpose Filter
       var purposeList = document.getElementById('filterPurposeList');
       purposeList.innerHTML = "";
       Array.from(purposes).sort().forEach(function(p) {
         var li = document.createElement('li');
         li.innerHTML = `<label><input type="checkbox" value="${p}" onchange="filterDashboardTable(); updateDropdownLabel('purposeCheckList', 'Purposes');"> ${p}</label>`;
         purposeList.appendChild(li);
+      });
+
+      // 3. Status Filter (New)
+      var statusList = document.getElementById('filterStatusList');
+      statusList.innerHTML = "";
+      Array.from(statuses).sort().forEach(function(s) {
+        var li = document.createElement('li');
+        li.innerHTML = `<label><input type="checkbox" value="${s}" onchange="filterDashboardTable(); updateDropdownLabel('statusCheckList', 'Statuses');"> ${s}</label>`;
+        statusList.appendChild(li);
       });
     }
 
@@ -946,6 +1049,11 @@
         });
       }
 
+      var selectedStatuses = [];
+      document.querySelectorAll('#filterStatusList input:checked').forEach(function(cb) {
+        selectedStatuses.push(cb.value);
+      });
+
       currentFilteredRows = allDashboardRows.filter(function(row) {
         if (fromComparable || toComparable) {
           var rowDateComp = parseDateToComparable(row[1]);
@@ -963,6 +1071,12 @@
         if (selectedPurposes.length > 0) {
           var rowPurpose = (row[9] || "").toString().trim();
           if (!selectedPurposes.includes(rowPurpose)) return false;
+        }
+
+        // Status filter check
+        if (selectedStatuses.length > 0) {
+          var rowStatus = (row[11] && row[11].toString().trim() !== "") ? row[11].toString().trim().toUpperCase() : "PENDING";
+          if (!selectedStatuses.includes(rowStatus)) return false;
         }
 
         if (query) {
@@ -999,27 +1113,54 @@
       });
     }
 
-    // ഡ്രോപ്പ്ഡൗണിൽ നിന്ന് നേരിട്ട് സ്റ്റാറ്റസ് മാറ്റുമ്പോൾ റൺ ആകുന്ന ഫംഗ്ഷൻ
+    // --- Custom In-Page Password Modal Logic (No prompt window) ---
     function handleStatusDropdownChange(selectElem, slNo) {
       var oldStatus = selectElem.getAttribute('data-current');
       var newStatus = selectElem.value;
 
       if (oldStatus === newStatus) return;
 
-      var password = prompt("🔑 Enter Admin Password to change status:");
+      pendingStatusChange = {
+        selectElem: selectElem,
+        slNo: slNo,
+        oldStatus: oldStatus,
+        newStatus: newStatus
+      };
+
+      document.getElementById('modalPromptText').innerText = 
+        `Change SL No: ${slNo} from "${oldStatus}" to "${newStatus}"?`;
+      document.getElementById('modalPasswordInput').value = "";
+      document.getElementById('passwordModal').style.display = "flex";
+      setTimeout(function() {
+        document.getElementById('modalPasswordInput').focus();
+      }, 100);
+    }
+
+    function closePasswordModal() {
+      if (pendingStatusChange && pendingStatusChange.selectElem) {
+        pendingStatusChange.selectElem.value = pendingStatusChange.oldStatus; // റീസെറ്റ് ചെയ്യുന്നു
+      }
+      pendingStatusChange = null;
+      document.getElementById('passwordModal').style.display = "none";
+    }
+
+    function submitPasswordModal() {
+      var password = document.getElementById('modalPasswordInput').value;
       if (!password) {
-        selectElem.value = oldStatus; // Cancel അടിച്ചാൽ പഴയതിലേക്ക് റീസെറ്റ് ചെയ്യുന്നു
+        alert("⚠️ Please enter Admin Password!");
         return;
       }
 
+      var req = pendingStatusChange;
+      document.getElementById('passwordModal').style.display = "none";
       showStatus("Updating status...", "loading");
 
       fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({
           action: "updateStatus",
-          slNo: slNo,
-          newStatus: newStatus,
+          slNo: req.slNo,
+          newStatus: req.newStatus,
           password: password
         })
       })
@@ -1027,28 +1168,28 @@
       .then(res => {
         hideStatus();
         if (res.status === "success") {
-          selectElem.setAttribute('data-current', newStatus);
-          
-          // കളർ ക്ലാസ്സ് പുതുക്കുന്നു
-          selectElem.className = "table-status-select " + getStatusColorClass(newStatus);
-          
-          // മെമ്മറിയിലുള്ള റോ ഡാറ്റ അപ്‌ഡേറ്റ് ചെയ്യുന്നു
+          req.selectElem.setAttribute('data-current', req.newStatus);
+          req.selectElem.className = "table-status-select " + getStatusColorClass(req.newStatus);
+
           allDashboardRows.forEach(function(r) {
-            if (r[0].toString() === slNo.toString()) {
-              r[11] = newStatus;
+            if (r[0].toString() === req.slNo.toString()) {
+              r[11] = req.newStatus;
             }
           });
-          
+
+          pendingStatusChange = null;
           alert("✅ " + res.message);
         } else {
           alert("❌ " + res.message);
-          selectElem.value = oldStatus; // എറർ വന്നാൽ തിരികെ പഴയതിലേക്ക്
+          req.selectElem.value = req.oldStatus;
+          pendingStatusChange = null;
         }
       })
       .catch(err => {
         hideStatus();
         alert("❌ Error: " + err);
-        selectElem.value = oldStatus;
+        req.selectElem.value = req.oldStatus;
+        pendingStatusChange = null;
       });
     }
 
@@ -1089,7 +1230,7 @@
             tr.appendChild(td);
           });
 
-          // 12-ാമത്തെ കോളം: നേരിട്ട് മാറ്റാവുന്ന Dropdown <select>
+          // 12-ാമത്തെ കോളം: Dropdown <select>
           var tdStatus = document.createElement('td');
           tdStatus.className = "col-status";
 
@@ -1162,8 +1303,10 @@
       document.getElementById('filterToDate').value = "";
       document.querySelectorAll('#filterOfficeList input').forEach(function(cb) { cb.checked = false; });
       document.querySelectorAll('#filterPurposeList input').forEach(function(cb) { cb.checked = false; });
+      document.querySelectorAll('#filterStatusList input').forEach(function(cb) { cb.checked = false; });
       updateDropdownLabel('officeCheckList', 'Offices');
       updateDropdownLabel('purposeCheckList', 'Purposes');
+      updateDropdownLabel('statusCheckList', 'Statuses');
       
       document.querySelectorAll('#purposeSummaryBox .purpose-stat').forEach(function(badge) {
         badge.classList.remove('active-badge');
