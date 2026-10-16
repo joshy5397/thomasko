@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MULTI PURPOSE PORTAL</title>
-  <!-- Excel Export ലൈബ്രറി -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body {
@@ -15,7 +14,7 @@
       color: #111827;
     }
     .container {
-      max-width: 1180px;
+      max-width: 1250px;
       margin: auto;
       background: #ffffff;
       padding: 0;
@@ -38,7 +37,6 @@
       font-weight: 800;
     }
     
-    /* Navigation Tabs */
     .tab-bar {
       display: flex;
       background: #0f172a;
@@ -81,7 +79,6 @@
     .error-msg { color: #dc2626; font-size: 13px; font-weight: 700; margin-top: 5px; display: none; }
     .char-count { float: right; font-size: 13px; font-weight: 700; color: #475569; }
 
-    /* Purpose Chips Container (Form Entry) */
     .purpose-container {
       display: flex; flex-wrap: wrap; gap: 10px; background: #f1f5f9;
       border: 2px dashed #94a3b8; padding: 12px; border-radius: 8px;
@@ -96,7 +93,6 @@
     .purpose-item.selected { background: #dbeafe; border-color: #2563eb; color: #1e40af; }
     .purpose-item.disabled { opacity: 0.35; cursor: not-allowed; background: #e2e8f0; border-color: #cbd5e1; color: #64748b; text-decoration: line-through; }
 
-    /* Captcha Section */
     .captcha-container { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
     .captcha-badge {
       background: #1e293b; color: #38bdf8; font-size: 18px; font-weight: 800; letter-spacing: 2px;
@@ -109,7 +105,6 @@
     .btn-refresh:hover { background: #cbd5e1; }
     .captcha-input { max-width: 130px; text-align: center; font-size: 16px !important; font-weight: bold !important; }
 
-    /* Buttons */
     .button-group { display: flex; gap: 15px; margin-top: 18px; }
     .btn-submit {
       flex: 2; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff;
@@ -133,7 +128,6 @@
       border-radius: 10px; margin-bottom: 22px; text-align: center;
     }
 
-    /* Dashboard Cards */
     .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px; }
     .metric-card {
       background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 16px;
@@ -145,7 +139,6 @@
     .metric-card h4 { margin: 0; font-size: 13px; text-transform: uppercase; opacity: 0.9; }
     .metric-card .val { font-size: 28px; font-weight: 800; margin-top: 6px; }
 
-    /* Clickable Purpose Breakdown Badges */
     .purpose-summary {
       display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; background: #f8fafc;
       padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1;
@@ -164,7 +157,6 @@
     .purpose-stat.active-badge span { color: #fef08a !important; }
     .purpose-stat span { color: #2563eb; font-size: 14px; margin-left: 5px; font-weight: 800; }
 
-    /* Filter Panel */
     .filter-panel { background: #f8fafc; border: 1px solid #cbd5e1; padding: 16px; border-radius: 8px; margin-bottom: 18px; }
     .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 14px; }
     .dropdown-check-list { position: relative; }
@@ -185,21 +177,18 @@
     .dropdown-check-list ul.items li { margin-bottom: 6px; font-size: 13px; }
     .dropdown-check-list ul.items label { display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; margin: 0; }
 
-    /* Search Box & Button */
     .search-row { margin-bottom: 12px; }
     .search-input-group { display: flex; gap: 8px; }
     .search-input-group input[type="text"] { flex: 1; padding: 11px 14px; font-size: 14px; background: #ffffff; border: 2px solid #2563eb; border-radius: 7px; }
     .btn-search { background: #2563eb; color: white; border: none; padding: 11px 20px; border-radius: 7px; cursor: pointer; font-weight: 700; font-size: 14px; white-space: nowrap; }
     .btn-search:hover { background: #1d4ed8; }
 
-    /* Actions Row */
     .action-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
     .date-range-box { display: flex; align-items: center; gap: 8px; }
     .date-range-box input[type="date"] { width: 140px; padding: 8px 10px; font-size: 13px; }
     .date-range-box span { font-size: 12.5px; font-weight: 700; color: #334155; }
     .btn-actions { display: flex; gap: 8px; }
 
-    /* Table & Pagination */
     .table-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13.5px; font-weight: 600; color: #334155; }
     .table-top-bar select { width: auto; display: inline-block; padding: 5px 8px; font-size: 13px; }
 
@@ -210,6 +199,30 @@
     th.col-date, td.col-date { white-space: nowrap; font-size: 12px; width: 140px; min-width: 140px; max-width: 140px; }
     tr:nth-child(even) { background-color: #f8fafc; }
     tr:hover { background-color: #eff6ff; }
+
+    /* Status Badges & Controls */
+    .status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .status-pending { background-color: #fef08a; color: #854d0e; border: 1px solid #ca8a04; }
+    .status-created, .status-approved { background-color: #bbf7d0; color: #166534; border: 1px solid #16a34a; }
+    .status-rejected { background-color: #fecaca; color: #991b1b; border: 1px solid #dc2626; }
+
+    .status-select-btn {
+      padding: 4px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid #94a3b8;
+      background: #ffffff;
+      cursor: pointer;
+    }
 
     .pagination-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 13.5px; color: #334155; }
     .pagination-controls { display: flex; gap: 5px; }
@@ -414,6 +427,7 @@
                 <th>EMAIL</th>
                 <th>PURPOSE</th>
                 <th>REMARKS</th>
+                <th>STATUS</th> <!-- പുതിയ കോളം -->
               </tr>
             </thead>
             <tbody id="dashTableBody"></tbody>
@@ -443,7 +457,8 @@
     let rowsPerPage = 25;
     let activePurposeBadge = null;
     let globalPurposeCounts = {};
-    let masterPurposesList = []; // Option ടാബിലുള്ള എല്ലാ Purpose-കളും സൂക്ഷിക്കാൻ
+    let masterPurposesList = [];
+    let availableStatuses = ["PENDING", "APPROVED", "CREATED", "REJECTED"];
 
     const MALAYALAM_REGEX = /[\u0D00-\u0D7F]/;
     const GENERAL_UNSUPPORTED_CHARS = /[^\x20-\x7E]/;
@@ -519,9 +534,13 @@
             });
           }
 
+          if (data && data.statuses) {
+            availableStatuses = data.statuses;
+          }
+
           var purpContainer = document.getElementById('purposeContainer');
           if (data && data.purposes) {
-            masterPurposesList = data.purposes; // Option ഷീറ്റിലെ മുഴുവൻ Purpose-കളും സേവ് ചെയ്യുന്നു
+            masterPurposesList = data.purposes;
             data.purposes.forEach(function(p) {
               var labelItem = document.createElement('label');
               labelItem.className = "purpose-item";
@@ -781,15 +800,11 @@
           }
           allDashboardRows = res.rows || [];
           
-          // Option ഷീറ്റിലെ എല്ലാ പർപ്പസുകളെയും ഉൾപ്പെടുത്തി കൗണ്ട് ശേഖരിക്കുന്നു
           globalPurposeCounts = {};
-          
-          // ആദ്യം എല്ലാത്തിനും കൗണ്ട് 0 നൽകുന്നു
           masterPurposesList.forEach(function(p) {
             globalPurposeCounts[p] = 0;
           });
 
-          // ഷീറ്റിലുള്ള ഡാറ്റ വെച്ച് യഥാർത്ഥ കൗണ്ട് കൂട്ടുന്നു
           allDashboardRows.forEach(function(r) {
             var p = r[9] ? r[9].toString().trim() : "";
             if (p) {
@@ -798,7 +813,7 @@
           });
 
           setupFilterOptions();
-          renderPurposeBreakdownBadges(); // എല്ലാ ബാഡ്ജുകളും ഇവിടെ സ്ഥിരമായി കാണിക്കുന്നു
+          renderPurposeBreakdownBadges();
           filterDashboardTable();
         })
         .catch(err => {
@@ -861,15 +876,13 @@
       }
     }
 
-    // Purpose Breakdown ബാഡ്ജ് ക്ലിക്ക് ചെയ്യുമ്പോൾ മറ്റ് ബാഡ്ജുകൾ ഹൈഡ് ആവാതെ സെലക്റ്റ് ആകുന്ന ഫംഗ്ഷൻ
     function filterByPurposeBadge(purposeName) {
       if (activePurposeBadge === purposeName) {
-        activePurposeBadge = null; // വീണ്ടും ക്ലിക്ക് ചെയ്താൽ സെലക്ഷൻ റദ്ദാകും
+        activePurposeBadge = null;
       } else {
         activePurposeBadge = purposeName;
       }
 
-      // ബാഡ്ജുകളുടെ ഹൈലൈറ്റ് ക്ലാസ്സ് മാറ്റുന്നു
       document.querySelectorAll('#purposeSummaryBox .purpose-stat').forEach(function(badge) {
         if (badge.getAttribute('data-purpose') === activePurposeBadge) {
           badge.classList.add('active-badge');
@@ -878,7 +891,6 @@
         }
       });
 
-      // Dropdown ലിസ്റ്റും സിങ്ക് ചെയ്യുന്നു
       document.querySelectorAll('#filterPurposeList input').forEach(function(cb) {
         cb.checked = (cb.value === activePurposeBadge);
       });
@@ -887,7 +899,6 @@
       filterDashboardTable();
     }
 
-    // എല്ലാ ബാഡ്ജുകളും സ്ഥിരമായി റെൻഡർ ചെയ്യുന്ന ഫംഗ്ഷൻ
     function renderPurposeBreakdownBadges() {
       var summaryBox = document.getElementById('purposeSummaryBox');
       summaryBox.innerHTML = "";
@@ -973,13 +984,54 @@
 
       document.getElementById('statOffices').innerText = officesSet.size;
 
-      // തിരഞ്ഞെടുത്ത ബാഡ്ജ് മാത്രം ഹൈലൈറ്റ് ആയി നിലനിർത്തുന്നു
       document.querySelectorAll('#purposeSummaryBox .purpose-stat').forEach(function(badge) {
         if (badge.getAttribute('data-purpose') === activePurposeBadge) {
           badge.classList.add('active-badge');
         } else {
           badge.classList.remove('active-badge');
         }
+      });
+    }
+
+    // അഡ്മിൻ പാസ്‌വേഡ് ചോദിച്ച് സ്റ്റാറ്റസ് മാറ്റുന്ന ഫംഗ്ഷൻ
+    function promptStatusChange(slNo, currentStatus) {
+      var password = prompt("🔑 Please enter Admin Password to change status:");
+      if (!password) return;
+
+      var statusOptionsText = availableStatuses.join(", ");
+      var newStatus = prompt("Enter new status (" + statusOptionsText + "):", currentStatus);
+      if (!newStatus) return;
+
+      newStatus = newStatus.trim().toUpperCase();
+      if (!availableStatuses.includes(newStatus)) {
+        alert("⚠️ Invalid status! Allowed: " + statusOptionsText);
+        return;
+      }
+
+      showStatus("Updating status...", "loading");
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "updateStatus",
+          slNo: slNo,
+          newStatus: newStatus,
+          password: password
+        })
+      })
+      .then(res => res.json())
+      .then(res => {
+        hideStatus();
+        if (res.status === "success") {
+          alert("✅ " + res.message);
+          loadDashboard(); // ഡാഷ്‌ബോർഡ് പുതുക്കുന്നു
+        } else {
+          alert("❌ " + res.message);
+        }
+      })
+      .catch(err => {
+        hideStatus();
+        alert("❌ Error: " + err);
       });
     }
 
@@ -997,16 +1049,33 @@
       tbody.innerHTML = "";
 
       if (pageRows.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='11' style='text-align:center;'>No matching records found</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='12' style='text-align:center;'>No matching records found</td></tr>";
       } else {
         pageRows.forEach(function(row) {
           var tr = document.createElement('tr');
-          row.forEach(function(cell, idx) {
+          var slNo = row[0];
+          var statusVal = (row[11] || "PENDING").toString().trim().toUpperCase();
+
+          // കോളങ്ങൾ (0 മുതൽ 10 വരെ)
+          row.slice(0, 11).forEach(function(cell, idx) {
             var td = document.createElement('td');
             if (idx === 1) td.className = "col-date";
             td.innerText = cell;
             tr.appendChild(td);
           });
+
+          // 12-ാമത്തെ കോളം: സ്റ്റാറ്റസ് & മാറ്റാനുള്ള ബട്ടൺ
+          var tdStatus = document.createElement('td');
+          var badgeClass = "status-pending";
+          if (statusVal === "APPROVED" || statusVal === "CREATED") badgeClass = "status-created";
+          if (statusVal === "REJECTED") badgeClass = "status-rejected";
+
+          tdStatus.innerHTML = `
+            <span class="status-badge ${badgeClass}">${statusVal}</span>
+            <button type="button" class="status-select-btn" title="Change Status (Admin only)" onclick="promptStatusChange('${slNo}', '${statusVal}')">✏️</button>
+          `;
+          tr.appendChild(tdStatus);
+
           tbody.appendChild(tr);
         });
       }
@@ -1046,7 +1115,7 @@
 
       var headers = [
         "SL. NO", "DATE & TIME", "OFFICE", "NAME", "RANK", "GL. NO", 
-        "PEN", "MOBILE NUMBER", "EMAIL ID", "PURPOSE", "REMARKS"
+        "PEN", "MOBILE NUMBER", "EMAIL ID", "PURPOSE", "REMARKS", "STATUS"
       ];
 
       var exportData = [headers].concat(currentFilteredRows);
