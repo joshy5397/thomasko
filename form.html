@@ -155,7 +155,12 @@
       font-size: 13.5px; font-weight: 700; cursor: pointer; user-select: none; transition: all 0.2s;
     }
     .purpose-stat:hover { border-color: #2563eb; background: #eff6ff; }
-    .purpose-stat.active-badge { background: #1e40af !important; color: #ffffff !important; border-color: #1e40af !important; }
+    .purpose-stat.active-badge { 
+      background: #1e40af !important; 
+      color: #ffffff !important; 
+      border-color: #1e40af !important; 
+      box-shadow: 0 3px 8px rgba(30, 64, 175, 0.35);
+    }
     .purpose-stat.active-badge span { color: #fef08a !important; }
     .purpose-stat span { color: #2563eb; font-size: 14px; margin-left: 5px; font-weight: 800; }
 
@@ -426,7 +431,6 @@
   </div>
 
   <script>
-    // ✅ നിങ്ങൾ നൽകിയ Web App URL ഇവിടെ ഉൾപ്പെടുത്തിയിട്ടുണ്ട്:
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2yeyopDU6acCg8IAJbbTZfmFrrHiU3FlfSzf1IYgAyFoqCSjC0cATjuZvECuDSEg2/exec";
 
     const RESTRICTED_RANKS = ["CPO", "GSCPO", "SCPO", "GASI", "ASI", "GSI"];
@@ -438,6 +442,7 @@
     let currentPage = 1;
     let rowsPerPage = 25;
     let activePurposeBadge = null;
+    let globalPurposeCounts = {}; // മുഴുവൻ Purpose-കളുടെയും സ്ഥിരമായ എണ്ണം സൂക്ഷിക്കാൻ
 
     const MALAYALAM_REGEX = /[\u0D00-\u0D7F]/;
     const GENERAL_UNSUPPORTED_CHARS = /[^\x20-\x7E]/;
@@ -773,7 +778,18 @@
             return;
           }
           allDashboardRows = res.rows || [];
+          
+          // മുഴുവൻ ഡാറ്റയിൽ നിന്നുള്ള Purpose എണ്ണം ശേഖരിക്കുന്നു
+          globalPurposeCounts = {};
+          allDashboardRows.forEach(function(r) {
+            var p = r[9] ? r[9].toString().trim() : "";
+            if (p) {
+              globalPurposeCounts[p] = (globalPurposeCounts[p] || 0) + 1;
+            }
+          });
+
           setupFilterOptions();
+          renderPurposeBreakdownBadges(); // ബാഡ്ജുകൾ സ്ഥിരമായി റെൻഡർ ചെയ്യുന്നു
           filterDashboardTable();
         })
         .catch(err => {
@@ -836,19 +852,49 @@
       }
     }
 
+    // Purpose Breakdown ബാഡ്ജ് ക്ലിക്ക് ചെയ്യുമ്പോൾ ഹൈലൈറ്റ് ആകുകയും ടേബിൾ ഫിൽട്ടർ ആകുകയും ചെയ്യുന്നു
     function filterByPurposeBadge(purposeName) {
       if (activePurposeBadge === purposeName) {
-        activePurposeBadge = null;
+        activePurposeBadge = null; // വീണ്ടും ക്ലിക്ക് ചെയ്താൽ സെലക്ഷൻ റദ്ദാകും
       } else {
         activePurposeBadge = purposeName;
       }
 
+      // ബാഡ്ജുകളുടെ ക്ലാസ്സ് അപ്‌ഡേറ്റ് ചെയ്യുന്നു
+      document.querySelectorAll('#purposeSummaryBox .purpose-stat').forEach(function(badge) {
+        if (badge.getAttribute('data-purpose') === activePurposeBadge) {
+          badge.classList.add('active-badge');
+        } else {
+          badge.classList.remove('active-badge');
+        }
+      });
+
+      // Dropdown ലിസ്റ്റും സിങ്ക് ചെയ്യുന്നു
       document.querySelectorAll('#filterPurposeList input').forEach(function(cb) {
         cb.checked = (cb.value === activePurposeBadge);
       });
       updateDropdownLabel('purposeCheckList', 'Purposes');
 
       filterDashboardTable();
+    }
+
+    // ബാഡ്ജുകൾ ഒരിക്കലും hide ആകാതെ സ്ഥിരമായി നിൽക്കാൻ:
+    function renderPurposeBreakdownBadges() {
+      var summaryBox = document.getElementById('purposeSummaryBox');
+      summaryBox.innerHTML = "";
+      var keys = Object.keys(globalPurposeCounts).sort();
+      if (keys.length === 0) {
+        summaryBox.innerHTML = "<small style='color:#64748b;'>No Purpose Data Available</small>";
+        return;
+      }
+      keys.forEach(function(p) {
+        var div = document.createElement('div');
+        div.className = "purpose-stat" + (activePurposeBadge === p ? " active-badge" : "");
+        div.setAttribute('data-purpose', p);
+        div.innerHTML = p + ": <span>" + globalPurposeCounts[p] + "</span>";
+        div.onclick = function() { filterByPurposeBadge(p); };
+        summaryBox.appendChild(div);
+      });
     }
 
     function filterDashboardTable() {
@@ -903,39 +949,28 @@
       });
 
       currentPage = 1;
-      updateDashboardMetrics(currentFilteredRows);
+      updateDashboardCounts(currentFilteredRows);
       renderPaginatedTable();
     }
 
-    function updateDashboardMetrics(rows) {
+    // കാർഡുകളിലെ എണ്ണം മാത്രം മാറ്റുന്നു (ബാഡ്ജുകൾ hide ചെയ്യില്ല)
+    function updateDashboardCounts(rows) {
       document.getElementById('statTotal').innerText = rows.length;
 
       var officesSet = new Set();
-      var purposeCounts = {};
-
       rows.forEach(function(r) {
         if (r[2]) officesSet.add(r[2].toString().trim());
-        var p = r[9] ? r[9].toString().trim() : "";
-        if (p) {
-          purposeCounts[p] = (purposeCounts[p] || 0) + 1;
-        }
       });
 
       document.getElementById('statOffices').innerText = officesSet.size;
 
-      var summaryBox = document.getElementById('purposeSummaryBox');
-      summaryBox.innerHTML = "";
-      var keys = Object.keys(purposeCounts);
-      if (keys.length === 0) {
-        summaryBox.innerHTML = "<small style='color:#64748b;'>No Purpose Data Available</small>";
-        return;
-      }
-      keys.forEach(function(p) {
-        var div = document.createElement('div');
-        div.className = "purpose-stat" + (activePurposeBadge === p ? " active-badge" : "");
-        div.innerHTML = p + ": <span>" + purposeCounts[p] + "</span>";
-        div.onclick = function() { filterByPurposeBadge(p); };
-        summaryBox.appendChild(div);
+      // സെലക്റ്റ് ചെയ്ത ബാഡ്ജിന്റെ ഹൈലൈറ്റ് നിലനിർത്തുന്നു
+      document.querySelectorAll('#purposeSummaryBox .purpose-stat').forEach(function(badge) {
+        if (badge.getAttribute('data-purpose') === activePurposeBadge) {
+          badge.classList.add('active-badge');
+        } else {
+          badge.classList.remove('active-badge');
+        }
       });
     }
 
@@ -1023,6 +1058,12 @@
       document.querySelectorAll('#filterPurposeList input').forEach(function(cb) { cb.checked = false; });
       updateDropdownLabel('officeCheckList', 'Offices');
       updateDropdownLabel('purposeCheckList', 'Purposes');
+      
+      // ബാഡ്ജുകളുടെ സെലക്ഷൻ ഒഴിവാക്കുന്നു
+      document.querySelectorAll('#purposeSummaryBox .purpose-stat').forEach(function(badge) {
+        badge.classList.remove('active-badge');
+      });
+
       filterDashboardTable();
     }
 
