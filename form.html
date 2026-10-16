@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MULTI PURPOSE PORTAL</title>
+  <title>MULTI PURPOSE FORM</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body {
@@ -128,17 +128,69 @@
       border-radius: 10px; margin-bottom: 22px; text-align: center;
     }
 
-    /* Dashboard Metrics Cards */
-    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px; }
-    .metric-card {
-      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 16px;
-      border-radius: 8px; text-align: center; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
-      cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; user-select: none;
+    /* Compact Status Boxes Grid */
+    .status-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
     }
-    .metric-card:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(37, 99, 235, 0.3); }
-    .metric-card.alt { background: linear-gradient(135deg, #059669 0%, #10b981 100%); }
-    .metric-card h4 { margin: 0; font-size: 13px; text-transform: uppercase; opacity: 0.9; }
-    .metric-card .val { font-size: 28px; font-weight: 800; margin-top: 6px; }
+    .status-mini-card {
+      padding: 12px 10px;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.06);
+      border: 1px solid transparent;
+    }
+    .status-mini-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+    }
+    .status-mini-card h5 {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+    .status-mini-card .val {
+      font-size: 24px;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+    
+    /* Specific Colors for Mini Cards */
+    .card-total {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      color: #ffffff;
+    }
+    .card-pending {
+      background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
+      color: #854d0e;
+      border-color: #ca8a04;
+    }
+    .card-created {
+      background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
+      color: #166534;
+      border-color: #16a34a;
+    }
+    .card-approved {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #ffffff;
+    }
+    .card-rejected {
+      background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+      color: #991b1b;
+      border-color: #dc2626;
+    }
+    .card-offices {
+      background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+      color: #ffffff;
+    }
 
     /* Purpose Badges */
     .purpose-summary {
@@ -236,7 +288,6 @@
     tr:nth-child(even) { background-color: #f8fafc; }
     tr:hover { background-color: #eff6ff; }
 
-    /* Direct In-place Status Select Dropdown */
     .table-status-select {
       width: 100%;
       padding: 6px 8px;
@@ -352,8 +403,9 @@
   </div>
 
   <div class="container">
+    <!-- Updated Heading: MULTI PURPOSE FORM -->
     <div class="header-banner">
-      <h2>MULTI PURPOSE PORTAL</h2>
+      <h2>MULTI PURPOSE FORM</h2>
     </div>
 
     <div class="tab-bar">
@@ -451,13 +503,30 @@
       <!-- TAB 2: DASHBOARD & LIVE RECORDS -->
       <div id="sectionDash" style="display: none;">
         
-        <div class="metrics-grid">
-          <div class="metric-card" onclick="resetFilters()" title="Click to view all records">
-            <h4>Total Records (Click to View All)</h4>
+        <!-- Compact Status Boxes Grid (Reduced size boxes) -->
+        <div class="status-cards-grid">
+          <div class="status-mini-card card-total" onclick="resetFilters()" title="Click to view all records">
+            <h5>Total</h5>
             <div class="val" id="statTotal">0</div>
           </div>
-          <div class="metric-card alt">
-            <h4>Offices Filtered</h4>
+          <div class="status-mini-card card-pending" onclick="filterByStatusCard('PENDING')" title="Click to filter Pending">
+            <h5>Pending</h5>
+            <div class="val" id="statPending">0</div>
+          </div>
+          <div class="status-mini-card card-created" onclick="filterByStatusCard('CREATED')" title="Click to filter Created">
+            <h5>Created</h5>
+            <div class="val" id="statCreated">0</div>
+          </div>
+          <div class="status-mini-card card-approved" onclick="filterByStatusCard('APPROVED')" title="Click to filter Approved">
+            <h5>Approved</h5>
+            <div class="val" id="statApproved">0</div>
+          </div>
+          <div class="status-mini-card card-rejected" onclick="filterByStatusCard('REJECTED')" title="Click to filter Rejected">
+            <h5>Rejected</h5>
+            <div class="val" id="statRejected">0</div>
+          </div>
+          <div class="status-mini-card card-offices" title="Filtered Offices Count">
+            <h5>Offices</h5>
             <div class="val" id="statOffices">0</div>
           </div>
         </div>
@@ -954,7 +1023,6 @@
             }
           });
 
-          // സെലക്ഷൻ ക്ലിയർ ചെയ്യുന്നു
           selectedSlNos.clear();
           updateSelectedCount();
 
@@ -1055,6 +1123,15 @@
       filterDashboardTable();
     }
 
+    // Mini Status Card ക്ലിക്ക് ചെയ്യുമ്പോൾ ആ സ്റ്റാറ്റസ് മാത്രം ഫിൽട്ടർ ചെയ്യുന്നു
+    function filterByStatusCard(targetStatus) {
+      document.querySelectorAll('#filterStatusList input').forEach(function(cb) {
+        cb.checked = (cb.value.toUpperCase() === targetStatus.toUpperCase());
+      });
+      updateDropdownLabel('statusCheckList', 'Statuses');
+      filterDashboardTable();
+    }
+
     function renderPurposeBreakdownBadges() {
       var summaryBox = document.getElementById('purposeSummaryBox');
       summaryBox.innerHTML = "";
@@ -1140,14 +1217,30 @@
       renderPaginatedTable();
     }
 
+    // Mini Cards-ലെ കൃത്യമായ കണക്കുകൾ മാറ്റുന്നു
     function updateDashboardCounts(rows) {
       document.getElementById('statTotal').innerText = rows.length;
 
+      var pendingCount = 0;
+      var createdCount = 0;
+      var approvedCount = 0;
+      var rejectedCount = 0;
       var officesSet = new Set();
+
       rows.forEach(function(r) {
         if (r[2]) officesSet.add(r[2].toString().trim());
+        var st = (r[11] && r[11].toString().trim() !== "") ? r[11].toString().trim().toUpperCase() : "PENDING";
+        
+        if (st === "PENDING") pendingCount++;
+        else if (st === "CREATED") createdCount++;
+        else if (st === "APPROVED") approvedCount++;
+        else if (st === "REJECTED") rejectedCount++;
       });
 
+      document.getElementById('statPending').innerText = pendingCount;
+      document.getElementById('statCreated').innerText = createdCount;
+      document.getElementById('statApproved').innerText = approvedCount;
+      document.getElementById('statRejected').innerText = rejectedCount;
       document.getElementById('statOffices').innerText = officesSet.size;
 
       document.querySelectorAll('#purposeSummaryBox .purpose-stat').forEach(function(badge) {
@@ -1159,7 +1252,6 @@
       });
     }
 
-    // --- Checkbox & Selection Tracking ---
     function toggleRowSelection(cb, slNo) {
       if (cb.checked) {
         selectedSlNos.add(slNo);
@@ -1187,7 +1279,6 @@
       document.getElementById('selectedCountText').innerText = selectedSlNos.size;
     }
 
-    // --- Bulk Status Update Action ---
     function handleBulkStatusChange() {
       if (selectedSlNos.size === 0) {
         alert("⚠️ Please select at least one record to update status!");
@@ -1215,7 +1306,6 @@
       }, 100);
     }
 
-    // --- Single Row Status Dropdown Change ---
     function handleStatusDropdownChange(selectElem, slNo) {
       var oldStatus = selectElem.getAttribute('data-current');
       var newStatus = selectElem.value;
@@ -1258,7 +1348,6 @@
       document.getElementById('passwordModal').style.display = "none";
       showStatus("Updating status...", "loading");
 
-      // 1. Bulk Update
       if (req.isBulk) {
         fetch(SCRIPT_URL, {
           method: "POST",
@@ -1273,15 +1362,14 @@
         .then(res => {
           hideStatus();
           if (res.status === "success") {
-            // ✅ സ്റ്റാറ്റസ് മാറിയാൽ ഡിഫോൾട്ടിലേക്ക് റീസെറ്റ് ചെയ്യുന്നു:
-            document.getElementById('bulkStatusSelect').value = ""; // ഡ്രോപ്പ്ഡൗൺ ഡിഫോൾട്ടിലേക്ക്
-            selectedSlNos.clear(); // സെലക്ഷൻ ക്ലിയർ
+            document.getElementById('bulkStatusSelect').value = "";
+            selectedSlNos.clear();
             updateSelectedCount();
             var masterCb = document.getElementById('selectAllCheckbox');
             if (masterCb) masterCb.checked = false;
 
             alert("✅ " + res.message);
-            loadDashboard(); // ടേബിളും കണക്കുകളും പുതുക്കുന്നു
+            loadDashboard();
           } else {
             alert("❌ " + res.message);
           }
@@ -1293,7 +1381,6 @@
           pendingStatusChange = null;
         });
       } 
-      // 2. Single Update
       else {
         fetch(SCRIPT_URL, {
           method: "POST",
@@ -1319,6 +1406,7 @@
 
             pendingStatusChange = null;
             alert("✅ " + res.message);
+            updateDashboardCounts(currentFilteredRows);
           } else {
             alert("❌ " + res.message);
             req.selectElem.value = req.oldStatus;
@@ -1365,14 +1453,12 @@
           var slNo = row[0].toString();
           var statusVal = (row[11] && row[11].toString().trim() !== "") ? row[11].toString().trim().toUpperCase() : "PENDING";
 
-          // 1. Checkbox Column
           var tdCheck = document.createElement('td');
           tdCheck.className = "col-check";
           var isChecked = selectedSlNos.has(slNo) ? "checked" : "";
           tdCheck.innerHTML = `<input type="checkbox" class="row-select-cb" data-sl="${slNo}" ${isChecked} onchange="toggleRowSelection(this, '${slNo}')">`;
           tr.appendChild(tdCheck);
 
-          // 2. Data Columns 0 to 10
           row.slice(0, 11).forEach(function(cell, idx) {
             var td = document.createElement('td');
             if (idx === 1) td.className = "col-date";
@@ -1380,7 +1466,6 @@
             tr.appendChild(td);
           });
 
-          // 3. Status Column Dropdown
           var tdStatus = document.createElement('td');
           tdStatus.className = "col-status";
 
