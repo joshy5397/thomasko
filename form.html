@@ -143,11 +143,16 @@
       user-select: none;
       transition: all 0.2s ease;
       box-shadow: 0 3px 6px rgba(0,0,0,0.06);
-      border: 1px solid transparent;
+      border: 2px solid transparent;
     }
     .status-mini-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+    }
+    .status-mini-card.active-card {
+      border: 2px solid #0f172a !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.4) !important;
+      transform: scale(1.03);
     }
     .status-mini-card h5 {
       margin: 0;
@@ -163,7 +168,6 @@
       margin-top: 4px;
     }
     
-    /* Specific Colors for Mini Cards */
     .card-total {
       background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
       color: #ffffff;
@@ -171,12 +175,10 @@
     .card-pending {
       background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
       color: #854d0e;
-      border-color: #ca8a04;
     }
     .card-created {
       background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
       color: #166534;
-      border-color: #16a34a;
     }
     .card-approved {
       background: linear-gradient(135deg, #059669 0%, #10b981 100%);
@@ -185,11 +187,11 @@
     .card-rejected {
       background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
       color: #991b1b;
-      border-color: #dc2626;
     }
     .card-offices {
       background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
       color: #ffffff;
+      cursor: default;
     }
 
     /* Purpose Badges */
@@ -389,7 +391,6 @@
 </head>
 <body>
 
-  <!-- In-page Password Modal -->
   <div id="passwordModal" class="modal-overlay">
     <div class="modal-card">
       <h3>🔑 Admin Authentication</h3>
@@ -403,7 +404,6 @@
   </div>
 
   <div class="container">
-    <!-- Updated Heading: MULTI PURPOSE FORM -->
     <div class="header-banner">
       <h2>MULTI PURPOSE FORM</h2>
     </div>
@@ -503,29 +503,29 @@
       <!-- TAB 2: DASHBOARD & LIVE RECORDS -->
       <div id="sectionDash" style="display: none;">
         
-        <!-- Compact Status Boxes Grid (Reduced size boxes) -->
+        <!-- Status Boxes Grid (Permanent Fixed Numbers) -->
         <div class="status-cards-grid">
-          <div class="status-mini-card card-total" onclick="resetFilters()" title="Click to view all records">
+          <div class="status-mini-card card-total" id="card_TOTAL" onclick="filterByStatusCard(null)" title="Click to view all records">
             <h5>Total</h5>
             <div class="val" id="statTotal">0</div>
           </div>
-          <div class="status-mini-card card-pending" onclick="filterByStatusCard('PENDING')" title="Click to filter Pending">
+          <div class="status-mini-card card-pending" id="card_PENDING" onclick="filterByStatusCard('PENDING')" title="Click to filter Pending">
             <h5>Pending</h5>
             <div class="val" id="statPending">0</div>
           </div>
-          <div class="status-mini-card card-created" onclick="filterByStatusCard('CREATED')" title="Click to filter Created">
+          <div class="status-mini-card card-created" id="card_CREATED" onclick="filterByStatusCard('CREATED')" title="Click to filter Created">
             <h5>Created</h5>
             <div class="val" id="statCreated">0</div>
           </div>
-          <div class="status-mini-card card-approved" onclick="filterByStatusCard('APPROVED')" title="Click to filter Approved">
+          <div class="status-mini-card card-approved" id="card_APPROVED" onclick="filterByStatusCard('APPROVED')" title="Click to filter Approved">
             <h5>Approved</h5>
             <div class="val" id="statApproved">0</div>
           </div>
-          <div class="status-mini-card card-rejected" onclick="filterByStatusCard('REJECTED')" title="Click to filter Rejected">
+          <div class="status-mini-card card-rejected" id="card_REJECTED" onclick="filterByStatusCard('REJECTED')" title="Click to filter Rejected">
             <h5>Rejected</h5>
             <div class="val" id="statRejected">0</div>
           </div>
-          <div class="status-mini-card card-offices" title="Filtered Offices Count">
+          <div class="status-mini-card card-offices" title="Total Unique Offices">
             <h5>Offices</h5>
             <div class="val" id="statOffices">0</div>
           </div>
@@ -658,6 +658,7 @@
     let currentPage = 1;
     let rowsPerPage = 25;
     let activePurposeBadge = null;
+    let activeStatusCard = null;
     let globalPurposeCounts = {};
     let masterPurposesList = [];
     let availableStatuses = ["PENDING", "APPROVED", "CREATED", "REJECTED"];
@@ -1028,6 +1029,10 @@
 
           setupFilterOptions();
           renderPurposeBreakdownBadges();
+          
+          // കാർഡുകളിലെ ആകെ സ്ഥിര എണ്ണം സെറ്റ് ചെയ്യുന്നു
+          updatePermanentCardCounts();
+          
           filterDashboardTable();
         })
         .catch(err => {
@@ -1123,13 +1128,65 @@
       filterDashboardTable();
     }
 
-    // Mini Status Card ക്ലിക്ക് ചെയ്യുമ്പോൾ ആ സ്റ്റാറ്റസ് മാത്രം ഫിൽട്ടർ ചെയ്യുന്നു
+    // Status Mini Card ക്ലിക്ക് ചെയ്യുമ്പോൾ ആ കാർഡ് മാത്രം ടോഗിൾ ചെയ്യുന്നു
     function filterByStatusCard(targetStatus) {
+      if (!targetStatus) {
+        activeStatusCard = null; // TOTAL ക്ലിക്ക് ചെയ്താൽ
+      } else if (activeStatusCard === targetStatus) {
+        activeStatusCard = null; // വീണ്ടും ക്ലിക്ക് ചെയ്താൽ അൺഫിൽട്ടർ ആകുന്നു
+      } else {
+        activeStatusCard = targetStatus;
+      }
+
+      updateActiveCardHighlight();
+
       document.querySelectorAll('#filterStatusList input').forEach(function(cb) {
-        cb.checked = (cb.value.toUpperCase() === targetStatus.toUpperCase());
+        cb.checked = (activeStatusCard ? cb.value.toUpperCase() === activeStatusCard.toUpperCase() : false);
       });
       updateDropdownLabel('statusCheckList', 'Statuses');
       filterDashboardTable();
+    }
+
+    function updateActiveCardHighlight() {
+      document.querySelectorAll('.status-mini-card').forEach(function(card) {
+        card.classList.remove('active-card');
+      });
+      if (activeStatusCard) {
+        var activeEl = document.getElementById('card_' + activeStatusCard);
+        if (activeEl) activeEl.classList.add('active-card');
+      } else {
+        var totalEl = document.getElementById('card_TOTAL');
+        if (totalEl) totalEl.classList.add('active-card');
+      }
+    }
+
+    // സ്ഥിരമായ എണ്ണം കണക്കാക്കുന്നു (ഫിൽട്ടർ ചെയ്താലും ബോക്സുകളിലെ നമ്പറുകൾ മാറില്ല)
+    function updatePermanentCardCounts() {
+      var total = allDashboardRows.length;
+      var pendingCount = 0;
+      var createdCount = 0;
+      var approvedCount = 0;
+      var rejectedCount = 0;
+      var officesSet = new Set();
+
+      allDashboardRows.forEach(function(r) {
+        if (r[2]) officesSet.add(r[2].toString().trim());
+        var st = (r[11] && r[11].toString().trim() !== "") ? r[11].toString().trim().toUpperCase() : "PENDING";
+        
+        if (st === "PENDING") pendingCount++;
+        else if (st === "CREATED") createdCount++;
+        else if (st === "APPROVED") approvedCount++;
+        else if (st === "REJECTED") rejectedCount++;
+      });
+
+      document.getElementById('statTotal').innerText = total;
+      document.getElementById('statPending').innerText = pendingCount;
+      document.getElementById('statCreated').innerText = createdCount;
+      document.getElementById('statApproved').innerText = approvedCount;
+      document.getElementById('statRejected').innerText = rejectedCount;
+      document.getElementById('statOffices').innerText = officesSet.size;
+
+      updateActiveCardHighlight();
     }
 
     function renderPurposeBreakdownBadges() {
@@ -1174,9 +1231,13 @@
       }
 
       var selectedStatuses = [];
-      document.querySelectorAll('#filterStatusList input:checked').forEach(function(cb) {
-        selectedStatuses.push(cb.value);
-      });
+      if (activeStatusCard) {
+        selectedStatuses.push(activeStatusCard);
+      } else {
+        document.querySelectorAll('#filterStatusList input:checked').forEach(function(cb) {
+          selectedStatuses.push(cb.value);
+        });
+      }
 
       currentFilteredRows = allDashboardRows.filter(function(row) {
         if (fromComparable || toComparable) {
@@ -1213,43 +1274,8 @@
       });
 
       currentPage = 1;
-      updateDashboardCounts(currentFilteredRows);
+      // ഫിൽട്ടർ ചെയ്യുമ്പോൾ കാർഡുകളിലെ നമ്പറുകൾ മാറ്റുന്നില്ല, ടേബിൾ മാത്രം റീ-റെൻഡർ ചെയ്യുന്നു
       renderPaginatedTable();
-    }
-
-    // Mini Cards-ലെ കൃത്യമായ കണക്കുകൾ മാറ്റുന്നു
-    function updateDashboardCounts(rows) {
-      document.getElementById('statTotal').innerText = rows.length;
-
-      var pendingCount = 0;
-      var createdCount = 0;
-      var approvedCount = 0;
-      var rejectedCount = 0;
-      var officesSet = new Set();
-
-      rows.forEach(function(r) {
-        if (r[2]) officesSet.add(r[2].toString().trim());
-        var st = (r[11] && r[11].toString().trim() !== "") ? r[11].toString().trim().toUpperCase() : "PENDING";
-        
-        if (st === "PENDING") pendingCount++;
-        else if (st === "CREATED") createdCount++;
-        else if (st === "APPROVED") approvedCount++;
-        else if (st === "REJECTED") rejectedCount++;
-      });
-
-      document.getElementById('statPending').innerText = pendingCount;
-      document.getElementById('statCreated').innerText = createdCount;
-      document.getElementById('statApproved').innerText = approvedCount;
-      document.getElementById('statRejected').innerText = rejectedCount;
-      document.getElementById('statOffices').innerText = officesSet.size;
-
-      document.querySelectorAll('#purposeSummaryBox .purpose-stat').forEach(function(badge) {
-        if (badge.getAttribute('data-purpose') === activePurposeBadge) {
-          badge.classList.add('active-badge');
-        } else {
-          badge.classList.remove('active-badge');
-        }
-      });
     }
 
     function toggleRowSelection(cb, slNo) {
@@ -1404,9 +1430,12 @@
               }
             });
 
+            // ഡാഷ്‌ബോർഡ് ബോക്സ് എണ്ണം പുതുക്കുന്നു
+            updatePermanentCardCounts();
+            filterDashboardTable();
+
             pendingStatusChange = null;
             alert("✅ " + res.message);
-            updateDashboardCounts(currentFilteredRows);
           } else {
             alert("❌ " + res.message);
             req.selectElem.value = req.oldStatus;
@@ -1453,12 +1482,14 @@
           var slNo = row[0].toString();
           var statusVal = (row[11] && row[11].toString().trim() !== "") ? row[11].toString().trim().toUpperCase() : "PENDING";
 
+          // 1. Checkbox Column
           var tdCheck = document.createElement('td');
           tdCheck.className = "col-check";
           var isChecked = selectedSlNos.has(slNo) ? "checked" : "";
           tdCheck.innerHTML = `<input type="checkbox" class="row-select-cb" data-sl="${slNo}" ${isChecked} onchange="toggleRowSelection(this, '${slNo}')">`;
           tr.appendChild(tdCheck);
 
+          // 2. Data Columns 0 to 10
           row.slice(0, 11).forEach(function(cell, idx) {
             var td = document.createElement('td');
             if (idx === 1) td.className = "col-date";
@@ -1466,6 +1497,7 @@
             tr.appendChild(td);
           });
 
+          // 3. Status Column Dropdown
           var tdStatus = document.createElement('td');
           tdStatus.className = "col-status";
 
@@ -1532,6 +1564,7 @@
 
     function resetFilters() {
       activePurposeBadge = null;
+      activeStatusCard = null;
       document.getElementById('dashSearch').value = "";
       document.getElementById('filterFromDate').value = "";
       document.getElementById('filterToDate').value = "";
@@ -1546,6 +1579,7 @@
         badge.classList.remove('active-badge');
       });
 
+      updateActiveCardHighlight();
       filterDashboardTable();
     }
 
