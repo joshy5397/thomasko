@@ -442,7 +442,8 @@
     let currentPage = 1;
     let rowsPerPage = 25;
     let activePurposeBadge = null;
-    let globalPurposeCounts = {}; // മുഴുവൻ Purpose-കളുടെയും സ്ഥിരമായ എണ്ണം സൂക്ഷിക്കാൻ
+    let globalPurposeCounts = {};
+    let masterPurposesList = []; // Option ടാബിലുള്ള എല്ലാ Purpose-കളും സൂക്ഷിക്കാൻ
 
     const MALAYALAM_REGEX = /[\u0D00-\u0D7F]/;
     const GENERAL_UNSUPPORTED_CHARS = /[^\x20-\x7E]/;
@@ -520,6 +521,7 @@
 
           var purpContainer = document.getElementById('purposeContainer');
           if (data && data.purposes) {
+            masterPurposesList = data.purposes; // Option ഷീറ്റിലെ മുഴുവൻ Purpose-കളും സേവ് ചെയ്യുന്നു
             data.purposes.forEach(function(p) {
               var labelItem = document.createElement('label');
               labelItem.className = "purpose-item";
@@ -779,8 +781,15 @@
           }
           allDashboardRows = res.rows || [];
           
-          // മുഴുവൻ ഡാറ്റയിൽ നിന്നുള്ള Purpose എണ്ണം ശേഖരിക്കുന്നു
+          // Option ഷീറ്റിലെ എല്ലാ പർപ്പസുകളെയും ഉൾപ്പെടുത്തി കൗണ്ട് ശേഖരിക്കുന്നു
           globalPurposeCounts = {};
+          
+          // ആദ്യം എല്ലാത്തിനും കൗണ്ട് 0 നൽകുന്നു
+          masterPurposesList.forEach(function(p) {
+            globalPurposeCounts[p] = 0;
+          });
+
+          // ഷീറ്റിലുള്ള ഡാറ്റ വെച്ച് യഥാർത്ഥ കൗണ്ട് കൂട്ടുന്നു
           allDashboardRows.forEach(function(r) {
             var p = r[9] ? r[9].toString().trim() : "";
             if (p) {
@@ -789,7 +798,7 @@
           });
 
           setupFilterOptions();
-          renderPurposeBreakdownBadges(); // ബാഡ്ജുകൾ സ്ഥിരമായി റെൻഡർ ചെയ്യുന്നു
+          renderPurposeBreakdownBadges(); // എല്ലാ ബാഡ്ജുകളും ഇവിടെ സ്ഥിരമായി കാണിക്കുന്നു
           filterDashboardTable();
         })
         .catch(err => {
@@ -799,7 +808,7 @@
 
     function setupFilterOptions() {
       var offices = new Set();
-      var purposes = new Set();
+      var purposes = new Set(masterPurposesList);
 
       allDashboardRows.forEach(function(r) {
         if (r[2]) offices.add(r[2].toString().trim());
@@ -852,7 +861,7 @@
       }
     }
 
-    // Purpose Breakdown ബാഡ്ജ് ക്ലിക്ക് ചെയ്യുമ്പോൾ ഹൈലൈറ്റ് ആകുകയും ടേബിൾ ഫിൽട്ടർ ആകുകയും ചെയ്യുന്നു
+    // Purpose Breakdown ബാഡ്ജ് ക്ലിക്ക് ചെയ്യുമ്പോൾ മറ്റ് ബാഡ്ജുകൾ ഹൈഡ് ആവാതെ സെലക്റ്റ് ആകുന്ന ഫംഗ്ഷൻ
     function filterByPurposeBadge(purposeName) {
       if (activePurposeBadge === purposeName) {
         activePurposeBadge = null; // വീണ്ടും ക്ലിക്ക് ചെയ്താൽ സെലക്ഷൻ റദ്ദാകും
@@ -860,7 +869,7 @@
         activePurposeBadge = purposeName;
       }
 
-      // ബാഡ്ജുകളുടെ ക്ലാസ്സ് അപ്‌ഡേറ്റ് ചെയ്യുന്നു
+      // ബാഡ്ജുകളുടെ ഹൈലൈറ്റ് ക്ലാസ്സ് മാറ്റുന്നു
       document.querySelectorAll('#purposeSummaryBox .purpose-stat').forEach(function(badge) {
         if (badge.getAttribute('data-purpose') === activePurposeBadge) {
           badge.classList.add('active-badge');
@@ -878,7 +887,7 @@
       filterDashboardTable();
     }
 
-    // ബാഡ്ജുകൾ ഒരിക്കലും hide ആകാതെ സ്ഥിരമായി നിൽക്കാൻ:
+    // എല്ലാ ബാഡ്ജുകളും സ്ഥിരമായി റെൻഡർ ചെയ്യുന്ന ഫംഗ്ഷൻ
     function renderPurposeBreakdownBadges() {
       var summaryBox = document.getElementById('purposeSummaryBox');
       summaryBox.innerHTML = "";
@@ -888,10 +897,11 @@
         return;
       }
       keys.forEach(function(p) {
+        var count = globalPurposeCounts[p];
         var div = document.createElement('div');
         div.className = "purpose-stat" + (activePurposeBadge === p ? " active-badge" : "");
         div.setAttribute('data-purpose', p);
-        div.innerHTML = p + ": <span>" + globalPurposeCounts[p] + "</span>";
+        div.innerHTML = p + ": <span>" + count + "</span>";
         div.onclick = function() { filterByPurposeBadge(p); };
         summaryBox.appendChild(div);
       });
@@ -953,7 +963,6 @@
       renderPaginatedTable();
     }
 
-    // കാർഡുകളിലെ എണ്ണം മാത്രം മാറ്റുന്നു (ബാഡ്ജുകൾ hide ചെയ്യില്ല)
     function updateDashboardCounts(rows) {
       document.getElementById('statTotal').innerText = rows.length;
 
@@ -964,7 +973,7 @@
 
       document.getElementById('statOffices').innerText = officesSet.size;
 
-      // സെലക്റ്റ് ചെയ്ത ബാഡ്ജിന്റെ ഹൈലൈറ്റ് നിലനിർത്തുന്നു
+      // തിരഞ്ഞെടുത്ത ബാഡ്ജ് മാത്രം ഹൈലൈറ്റ് ആയി നിലനിർത്തുന്നു
       document.querySelectorAll('#purposeSummaryBox .purpose-stat').forEach(function(badge) {
         if (badge.getAttribute('data-purpose') === activePurposeBadge) {
           badge.classList.add('active-badge');
@@ -1059,7 +1068,6 @@
       updateDropdownLabel('officeCheckList', 'Offices');
       updateDropdownLabel('purposeCheckList', 'Purposes');
       
-      // ബാഡ്ജുകളുടെ സെലക്ഷൻ ഒഴിവാക്കുന്നു
       document.querySelectorAll('#purposeSummaryBox .purpose-stat').forEach(function(badge) {
         badge.classList.remove('active-badge');
       });
