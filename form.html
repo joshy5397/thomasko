@@ -130,8 +130,6 @@
       transition: all 0.15s ease;
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
       border: 2px solid transparent;
-      background: #f1f5f9;
-      color: #1e293b;
     }
     .status-mini-card:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     .status-mini-card.active-card {
@@ -403,7 +401,7 @@
       <!-- TAB 2: DASHBOARD & LIVE RECORDS -->
       <div id="sectionDash" style="display: none;">
         
-        <!-- Dynamic Status Cards Grid (Directly derived from Option Tab) -->
+        <!-- Dynamic Status Cards Grid -->
         <div class="status-cards-grid" id="statusCardsContainer">
           <div class="status-mini-card card-total" id="card_TOTAL" onclick="filterByStatusCard(null)" title="Click to view all records">
             <h5>Total</h5>
@@ -544,7 +542,7 @@
     let rowsPerPage = 25;
     let activeStatusCard = null;
     let masterPurposesList = [];
-    let availableStatuses = []; // Option ടാബിലുള്ള Status മാത്രം ശേഖരിക്കും
+    let availableStatuses = [];
 
     let isAdminUnlocked = false;
     let verifiedAdminPassword = "";
@@ -557,15 +555,44 @@
     const GENERAL_UNSUPPORTED_CHARS = /[^\x20-\x7E]/;
     const STARTS_WITH_SPECIAL = /^[^a-zA-Z0-9\s]/;
 
-    // കളർ പാലറ്റ് (Status ബോക്സുകൾക്ക് ഡൈനാമിക് ആയി നൽകാൻ)
-    const STATUS_COLORS = [
-      { bg: "linear-gradient(135deg, #fef08a 0%, #fde047 100%)", color: "#854d0e" },
-      { bg: "linear-gradient(135deg, #bbf7d0 0%, #86efac 100%)", color: "#166534" },
-      { bg: "linear-gradient(135deg, #059669 0%, #10b981 100%)", color: "#ffffff" },
-      { bg: "linear-gradient(135deg, #fecaca 0%, #fca5a5 100%)", color: "#991b1b" },
-      { bg: "linear-gradient(135deg, #fed7aa 0%, #fdba74 100%)", color: "#9a3412" },
-      { bg: "linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%)", color: "#6b21a8" }
-    ];
+    // സ്റ്റാറ്റസുകളുടെ അർത്ഥത്തിനനുസരിച്ചുള്ള കളർ ഷേഡുകൾ
+    function getSemanticStyle(statusName) {
+      const s = (statusName || "").toUpperCase();
+
+      // 1. Negative (Red Shade)
+      if (s.includes("REJECT") || s.includes("CANCEL") || s.includes("REVERT") || s.includes("FAILED") || s.includes("CLOSE")) {
+        return {
+          bg: "linear-gradient(135deg, #fecaca 0%, #fca5a5 100%)",
+          color: "#991b1b",
+          border: "#dc2626"
+        };
+      }
+      
+      // 2. Created, Approved & Completed (Green Shade)
+      if (s.includes("APPROV") || s.includes("CREATE") || s.includes("SUCCESS") || s.includes("COMPLETE") || s.includes("ACCEPT") || s.includes("DONE")) {
+        return {
+          bg: "linear-gradient(135deg, #bbf7d0 0%, #86efac 100%)",
+          color: "#166534",
+          border: "#16a34a"
+        };
+      }
+
+      // 3. Pending (Yellow Shade)
+      if (s.includes("PEND") || s.includes("PROCESS") || s.includes("WAIT") || s.includes("HOLD") || s.includes("SUBMIT")) {
+        return {
+          bg: "linear-gradient(135deg, #fef08a 0%, #fde047 100%)",
+          color: "#854d0e",
+          border: "#ca8a04"
+        };
+      }
+
+      // 4. Default Neutral Shade
+      return {
+        bg: "linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)",
+        color: "#334155",
+        border: "#94a3b8"
+      };
+    }
 
     function toggleDropdown(id) {
       var checkList = document.getElementById(id);
@@ -637,7 +664,6 @@
             });
           }
 
-          // Option ടാബിലുള്ള Status മാത്രം ഡ്രോപ്പ്ഡൗണിലും ബൾക്ക് സെലക്റ്റിലും നൽകുന്നു
           if (data && data.statuses && data.statuses.length > 0) {
             availableStatuses = data.statuses;
           } else {
@@ -650,7 +676,6 @@
             bulkSel.innerHTML += `<option value="${st.toUpperCase()}">${st.toUpperCase()}</option>`;
           });
 
-          // ഡൈനാമിക് ആയി സ്റ്റാറ്റസ് ബോക്സുകൾ റെൻഡർ ചെയ്യുന്നു
           renderDynamicStatusCards();
 
           var purpContainer = document.getElementById('purposeContainer');
@@ -689,7 +714,6 @@
         });
     };
 
-    // Option ടാബിലുള്ള സ്റ്റാറ്റസുകൾ മാത്രം ബോക്സുകളായി നൽകുന്നു
     function renderDynamicStatusCards() {
       var container = document.getElementById('statusCardsContainer');
       container.innerHTML = `
@@ -699,14 +723,15 @@
         </div>
       `;
 
-      availableStatuses.forEach(function(st, idx) {
+      availableStatuses.forEach(function(st) {
         var cleanSt = st.toUpperCase();
-        var colorObj = STATUS_COLORS[idx % STATUS_COLORS.length];
+        var style = getSemanticStyle(cleanSt);
+
         var div = document.createElement('div');
         div.className = "status-mini-card";
         div.id = "card_" + cleanSt;
-        div.style.background = colorObj.bg;
-        div.style.color = colorObj.color;
+        div.style.background = style.bg;
+        div.style.color = style.color;
         div.onclick = function() { filterByStatusCard(cleanSt); };
         div.title = "Click to filter " + cleanSt;
         div.innerHTML = `
@@ -1240,19 +1265,17 @@
       stagedBulkStatus = "";
     }
 
-    // ഏത് സെല്ലിലെ മാറ്റവും ട്രാക്ക് ചെയ്യാൻ
     function ensurePendingRow(slNo) {
       if (!pendingRowEdits[slNo]) {
         for (var i = 0; i < allDashboardRows.length; i++) {
           if (allDashboardRows[i][0].toString() === slNo.toString()) {
-            pendingRowEdits[slNo] = allDashboardRows[i].slice(); // കോപ്പി ഉണ്ടാക്കുന്നു
+            pendingRowEdits[slNo] = allDashboardRows[i].slice();
             break;
           }
         }
       }
     }
 
-    // സെൽ നേരിട്ട് എഡിറ്റ് ചെയ്യുമ്പോൾ (Inline Table Edit)
     function handleCellEdit(tdElem, slNo, colIdx) {
       if (!isAdminUnlocked) return;
       var newVal = tdElem.innerText.trim();
@@ -1261,12 +1284,17 @@
       updatePendingSaveButton();
     }
 
-    // സ്റ്റാറ്റസ് ഡ്രോപ്പ്ഡൗൺ മാറ്റുമ്പോൾ
     function handleStatusDropdownChange(selectElem, slNo) {
       if (!isAdminUnlocked) return;
       var newStatus = selectElem.value;
       ensurePendingRow(slNo);
       pendingRowEdits[slNo][11] = newStatus;
+      
+      var newStyle = getSemanticStyle(newStatus);
+      selectElem.style.background = newStyle.bg;
+      selectElem.style.color = newStyle.color;
+      selectElem.style.borderColor = newStyle.border;
+
       updatePendingSaveButton();
       renderPaginatedTable();
     }
@@ -1363,7 +1391,6 @@
         .then(res => {
           hideStatus();
           if (res.status === "success") {
-            // മെമ്മറിയിലുള്ള റോകളും അപ്‌ഡേറ്റ് ചെയ്യുന്നു
             allDashboardRows.forEach(function(r) {
               var sl = r[0].toString();
               if (pendingRowEdits.hasOwnProperty(sl)) {
@@ -1449,15 +1476,16 @@
             tr.appendChild(td);
           }
 
-          // 4. Status Column (Dropdown)
+          // 4. Status Column (Dropdown with Semantic Color)
           var tdStatus = document.createElement('td');
           tdStatus.className = "col-status";
 
           var currentStatus = (activeRowData[11] && activeRowData[11].toString().trim() !== "") ? activeRowData[11].toString().trim().toUpperCase() : "PENDING";
+          var style = getSemanticStyle(currentStatus);
           var disabledAttr = isAdminUnlocked ? "" : "disabled";
           var modifiedClass = isModified ? "select-pending-save" : "";
 
-          var selectHtml = `<select class="table-status-select ${modifiedClass}" style="background:#e2e8f0; font-weight:800;" ${disabledAttr} onchange="handleStatusDropdownChange(this, '${slNo}')">`;
+          var selectHtml = `<select class="table-status-select ${modifiedClass}" style="background:${style.bg}; color:${style.color}; border: 1.5px solid ${style.border}; font-weight:800;" ${disabledAttr} onchange="handleStatusDropdownChange(this, '${slNo}')">`;
           availableStatuses.forEach(function(st) {
             var cleanSt = st.toUpperCase();
             var isSel = (cleanSt === currentStatus) ? "selected" : "";
