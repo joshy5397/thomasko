@@ -128,7 +128,7 @@
       border-radius: 10px; margin-bottom: 22px; text-align: center;
     }
 
-    /* Compact Status Boxes Grid */
+    /* Status Mini Cards */
     .status-cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -145,73 +145,21 @@
       box-shadow: 0 3px 6px rgba(0,0,0,0.06);
       border: 2px solid transparent;
     }
-    .status-mini-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.12);
-    }
+    .status-mini-card:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.12); }
     .status-mini-card.active-card {
       border: 2px solid #0f172a !important;
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.4) !important;
       transform: scale(1.03);
     }
-    .status-mini-card h5 {
-      margin: 0;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      opacity: 0.9;
-    }
-    .status-mini-card .val {
-      font-size: 24px;
-      font-weight: 800;
-      margin-top: 4px;
-    }
+    .status-mini-card h5 { margin: 0; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.9; }
+    .status-mini-card .val { font-size: 24px; font-weight: 800; margin-top: 4px; }
     
-    .card-total {
-      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-      color: #ffffff;
-    }
-    .card-pending {
-      background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
-      color: #854d0e;
-    }
-    .card-created {
-      background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
-      color: #166534;
-    }
-    .card-approved {
-      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-      color: #ffffff;
-    }
-    .card-rejected {
-      background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
-      color: #991b1b;
-    }
-    .card-offices {
-      background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
-      color: #ffffff;
-      cursor: default;
-    }
-
-    /* Purpose Badges */
-    .purpose-summary {
-      display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; background: #f8fafc;
-      padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1;
-    }
-    .purpose-stat {
-      background: #ffffff; padding: 8px 14px; border-radius: 20px; border: 2px solid #94a3b8;
-      font-size: 13.5px; font-weight: 700; cursor: pointer; user-select: none; transition: all 0.2s;
-    }
-    .purpose-stat:hover { border-color: #2563eb; background: #eff6ff; }
-    .purpose-stat.active-badge { 
-      background: #1e40af !important; 
-      color: #ffffff !important; 
-      border-color: #1e40af !important; 
-      box-shadow: 0 3px 8px rgba(30, 64, 175, 0.35);
-    }
-    .purpose-stat.active-badge span { color: #fef08a !important; }
-    .purpose-stat span { color: #2563eb; font-size: 14px; margin-left: 5px; font-weight: 800; }
+    .card-total { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: #ffffff; }
+    .card-pending { background: linear-gradient(135deg, #fef08a 0%, #fde047 100%); color: #854d0e; }
+    .card-created { background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%); color: #166534; }
+    .card-approved { background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; }
+    .card-rejected { background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%); color: #991b1b; }
+    .card-offices { background: linear-gradient(135deg, #0f172a 0%, #334155 100%); color: #ffffff; cursor: default; }
 
     /* Filter Panel */
     .filter-panel { background: #f8fafc; border: 1px solid #cbd5e1; padding: 16px; border-radius: 8px; margin-bottom: 18px; }
@@ -248,14 +196,20 @@
 
     /* Bulk Action Bar */
     .bulk-action-bar {
-      display: flex;
+      display: none;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
+      flex-wrap: wrap;
       background: #eff6ff;
       border: 2px dashed #3b82f6;
       padding: 10px 14px;
       border-radius: 8px;
       margin-bottom: 12px;
+    }
+    .bulk-left-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     .bulk-action-bar select {
       width: auto;
@@ -265,17 +219,59 @@
       border-radius: 6px;
       font-size: 13px;
     }
-    .btn-bulk-update {
-      background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    .btn-bulk-apply {
+      background: #2563eb;
       color: #ffffff;
       border: none;
-      padding: 8px 16px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .btn-bulk-apply:hover { background: #1d4ed8; }
+
+    .btn-save-changes {
+      background: #059669;
+      color: #ffffff;
+      border: none;
+      padding: 9px 18px;
       border-radius: 6px;
       cursor: pointer;
       font-weight: 800;
-      font-size: 13px;
+      font-size: 13.5px;
+      display: none;
+      animation: pulse 1.5s infinite;
     }
-    .btn-bulk-update:hover { background: #172554; }
+    .btn-save-changes:hover { background: #047857; }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.4); }
+      70% { box-shadow: 0 0 0 8px rgba(5, 150, 105, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); }
+    }
+
+    /* Admin Toggle Checkbox */
+    .admin-toggle-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #1e3a8a;
+      background: #f1f5f9;
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid #cbd5e1;
+      cursor: pointer;
+      user-select: none;
+    }
+    .admin-toggle-wrapper input {
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      accent-color: #1e40af;
+      margin: 0;
+    }
 
     .table-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13.5px; font-weight: 600; color: #334155; }
     .table-top-bar select { width: auto; display: inline-block; padding: 5px 8px; font-size: 13px; }
@@ -284,7 +280,13 @@
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
     th { background: #1e40af; color: #ffffff; white-space: nowrap; font-weight: 700; text-transform: uppercase; font-size: 12px; position: sticky; top: 0; z-index: 2; }
-    th.col-check, td.col-check { text-align: center; width: 40px; min-width: 40px; }
+    
+    th.col-check, td.col-check { 
+      text-align: center; 
+      width: 40px; 
+      min-width: 40px; 
+      display: none; 
+    }
     th.col-date, td.col-date { white-space: nowrap; font-size: 12px; width: 140px; min-width: 140px; max-width: 140px; }
     th.col-status, td.col-status { white-space: nowrap; font-size: 12px; width: 140px; min-width: 140px; max-width: 140px; text-align: center; }
     tr:nth-child(even) { background-color: #f8fafc; }
@@ -297,12 +299,29 @@
       font-size: 12px;
       font-weight: 800;
       text-transform: uppercase;
-      cursor: pointer;
-      border: 2px solid transparent;
       outline: none;
       text-align: center;
       transition: all 0.2s;
+      border: 2px solid transparent;
     }
+    .table-status-select:disabled {
+      cursor: not-allowed;
+      opacity: 0.95;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: none !important;
+    }
+    .table-status-select:not(:disabled) {
+      cursor: pointer;
+    }
+    .row-pending-save {
+      background-color: #fef9c3 !important;
+    }
+    .select-pending-save {
+      border: 2px dashed #ca8a04 !important;
+    }
+
     .status-select-pending { background-color: #fef08a; color: #854d0e; border-color: #ca8a04; }
     .status-select-approved, .status-select-created { background-color: #bbf7d0; color: #166534; border-color: #16a34a; }
     .status-select-rejected { background-color: #fecaca; color: #991b1b; border-color: #dc2626; }
@@ -314,7 +333,7 @@
     .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .page-btn.active { background: #1e40af; color: white; border-color: #1e40af; }
 
-    /* In-page Password Modal */
+    /* Modal Styling */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -340,65 +359,29 @@
       0% { transform: scale(0.9); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
     }
-    .modal-card h3 {
-      margin: 0 0 10px 0;
-      color: #1e3a8a;
-      font-size: 18px;
-      font-weight: 800;
-    }
-    .modal-card p {
-      margin: 0 0 16px 0;
-      font-size: 14px;
-      color: #475569;
-    }
+    .modal-card h3 { margin: 0 0 10px 0; color: #1e3a8a; font-size: 18px; font-weight: 800; }
+    .modal-card p { margin: 0 0 16px 0; font-size: 14px; color: #475569; }
     .modal-card input[type="password"] {
-      width: 100%;
-      padding: 11px 14px;
-      border: 2px solid #2563eb;
-      border-radius: 7px;
-      font-size: 16px;
-      box-sizing: border-box;
-      outline: none;
-      margin-bottom: 18px;
-      text-align: center;
-      letter-spacing: 2px;
+      width: 100%; padding: 11px 14px; border: 2px solid #2563eb; border-radius: 7px;
+      font-size: 16px; box-sizing: border-box; outline: none; margin-bottom: 18px;
+      text-align: center; letter-spacing: 2px;
     }
-    .modal-btn-group {
-      display: flex;
-      gap: 10px;
-    }
-    .btn-modal-confirm {
-      flex: 1;
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 11px;
-      border-radius: 6px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .btn-modal-cancel {
-      flex: 1;
-      background: #e2e8f0;
-      color: #334155;
-      border: 1px solid #cbd5e1;
-      padding: 11px;
-      border-radius: 6px;
-      font-weight: 700;
-      cursor: pointer;
-    }
+    .modal-btn-group { display: flex; gap: 10px; }
+    .btn-modal-confirm { flex: 1; background: #2563eb; color: white; border: none; padding: 11px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+    .btn-modal-cancel { flex: 1; background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; padding: 11px; border-radius: 6px; font-weight: 700; cursor: pointer; }
   </style>
 </head>
 <body>
 
+  <!-- In-page Authentication & Confirmation Modal -->
   <div id="passwordModal" class="modal-overlay">
     <div class="modal-card">
-      <h3>🔑 Admin Authentication</h3>
+      <h3 id="modalTitleText">🔑 Admin Authentication</h3>
       <p id="modalPromptText">Enter Admin Password:</p>
       <input type="password" id="modalPasswordInput" placeholder="Password" onkeydown="if(event.key==='Enter') submitPasswordModal()">
       <div class="modal-btn-group">
-        <button type="button" class="btn-modal-confirm" onclick="submitPasswordModal()">Confirm</button>
-        <button type="button" class="btn-modal-cancel" onclick="closePasswordModal()">Cancel</button>
+        <button type="button" class="btn-modal-confirm" id="btnModalConfirm" onclick="submitPasswordModal()">Confirm</button>
+        <button type="button" class="btn-modal-cancel" id="btnModalCancel" onclick="closePasswordModal()">Cancel</button>
       </div>
     </div>
   </div>
@@ -503,7 +486,7 @@
       <!-- TAB 2: DASHBOARD & LIVE RECORDS -->
       <div id="sectionDash" style="display: none;">
         
-        <!-- Status Boxes Grid (Permanent Fixed Numbers) -->
+        <!-- Status Boxes Grid -->
         <div class="status-cards-grid">
           <div class="status-mini-card card-total" id="card_TOTAL" onclick="filterByStatusCard(null)" title="Click to view all records">
             <h5>Total</h5>
@@ -531,12 +514,8 @@
           </div>
         </div>
 
-        <h4 style="margin: 0 0 8px 0; color: #1e3a8a;">Purpose Breakdown (Click any purpose to filter):</h4>
-        <div class="purpose-summary" id="purposeSummaryBox"></div>
-
         <!-- Filter Panel -->
         <div class="filter-panel">
-          
           <div class="filter-grid-3">
             <div>
               <label>Filter by Office (Multi-select):</label>
@@ -587,16 +566,19 @@
               <button type="button" class="btn-export" onclick="exportToExcel()">📥 Export to Excel</button>
             </div>
           </div>
-
         </div>
 
-        <!-- Multiple Select Bulk Action Bar -->
-        <div class="bulk-action-bar">
-          <span style="font-weight: 700; color: #1e3a8a;">Selected: <span id="selectedCountText">0</span> items</span>
-          <select id="bulkStatusSelect">
-            <option value="">-- Change Status To --</option>
-          </select>
-          <button type="button" class="btn-bulk-update" onclick="handleBulkStatusChange()">⚡ Update Selected Status</button>
+        <!-- Bulk Action Bar & Save Option -->
+        <div class="bulk-action-bar" id="adminBulkBar">
+          <div class="bulk-left-group">
+            <span style="font-weight: 700; color: #1e3a8a;">Selected: <span id="selectedCountText">0</span> items</span>
+            <select id="bulkStatusSelect">
+              <option value="">-- Change Status To --</option>
+            </select>
+            <button type="button" class="btn-bulk-apply" onclick="promptBulkApplyConfirmation()">Apply to Selected</button>
+          </div>
+          
+          <button type="button" class="btn-save-changes" id="btnSaveChanges" onclick="promptSaveConfirmation()">💾 Save Changes (<span id="pendingSaveCountText">0</span>)</button>
         </div>
 
         <div class="table-top-bar">
@@ -610,6 +592,13 @@
             </select>
             entries
           </div>
+          
+          <!-- Admin Mode Toggle Option -->
+          <label class="admin-toggle-wrapper">
+            <input type="checkbox" id="adminModeCheckbox" onchange="toggleAdminMode(this)">
+            <span>🔒 Admin Mode</span>
+          </label>
+
           <div id="tableCountText">Showing 0 to 0 of 0 entries</div>
         </div>
 
@@ -617,7 +606,7 @@
           <table>
             <thead>
               <tr>
-                <th class="col-check"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" title="Select All"></th>
+                <th class="col-check" id="thSelectAll"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" title="Select All"></th>
                 <th>SL. NO</th>
                 <th class="col-date">DATE & TIME</th>
                 <th>OFFICE</th>
@@ -657,14 +646,16 @@
     let currentFilteredRows = [];
     let currentPage = 1;
     let rowsPerPage = 25;
-    let activePurposeBadge = null;
     let activeStatusCard = null;
-    let globalPurposeCounts = {};
     let masterPurposesList = [];
     let availableStatuses = ["PENDING", "APPROVED", "CREATED", "REJECTED"];
 
+    let isAdminUnlocked = false;
+    let verifiedAdminPassword = "";
     let selectedSlNos = new Set();
-    let pendingStatusChange = null;
+    let pendingStatusEdits = {}; // { slNo: newStatus }
+    let pendingActionType = null;
+    let stagedBulkStatus = "";
 
     const MALAYALAM_REGEX = /[\u0D00-\u0D7F]/;
     const GENERAL_UNSUPPORTED_CHARS = /[^\x20-\x7E]/;
@@ -916,32 +907,32 @@
       const emailVal = document.getElementById('email').value;
 
       if (!isNameValid || !isGlNoValid || !isPenValid || !isMobileValid || !isEmailValid || !isRemarksValid || !isCaptchaValid) {
-        alert("⚠️ Please resolve the highlighted errors before submitting.");
+        showCustomNotice("⚠️ Please resolve the highlighted errors before submitting.");
         return;
       }
 
       if (penVal.length !== 6 && penVal.length !== 7) {
-        alert("⚠️ PEN must be exactly 6 or 7 digits.");
+        showCustomNotice("⚠️ PEN must be exactly 6 or 7 digits.");
         document.getElementById('pen').focus();
         return;
       }
 
       if (mobileVal.length !== 10) {
-        alert("⚠️ Mobile Number must be exactly 10 digits.");
+        showCustomNotice("⚠️ Mobile Number must be exactly 10 digits.");
         document.getElementById('mobile').focus();
         return;
       }
 
       const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!emailPattern.test(emailVal)) {
-        alert("⚠️ Please enter a valid Email ID.");
+        showCustomNotice("⚠️ Please enter a valid Email ID.");
         document.getElementById('email').focus();
         return;
       }
 
       var userAnswer = parseInt(document.getElementById('captchaAnswer').value, 10);
       if (userAnswer !== expectedCaptcha) {
-        alert("⚠️ Captcha answer is incorrect. Please check the math and try again.");
+        showCustomNotice("⚠️ Captcha answer is incorrect. Please check the math and try again.");
         generateCaptcha();
         document.getElementById('captchaAnswer').focus();
         return;
@@ -953,7 +944,7 @@
       });
 
       if (selectedPurposes.length === 0) {
-        alert("⚠️ Please select at least one PURPOSE.");
+        showCustomNotice("⚠️ Please select at least one PURPOSE.");
         return;
       }
 
@@ -1007,32 +998,18 @@
         .then(res => {
           hideStatus();
           if (res.error) {
-            alert("Error: " + res.error);
+            showCustomNotice("Error: " + res.error);
             return;
           }
           allDashboardRows = res.rows || [];
-          
-          globalPurposeCounts = {};
-          masterPurposesList.forEach(function(p) {
-            globalPurposeCounts[p] = 0;
-          });
-
-          allDashboardRows.forEach(function(r) {
-            var p = r[9] ? r[9].toString().trim() : "";
-            if (p) {
-              globalPurposeCounts[p] = (globalPurposeCounts[p] || 0) + 1;
-            }
-          });
 
           selectedSlNos.clear();
+          pendingStatusEdits = {};
+          updatePendingSaveButton();
           updateSelectedCount();
 
           setupFilterOptions();
-          renderPurposeBreakdownBadges();
-          
-          // കാർഡുകളിലെ ആകെ സ്ഥിര എണ്ണം സെറ്റ് ചെയ്യുന്നു
           updatePermanentCardCounts();
-          
           filterDashboardTable();
         })
         .catch(err => {
@@ -1105,35 +1082,11 @@
       }
     }
 
-    function filterByPurposeBadge(purposeName) {
-      if (activePurposeBadge === purposeName) {
-        activePurposeBadge = null;
-      } else {
-        activePurposeBadge = purposeName;
-      }
-
-      document.querySelectorAll('#purposeSummaryBox .purpose-stat').forEach(function(badge) {
-        if (badge.getAttribute('data-purpose') === activePurposeBadge) {
-          badge.classList.add('active-badge');
-        } else {
-          badge.classList.remove('active-badge');
-        }
-      });
-
-      document.querySelectorAll('#filterPurposeList input').forEach(function(cb) {
-        cb.checked = (cb.value === activePurposeBadge);
-      });
-      updateDropdownLabel('purposeCheckList', 'Purposes');
-
-      filterDashboardTable();
-    }
-
-    // Status Mini Card ക്ലിക്ക് ചെയ്യുമ്പോൾ ആ കാർഡ് മാത്രം ടോഗിൾ ചെയ്യുന്നു
     function filterByStatusCard(targetStatus) {
       if (!targetStatus) {
-        activeStatusCard = null; // TOTAL ക്ലിക്ക് ചെയ്താൽ
+        activeStatusCard = null;
       } else if (activeStatusCard === targetStatus) {
-        activeStatusCard = null; // വീണ്ടും ക്ലിക്ക് ചെയ്താൽ അൺഫിൽട്ടർ ആകുന്നു
+        activeStatusCard = null;
       } else {
         activeStatusCard = targetStatus;
       }
@@ -1160,7 +1113,6 @@
       }
     }
 
-    // സ്ഥിരമായ എണ്ണം കണക്കാക്കുന്നു (ഫിൽട്ടർ ചെയ്താലും ബോക്സുകളിലെ നമ്പറുകൾ മാറില്ല)
     function updatePermanentCardCounts() {
       var total = allDashboardRows.length;
       var pendingCount = 0;
@@ -1189,25 +1141,6 @@
       updateActiveCardHighlight();
     }
 
-    function renderPurposeBreakdownBadges() {
-      var summaryBox = document.getElementById('purposeSummaryBox');
-      summaryBox.innerHTML = "";
-      var keys = Object.keys(globalPurposeCounts).sort();
-      if (keys.length === 0) {
-        summaryBox.innerHTML = "<small style='color:#64748b;'>No Purpose Data Available</small>";
-        return;
-      }
-      keys.forEach(function(p) {
-        var count = globalPurposeCounts[p];
-        var div = document.createElement('div');
-        div.className = "purpose-stat" + (activePurposeBadge === p ? " active-badge" : "");
-        div.setAttribute('data-purpose', p);
-        div.innerHTML = p + ": <span>" + count + "</span>";
-        div.onclick = function() { filterByPurposeBadge(p); };
-        summaryBox.appendChild(div);
-      });
-    }
-
     function filterDashboardTable() {
       var query = document.getElementById('dashSearch').value.toLowerCase().trim();
       var fromDateVal = document.getElementById('filterFromDate').value;
@@ -1222,13 +1155,9 @@
       });
 
       var selectedPurposes = [];
-      if (activePurposeBadge) {
-        selectedPurposes.push(activePurposeBadge);
-      } else {
-        document.querySelectorAll('#filterPurposeList input:checked').forEach(function(cb) {
-          selectedPurposes.push(cb.value);
-        });
-      }
+      document.querySelectorAll('#filterPurposeList input:checked').forEach(function(cb) {
+        selectedPurposes.push(cb.value);
+      });
 
       var selectedStatuses = [];
       if (activeStatusCard) {
@@ -1274,8 +1203,37 @@
       });
 
       currentPage = 1;
-      // ഫിൽട്ടർ ചെയ്യുമ്പോൾ കാർഡുകളിലെ നമ്പറുകൾ മാറ്റുന്നില്ല, ടേബിൾ മാത്രം റീ-റെൻഡർ ചെയ്യുന്നു
       renderPaginatedTable();
+    }
+
+    // --- Admin Mode Toggle ---
+    function toggleAdminMode(checkbox) {
+      if (checkbox.checked) {
+        pendingActionType = "UNLOCK_ADMIN";
+        document.getElementById('modalTitleText').innerText = "🔒 Admin Login";
+        document.getElementById('modalPromptText').innerText = "Enter Admin Password to enable management:";
+        document.getElementById('modalPasswordInput').value = "";
+        document.getElementById('modalPasswordInput').style.display = "block";
+        document.getElementById('btnModalConfirm').innerText = "Confirm";
+        document.getElementById('btnModalConfirm').onclick = submitPasswordModal;
+        document.getElementById('btnModalCancel').style.display = "inline-block";
+        document.getElementById('passwordModal').style.display = "flex";
+        setTimeout(() => document.getElementById('modalPasswordInput').focus(), 100);
+      } else {
+        isAdminUnlocked = false;
+        verifiedAdminPassword = "";
+        document.getElementById('adminBulkBar').style.display = "none";
+        document.getElementById('thSelectAll').style.display = "none";
+        document.querySelectorAll('th.col-check, td.col-check').forEach(td => td.style.display = "none");
+        
+        document.querySelectorAll('.table-status-select').forEach(sel => sel.disabled = true);
+        
+        selectedSlNos.clear();
+        pendingStatusEdits = {};
+        updatePendingSaveButton();
+        updateSelectedCount();
+        renderPaginatedTable();
+      }
     }
 
     function toggleRowSelection(cb, slNo) {
@@ -1305,148 +1263,183 @@
       document.getElementById('selectedCountText').innerText = selectedSlNos.size;
     }
 
-    function handleBulkStatusChange() {
+    // 1. Bulk Apply Confirmation
+    function promptBulkApplyConfirmation() {
+      if (!isAdminUnlocked) return;
+
       if (selectedSlNos.size === 0) {
-        alert("⚠️ Please select at least one record to update status!");
+        showCustomNotice("⚠️ Please select at least one record from the table!");
         return;
       }
 
       var newStatus = document.getElementById('bulkStatusSelect').value;
       if (!newStatus) {
-        alert("⚠️ Please choose a status from the dropdown!");
+        showCustomNotice("⚠️ Please choose a status to apply!");
         return;
       }
 
-      pendingStatusChange = {
-        isBulk: true,
-        slNos: Array.from(selectedSlNos),
-        newStatus: newStatus
-      };
-
+      stagedBulkStatus = newStatus;
+      pendingActionType = "CONFIRM_BULK_APPLY";
+      
+      document.getElementById('modalTitleText').innerText = "⚡ Confirm Selection";
       document.getElementById('modalPromptText').innerText = 
-        `Update status of ${selectedSlNos.size} record(s) to "${newStatus}"?`;
-      document.getElementById('modalPasswordInput').value = "";
+        `Change status of ${selectedSlNos.size} selected record(s) to "${newStatus}"?`;
+      document.getElementById('modalPasswordInput').style.display = "none";
+      document.getElementById('btnModalConfirm').innerText = "Yes, Apply";
+      document.getElementById('btnModalConfirm').onclick = submitPasswordModal;
+      document.getElementById('btnModalCancel').style.display = "inline-block";
       document.getElementById('passwordModal').style.display = "flex";
-      setTimeout(function() {
-        document.getElementById('modalPasswordInput').focus();
-      }, 100);
     }
 
+    function executeBulkApply() {
+      selectedSlNos.forEach(function(sl) {
+        pendingStatusEdits[sl] = stagedBulkStatus;
+      });
+
+      document.getElementById('bulkStatusSelect').value = "";
+      selectedSlNos.clear();
+      updateSelectedCount();
+      var masterCb = document.getElementById('selectAllCheckbox');
+      if (masterCb) masterCb.checked = false;
+
+      updatePendingSaveButton();
+      renderPaginatedTable();
+      stagedBulkStatus = "";
+    }
+
+    // 2. Direct In-place Change
     function handleStatusDropdownChange(selectElem, slNo) {
-      var oldStatus = selectElem.getAttribute('data-current');
+      if (!isAdminUnlocked) return;
+
       var newStatus = selectElem.value;
+      var originalStatus = selectElem.getAttribute('data-original');
 
-      if (oldStatus === newStatus) return;
+      if (newStatus === originalStatus) {
+        delete pendingStatusEdits[slNo];
+      } else {
+        pendingStatusEdits[slNo] = newStatus;
+      }
 
-      pendingStatusChange = {
-        isBulk: false,
-        selectElem: selectElem,
-        slNo: slNo,
-        oldStatus: oldStatus,
-        newStatus: newStatus
-      };
+      updatePendingSaveButton();
+      renderPaginatedTable();
+    }
 
+    function updatePendingSaveButton() {
+      var count = Object.keys(pendingStatusEdits).length;
+      var btnSave = document.getElementById('btnSaveChanges');
+      var countSpan = document.getElementById('pendingSaveCountText');
+      countSpan.innerText = count;
+
+      if (count > 0 && isAdminUnlocked) {
+        btnSave.style.display = "inline-block";
+      } else {
+        btnSave.style.display = "none";
+      }
+    }
+
+    // 3. Save Confirmation Dialog
+    function promptSaveConfirmation() {
+      var count = Object.keys(pendingStatusEdits).length;
+      if (count === 0) return;
+
+      pendingActionType = "CONFIRM_SAVE";
+      document.getElementById('modalTitleText').innerText = "💾 Save Confirmation";
       document.getElementById('modalPromptText').innerText = 
-        `Change SL No: ${slNo} from "${oldStatus}" to "${newStatus}"?`;
-      document.getElementById('modalPasswordInput').value = "";
+        `Are you sure you want to save ${count} status update(s) to Google Sheet?`;
+      document.getElementById('modalPasswordInput').style.display = "none";
+      document.getElementById('btnModalConfirm').innerText = "Yes, Save Now";
+      document.getElementById('btnModalConfirm').onclick = submitPasswordModal;
+      document.getElementById('btnModalCancel').style.display = "inline-block";
       document.getElementById('passwordModal').style.display = "flex";
-      setTimeout(function() {
-        document.getElementById('modalPasswordInput').focus();
-      }, 100);
+    }
+
+    // Notice Modal
+    function showCustomNotice(msg) {
+      document.getElementById('modalTitleText').innerText = "ℹ️ Message";
+      document.getElementById('modalPromptText').innerText = msg;
+      document.getElementById('modalPasswordInput').style.display = "none";
+      document.getElementById('btnModalConfirm').innerText = "OK";
+      document.getElementById('btnModalConfirm').onclick = closePasswordModal;
+      document.getElementById('btnModalCancel').style.display = "none";
+      document.getElementById('passwordModal').style.display = "flex";
     }
 
     function closePasswordModal() {
-      if (pendingStatusChange && !pendingStatusChange.isBulk && pendingStatusChange.selectElem) {
-        pendingStatusChange.selectElem.value = pendingStatusChange.oldStatus;
-      }
-      pendingStatusChange = null;
       document.getElementById('passwordModal').style.display = "none";
+      if (pendingActionType === "UNLOCK_ADMIN" && !isAdminUnlocked) {
+        document.getElementById('adminModeCheckbox').checked = false;
+      }
+      pendingActionType = null;
     }
 
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closePasswordModal();
+      }
+    });
+
     function submitPasswordModal() {
-      var password = document.getElementById('modalPasswordInput').value;
-      if (!password) {
-        alert("⚠️ Please enter Admin Password!");
+      if (pendingActionType === "UNLOCK_ADMIN") {
+        var password = document.getElementById('modalPasswordInput').value;
+        if (password === "admin123") {
+          isAdminUnlocked = true;
+          verifiedAdminPassword = password;
+          document.getElementById('passwordModal').style.display = "none";
+          document.getElementById('adminBulkBar').style.display = "flex";
+          document.getElementById('thSelectAll').style.display = "table-cell";
+          document.querySelectorAll('th.col-check, td.col-check').forEach(td => td.style.display = "table-cell");
+          document.querySelectorAll('.table-status-select').forEach(sel => sel.disabled = false);
+          pendingActionType = null;
+        } else {
+          document.getElementById('adminModeCheckbox').checked = false;
+          showCustomNotice("❌ Incorrect Admin Password!");
+        }
         return;
       }
 
-      var req = pendingStatusChange;
-      document.getElementById('passwordModal').style.display = "none";
-      showStatus("Updating status...", "loading");
+      if (pendingActionType === "CONFIRM_BULK_APPLY") {
+        document.getElementById('passwordModal').style.display = "none";
+        executeBulkApply();
+        pendingActionType = null;
+        return;
+      }
 
-      if (req.isBulk) {
+      if (pendingActionType === "CONFIRM_SAVE") {
+        document.getElementById('passwordModal').style.display = "none";
+        showStatus("Saving changes to Google Sheet...", "loading");
+
         fetch(SCRIPT_URL, {
           method: "POST",
           body: JSON.stringify({
-            action: "updateBulkStatus",
-            slNos: req.slNos,
-            newStatus: req.newStatus,
-            password: password
+            action: "saveBatchStatuses",
+            updates: pendingStatusEdits,
+            password: verifiedAdminPassword
           })
         })
         .then(res => res.json())
         .then(res => {
           hideStatus();
           if (res.status === "success") {
-            document.getElementById('bulkStatusSelect').value = "";
-            selectedSlNos.clear();
-            updateSelectedCount();
-            var masterCb = document.getElementById('selectAllCheckbox');
-            if (masterCb) masterCb.checked = false;
-
-            alert("✅ " + res.message);
-            loadDashboard();
-          } else {
-            alert("❌ " + res.message);
-          }
-          pendingStatusChange = null;
-        })
-        .catch(err => {
-          hideStatus();
-          alert("❌ Error: " + err);
-          pendingStatusChange = null;
-        });
-      } 
-      else {
-        fetch(SCRIPT_URL, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "updateStatus",
-            slNo: req.slNo,
-            newStatus: req.newStatus,
-            password: password
-          })
-        })
-        .then(res => res.json())
-        .then(res => {
-          hideStatus();
-          if (res.status === "success") {
-            req.selectElem.setAttribute('data-current', req.newStatus);
-            req.selectElem.className = "table-status-select " + getStatusColorClass(req.newStatus);
-
             allDashboardRows.forEach(function(r) {
-              if (r[0].toString() === req.slNo.toString()) {
-                r[11] = req.newStatus;
+              var sl = r[0].toString();
+              if (pendingStatusEdits.hasOwnProperty(sl)) {
+                r[11] = pendingStatusEdits[sl];
               }
             });
 
-            // ഡാഷ്‌ബോർഡ് ബോക്സ് എണ്ണം പുതുക്കുന്നു
+            pendingStatusEdits = {};
+            updatePendingSaveButton();
             updatePermanentCardCounts();
             filterDashboardTable();
 
-            pendingStatusChange = null;
-            alert("✅ " + res.message);
+            showCustomNotice("✅ " + res.message);
           } else {
-            alert("❌ " + res.message);
-            req.selectElem.value = req.oldStatus;
-            pendingStatusChange = null;
+            showCustomNotice("❌ " + res.message);
           }
         })
         .catch(err => {
           hideStatus();
-          alert("❌ Error: " + err);
-          req.selectElem.value = req.oldStatus;
-          pendingStatusChange = null;
+          showCustomNotice("❌ Error: " + err);
         });
       }
     }
@@ -1480,16 +1473,22 @@
         pageRows.forEach(function(row) {
           var tr = document.createElement('tr');
           var slNo = row[0].toString();
-          var statusVal = (row[11] && row[11].toString().trim() !== "") ? row[11].toString().trim().toUpperCase() : "PENDING";
+          
+          var originalStatus = (row[11] && row[11].toString().trim() !== "") ? row[11].toString().trim().toUpperCase() : "PENDING";
+          var isModified = pendingStatusEdits.hasOwnProperty(slNo);
+          var currentDisplayStatus = isModified ? pendingStatusEdits[slNo] : originalStatus;
 
-          // 1. Checkbox Column
+          if (isModified) {
+            tr.className = "row-pending-save";
+          }
+
           var tdCheck = document.createElement('td');
           tdCheck.className = "col-check";
+          if (isAdminUnlocked) tdCheck.style.display = "table-cell";
           var isChecked = selectedSlNos.has(slNo) ? "checked" : "";
           tdCheck.innerHTML = `<input type="checkbox" class="row-select-cb" data-sl="${slNo}" ${isChecked} onchange="toggleRowSelection(this, '${slNo}')">`;
           tr.appendChild(tdCheck);
 
-          // 2. Data Columns 0 to 10
           row.slice(0, 11).forEach(function(cell, idx) {
             var td = document.createElement('td');
             if (idx === 1) td.className = "col-date";
@@ -1497,13 +1496,15 @@
             tr.appendChild(td);
           });
 
-          // 3. Status Column Dropdown
           var tdStatus = document.createElement('td');
           tdStatus.className = "col-status";
 
-          var selectHtml = `<select class="table-status-select ${getStatusColorClass(statusVal)}" data-current="${statusVal}" onchange="handleStatusDropdownChange(this, '${slNo}')">`;
+          var disabledAttr = isAdminUnlocked ? "" : "disabled";
+          var modifiedClass = isModified ? "select-pending-save" : "";
+
+          var selectHtml = `<select class="table-status-select ${getStatusColorClass(currentDisplayStatus)} ${modifiedClass}" data-original="${originalStatus}" ${disabledAttr} onchange="handleStatusDropdownChange(this, '${slNo}')">`;
           availableStatuses.forEach(function(st) {
-            var isSel = (st.toUpperCase() === statusVal) ? "selected" : "";
+            var isSel = (st.toUpperCase() === currentDisplayStatus) ? "selected" : "";
             selectHtml += `<option value="${st.toUpperCase()}" ${isSel}>${st.toUpperCase()}</option>`;
           });
           selectHtml += `</select>`;
@@ -1544,7 +1545,7 @@
 
     function exportToExcel() {
       if (!currentFilteredRows || currentFilteredRows.length === 0) {
-        alert("No records available to export!");
+        showCustomNotice("No records available to export!");
         return;
       }
 
@@ -1563,7 +1564,6 @@
     }
 
     function resetFilters() {
-      activePurposeBadge = null;
       activeStatusCard = null;
       document.getElementById('dashSearch').value = "";
       document.getElementById('filterFromDate').value = "";
@@ -1574,10 +1574,6 @@
       updateDropdownLabel('officeCheckList', 'Offices');
       updateDropdownLabel('purposeCheckList', 'Purposes');
       updateDropdownLabel('statusCheckList', 'Statuses');
-      
-      document.querySelectorAll('#purposeSummaryBox .purpose-stat').forEach(function(badge) {
-        badge.classList.remove('active-badge');
-      });
 
       updateActiveCardHighlight();
       filterDashboardTable();
