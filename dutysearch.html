@@ -31,6 +31,7 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 14px;
@@ -402,6 +403,39 @@
       text-align: center;
       margin-bottom: 8px;
     }
+
+    /* ലൈവ് സ്റ്റാറ്റിസ്റ്റിക്സ് ബാർ (Footer Stats) */
+    .stats-footer {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid #e2e8f0;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      text-align: center;
+      gap: 6px;
+    }
+
+    .stat-box {
+      background: #f8fafc;
+      padding: 8px 4px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .stat-value {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f2b5c;
+    }
   </style>
 </head>
 <body>
@@ -475,6 +509,23 @@
 
       <div class="duty-container" id="dutyList"></div>
     </div>
+
+    <!-- സന്ദർശകരുടെയും സെർച്ചുകളുടെയും തത്സമയ കണക്കുകൾ -->
+    <div class="stats-footer">
+      <div class="stat-box">
+        <div class="stat-label">Visitors</div>
+        <div class="stat-value" id="statVisits">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Today</div>
+        <div class="stat-value" id="statToday">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Total Searches</div>
+        <div class="stat-value" id="statTotal">0</div>
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -483,7 +534,6 @@
     const input = document.getElementById("queryInput");
     const inlineClear = document.getElementById("inlineClearBtn");
 
-    // 10 അക്ക മൊബൈൽ നമ്പറുകളെ ലിങ്കാക്കുന്ന ഫംഗ്ഷൻ (6-9ൽ തുടങ്ങുന്ന 10 അക്കങ്ങൾ)
     function linkifyPhoneNumbers(text) {
       if (!text) return "";
       const phoneRegex = /\b([6-9]\d{9})\b/g;
@@ -492,6 +542,14 @@
           <svg class="phone-icon-svg" viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
           ${match}</a>`;
       });
+    }
+
+    function updateStatsDisplay(stats) {
+      if (stats) {
+        document.getElementById("statVisits").innerText = stats.totalVisits || 0;
+        document.getElementById("statToday").innerText = stats.todaySearches || 0;
+        document.getElementById("statTotal").innerText = stats.totalSearches || 0;
+      }
     }
 
     window.addEventListener("DOMContentLoaded", function() {
@@ -507,6 +565,7 @@
               document.body.style.background = `linear-gradient(rgba(11, 25, 44, 0.40), rgba(11, 25, 44, 0.45)), url('${res.bgUrl}') no-repeat center center fixed`;
               document.body.style.backgroundSize = "cover";
             }
+            updateStatsDisplay(res.stats);
           }
         })
         .catch(err => console.log("Init fetch error:", err));
@@ -562,6 +621,11 @@
 
         loader.style.display = "none";
 
+        // സെർച്ച് കഴിയുമ്പോൾ ഏറ്റവും പുതിയ സ്റ്റാറ്റിസ്റ്റിക്സ് അപ്ഡേറ്റ് ചെയ്യുന്നു
+        if (res && res.stats) {
+          updateStatsDisplay(res.stats);
+        }
+
         if (res && res.status === "success") {
           const d = res.data;
           document.getElementById("officerName").innerText = d.name || "-";
@@ -571,12 +635,10 @@
           document.getElementById("officerStation").innerText = d.station || "-";
           document.getElementById("officerDistrict").innerText = d.district || "-";
 
-          // പ്രധാന മൊബൈൽ നമ്പർ ലിങ്കാക്കുന്നു
           const mobContainer = document.getElementById("officerMobileContainer");
           const rawMobile = d.mobile ? d.mobile.toString() : "";
           mobContainer.innerHTML = linkifyPhoneNumbers(rawMobile) || "-";
 
-          // ഡ്യൂട്ടി വിവരങ്ങളിലുള്ള 10 അക്ക നമ്പറുകളും ലിങ്കാക്കുന്നു
           let dutyMsgText = "";
           if (d.duties && d.duties.length > 0) {
             const totalThemes = 5;
