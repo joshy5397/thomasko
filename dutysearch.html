@@ -286,6 +286,10 @@
       gap: 5px;
     }
 
+    .phone-link:active {
+      color: #93c5fd;
+    }
+
     .phone-icon-svg {
       width: 14px;
       height: 14px;
@@ -315,6 +319,10 @@
       text-decoration: none;
       box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);
       touch-action: manipulation;
+    }
+
+    .btn-whatsapp:active {
+      background: var(--whatsapp-hover);
     }
 
     .btn-whatsapp svg {
@@ -462,30 +470,44 @@
   </div>
 
   <script>
-    // ⚠️ നിങ്ങളുടെ APPS SCRIPT URL ഇവിടെ നൽകുക
+    // നൽകിയ Apps Script Web App URL
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwrfO6oNdOpew0Hza8dNtuUiFlQqaBSLZxE_2k1-UCbHFBX0zKIXlkKOS8UVUMX9itQ/exec";
 
     const input = document.getElementById("queryInput");
     const inlineClear = document.getElementById("inlineClearBtn");
 
-    // പേജ് തുറക്കുമ്പോൾ DETAILS ഷീറ്റിൽ നിന്നുള്ള ടൈറ്റിലും ഫോട്ടോയും ലോഡ് ചെയ്യുന്നു
-    window.addEventListener("DOMContentLoaded", function() {
-      fetch(SCRIPT_URL)
-        .then(res => res.json())
-        .then(res => {
-          if (res.status === "init") {
-            if (res.title) {
-              document.getElementById("pageTitle").innerText = res.title;
-              document.getElementById("portalHeading").innerText = res.title;
-            }
-            if (res.bgUrl) {
-              document.body.style.background = `linear-gradient(rgba(11, 25, 44, 0.40), rgba(11, 25, 44, 0.45)), url('${res.bgUrl}') no-repeat center center fixed`;
-              document.body.style.backgroundSize = "cover";
-            }
-          }
-        })
-        .catch(err => console.log(err));
-    });
+    function callAppsScript(paramStr, callbackName) {
+      const oldScript = document.getElementById("jsonpScript");
+      if (oldScript) oldScript.remove();
+
+      const script = document.createElement("script");
+      script.id = "jsonpScript";
+      script.src = `${SCRIPT_URL}?${paramStr}&callback=${callbackName}&_=${new Date().getTime()}`;
+      script.onerror = function() {
+        document.getElementById("loader").style.display = "none";
+        const err = document.getElementById("errorMsg");
+        err.innerText = "Error connecting to database. Please try again.";
+        err.style.display = "block";
+      };
+      document.body.appendChild(script);
+    }
+
+    window.onload = function() {
+      callAppsScript("", "handleInit");
+    };
+
+    function handleInit(res) {
+      if (res && res.status === "init") {
+        if (res.title) {
+          document.getElementById("pageTitle").innerText = res.title;
+          document.getElementById("portalHeading").innerText = res.title;
+        }
+        if (res.bgUrl) {
+          document.body.style.background = `linear-gradient(rgba(11, 25, 44, 0.40), rgba(11, 25, 44, 0.45)), url('${res.bgUrl}') no-repeat center center fixed`;
+          document.body.style.backgroundSize = "cover";
+        }
+      }
+    }
 
     input.addEventListener("input", function() {
       if (this.value && this.value.length > 0) {
@@ -505,7 +527,7 @@
       input.focus();
     }
 
-    async function searchDuty() {
+    function searchDuty() {
       if (input) input.blur();
 
       const query = input.value ? input.value.trim() : "";
@@ -527,78 +549,78 @@
       }
 
       loader.style.display = "block";
+      callAppsScript(`q=${encodeURIComponent(query)}`, "handleSearchResult");
+    }
 
-      try {
-        const response = await fetch(`${SCRIPT_URL}?q=${encodeURIComponent(query)}`);
-        const res = await response.json();
+    function handleSearchResult(res) {
+      const loader = document.getElementById("loader");
+      const errorMsg = document.getElementById("errorMsg");
+      const resultCard = document.getElementById("resultCard");
+      const dutyList = document.getElementById("dutyList");
+      const whatsappBar = document.getElementById("whatsappBar");
 
-        loader.style.display = "none";
+      loader.style.display = "none";
 
-        if (res.status === "success") {
-          const d = res.data;
-          document.getElementById("officerName").innerText = d.name || "-";
-          document.getElementById("officerDesig").innerText = d.designation || "-";
-          document.getElementById("officerPen").innerText = d.pen || "-";
-          document.getElementById("officerGl").innerText = d.glNo || "-";
-          document.getElementById("officerStation").innerText = d.station || "-";
-          document.getElementById("officerDistrict").innerText = d.district || "-";
+      if (res && res.status === "success") {
+        const d = res.data;
+        document.getElementById("officerName").innerText = d.name || "-";
+        document.getElementById("officerDesig").innerText = d.designation || "-";
+        document.getElementById("officerPen").innerText = d.pen || "-";
+        document.getElementById("officerGl").innerText = d.glNo || "-";
+        document.getElementById("officerStation").innerText = d.station || "-";
+        document.getElementById("officerDistrict").innerText = d.district || "-";
 
-          const mobContainer = document.getElementById("officerMobileContainer");
-          const rawMobile = d.mobile ? d.mobile.toString() : "";
-          const cleanPhone = rawMobile.replace(/[^0-9]/g, "");
-          
-          if (cleanPhone && cleanPhone.length >= 10) {
-            mobContainer.innerHTML = `<a href="tel:${cleanPhone}" class="phone-link" title="Click to Call">
-              <svg class="phone-icon-svg" viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-              ${rawMobile}</a>`;
-          } else {
-            mobContainer.innerText = rawMobile || "-";
-          }
-
-          let dutyMsgText = "";
-          if (d.duties && d.duties.length > 0) {
-            const totalThemes = 5;
-            d.duties.forEach((item, index) => {
-              const box = document.createElement("div");
-              box.className = `duty-box duty-theme-${index % totalThemes}`;
-              box.innerHTML = `<div class="duty-title">${item.title}</div><div class="duty-content">${item.value}</div>`;
-              dutyList.appendChild(box);
-              dutyMsgText += `\n📌 *${item.title}:*\n${item.value}\n`;
-            });
-            dutyList.style.display = "flex";
-          } else {
-            dutyList.innerHTML = `<div class="duty-box duty-theme-0"><div class="duty-content">No duty details assigned.</div></div>`;
-            dutyList.style.display = "flex";
-            dutyMsgText = "\nNo specific duties assigned.\n";
-          }
-
-          if (cleanPhone && cleanPhone.length >= 10) {
-            const fullPhone = cleanPhone.length === 10 ? ("91" + cleanPhone) : cleanPhone;
-            const portalHeader = document.getElementById("portalHeading").innerText || "DUTY DETAILS";
-            
-            const message = `*${portalHeader}*\n` +
-                          `---------------------------\n` +
-                          `👤 *Name:* ${d.name} (${d.designation})\n` +
-                          `🆔 *PEN:* ${d.pen} | *GL:* ${d.glNo}\n` +
-                          `🏢 *Station:* ${d.station}\n` +
-                          `📍 *District:* ${d.district}\n` +
-                          `---------------------------` +
-                          dutyMsgText + `\n` +
-                          `_Generated from Duty Search Portal_`;
-
-            const waBtn = document.getElementById("whatsappBtn");
-            waBtn.href = `https://wa.me/${fullPhone}?text=${encodeURIComponent(message)}`;
-            whatsappBar.style.display = "block";
-          }
-
-          resultCard.style.display = "block";
+        const mobContainer = document.getElementById("officerMobileContainer");
+        const rawMobile = d.mobile ? d.mobile.toString() : "";
+        const cleanPhone = rawMobile.replace(/[^0-9]/g, "");
+        
+        if (cleanPhone && cleanPhone.length >= 10) {
+          mobContainer.innerHTML = `<a href="tel:${cleanPhone}" class="phone-link" title="Click to Call">
+            <svg class="phone-icon-svg" viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            ${rawMobile}</a>`;
         } else {
-          errorMsg.innerText = res.message || "No records found.";
-          errorMsg.style.display = "block";
+          mobContainer.innerText = rawMobile || "-";
         }
-      } catch (err) {
-        loader.style.display = "none";
-        errorMsg.innerText = "Error fetching details. Please check internet connection.";
+
+        let dutyMsgText = "";
+        if (d.duties && d.duties.length > 0) {
+          const totalThemes = 5;
+          d.duties.forEach((item, index) => {
+            const box = document.createElement("div");
+            box.className = `duty-box duty-theme-${index % totalThemes}`;
+            box.innerHTML = `<div class="duty-title">${item.title}</div><div class="duty-content">${item.value}</div>`;
+            dutyList.appendChild(box);
+            dutyMsgText += `\n📌 *${item.title}:*\n${item.value}\n`;
+          });
+          dutyList.style.display = "flex";
+        } else {
+          dutyList.innerHTML = `<div class="duty-box duty-theme-0"><div class="duty-content">No duty details assigned.</div></div>`;
+          dutyList.style.display = "flex";
+          dutyMsgText = "\nNo specific duties assigned.\n";
+        }
+
+        if (cleanPhone && cleanPhone.length >= 10) {
+          const fullPhone = cleanPhone.length === 10 ? ("91" + cleanPhone) : cleanPhone;
+          const portalHeader = document.getElementById("portalHeading").innerText || "DUTY DETAILS";
+          
+          const message = `*${portalHeader}*\n` +
+                        `---------------------------\n` +
+                        `👤 *Name:* ${d.name} (${d.designation})\n` +
+                        `🆔 *PEN:* ${d.pen} | *GL:* ${d.glNo}\n` +
+                        `🏢 *Station:* ${d.station}\n` +
+                        `📍 *District:* ${d.district}\n` +
+                        `---------------------------` +
+                        dutyMsgText + `\n` +
+                        `_Generated from Duty Search Portal_`;
+
+          const waBtn = document.getElementById("whatsappBtn");
+          waBtn.href = `https://wa.me/${fullPhone}?text=${encodeURIComponent(message)}`;
+          whatsappBar.style.display = "block";
+        }
+
+        resultCard.style.display = "block";
+      } else {
+        errorMsg.innerText = (res && res.message) ? res.message : "No records found.";
         errorMsg.style.display = "block";
       }
     }
