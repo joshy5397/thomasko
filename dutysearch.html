@@ -11,11 +11,11 @@
 
   <style>
     :root {
-      --primary: #0f2b5c;
-      --primary-hover: #0a1c3d;
-      --border-color: #cbd5e1;
-      --title-color: #0b192c;
-      --sub-color: #475569;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --border-color: rgba(255, 255, 255, 0.2);
+      --title-color: #ffffff;
+      --sub-color: #cbd5e1;
       --whatsapp-green: #25d366;
       --whatsapp-hover: #1ebc57;
     }
@@ -36,27 +36,28 @@
       justify-content: center;
       padding: 14px;
       color: #0f172a;
-      background: linear-gradient(135deg, #0b192c 0%, #1e3e62 50%, #000000 100%);
+      background: linear-gradient(135deg, #071326 0%, #0f274a 50%, #030811 100%);
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
     }
 
+    /* പ്രധാന കാർഡിന്റെ പുതിയ പ്രീമിയം കളർ ഡിസൈൻ */
     .wrapper {
       width: 100%;
       max-width: 460px;
-      background: rgba(255, 255, 255, 0.94);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-radius: 24px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.55);
-      padding: 26px 20px;
-      border: 1px solid rgba(255, 255, 255, 0.7);
+      background: rgba(15, 33, 64, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 26px;
+      box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+      padding: 28px 22px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
     }
 
     .header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
 
     .header h2 {
@@ -66,6 +67,7 @@
       letter-spacing: -0.3px;
       margin-bottom: 6px;
       text-transform: uppercase;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
 
     .header p {
@@ -92,9 +94,9 @@
       padding: 14px 44px 14px 44px;
       font-size: 16px;
       font-weight: 700;
-      color: #0f172a;
-      background: rgba(248, 250, 252, 0.95);
-      border: 2px solid var(--border-color);
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
       border-radius: 14px;
       outline: none;
       transition: all 0.25s ease;
@@ -111,7 +113,7 @@
       left: 14px;
       width: 20px;
       height: 20px;
-      stroke: #64748b;
+      stroke: #94a3b8;
       pointer-events: none;
     }
 
@@ -121,8 +123,8 @@
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: #cbd5e1;
-      color: #334155;
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
       border: none;
       display: none;
       align-items: center;
@@ -134,14 +136,13 @@
     }
 
     .btn-clear-inline:active {
-      background: #94a3b8;
-      color: #ffffff;
+      background: rgba(255, 255, 255, 0.35);
     }
 
     .input-field:focus {
-      background: #ffffff;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+      background: rgba(255, 255, 255, 0.16);
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.25);
     }
 
     .action-buttons {
@@ -151,29 +152,30 @@
 
     .btn-search {
       flex: 2;
-      background: var(--primary);
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
       color: #ffffff;
       border: none;
       padding: 14px;
       font-size: 16px;
-      font-weight: 700;
+      font-weight: 800;
       border-radius: 12px;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(15, 43, 92, 0.25);
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
       transition: all 0.2s ease;
       touch-action: manipulation;
+      letter-spacing: 0.5px;
     }
 
     .btn-search:active {
-      background: var(--primary-hover);
       transform: scale(0.98);
+      filter: brightness(0.95);
     }
 
     .btn-reset {
       flex: 1;
-      background: rgba(241, 245, 249, 0.95);
-      color: #475569;
-      border: 1.5px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
       padding: 14px;
       font-size: 15px;
       font-weight: 700;
@@ -184,8 +186,7 @@
     }
 
     .btn-reset:active {
-      background: #e2e8f0;
-      color: #0f172a;
+      background: rgba(255, 255, 255, 0.16);
       transform: scale(0.98);
     }
 
@@ -194,7 +195,7 @@
       text-align: center;
       padding: 14px;
       font-size: 14px;
-      color: #475569;
+      color: #93c5fd;
       font-weight: 600;
     }
 
@@ -202,9 +203,9 @@
       display: inline-block;
       width: 24px;
       height: 24px;
-      border: 3px solid rgba(37, 99, 235, 0.2);
+      border: 3px solid rgba(96, 165, 250, 0.2);
       border-radius: 50%;
-      border-top-color: #2563eb;
+      border-top-color: #60a5fa;
       animation: spin 0.8s linear infinite;
       margin-bottom: 6px;
     }
@@ -218,9 +219,9 @@
       background: #ffffff;
       border-radius: 18px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
       overflow: hidden;
-      margin-top: 10px;
+      margin-top: 12px;
       animation: slideUp 0.35s ease;
     }
 
@@ -230,7 +231,7 @@
     }
 
     .officer-profile-card {
-      background: linear-gradient(135deg, #091e42 0%, #173877 100%);
+      background: linear-gradient(135deg, #0b1f44 0%, #173877 100%);
       color: #ffffff;
       padding: 18px 20px;
     }
@@ -393,44 +394,74 @@
 
     .error-msg {
       display: none;
-      background: #fef2f2;
-      color: #b91c1c;
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
       padding: 12px 14px;
       border-radius: 12px;
       font-size: 13.5px;
       font-weight: 700;
-      border: 1px solid #fecaca;
+      border: 1px solid rgba(239, 68, 68, 0.3);
       text-align: center;
       margin-bottom: 8px;
     }
 
-    /* 2 ബോക്സുകൾ: VISITORS & SEARCHES */
+    /* ആകർഷകമായ നിറങ്ങളോടുകൂടിയ VISITORS & SEARCHES ബോക്സുകൾ */
     .stats-footer {
-      margin-top: 18px;
-      padding-top: 14px;
-      border-top: 1px solid #e2e8f0;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 12px;
     }
 
-    .stat-card {
-      background: #f8fafc;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid #e2e8f0;
+    /* Visitors Card - Soft Royal Blue Theme */
+    .stat-card-visitors {
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.45) 0%, rgba(59, 130, 246, 0.2) 100%);
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(96, 165, 250, 0.35);
       text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-card-visitors .stat-card-title {
+      color: #93c5fd;
+      border-bottom: 1px dashed rgba(147, 197, 253, 0.35);
+    }
+
+    .stat-card-visitors .stat-sub-val {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(147, 197, 253, 0.5);
+    }
+
+    /* Searches Card - Soft Emerald Mint Theme */
+    .stat-card-searches {
+      background: linear-gradient(135deg, rgba(6, 78, 59, 0.45) 0%, rgba(16, 185, 129, 0.2) 100%);
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-card-searches .stat-card-title {
+      color: #6ee7b7;
+      border-bottom: 1px dashed rgba(110, 231, 183, 0.35);
+    }
+
+    .stat-card-searches .stat-sub-val {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(110, 231, 183, 0.5);
     }
 
     .stat-card-title {
-      font-size: 10.5px;
+      font-size: 11px;
       font-weight: 800;
-      color: #64748b;
       text-transform: uppercase;
-      letter-spacing: 0.6px;
-      margin-bottom: 6px;
-      padding-bottom: 4px;
-      border-bottom: 1px dashed #cbd5e1;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+      padding-bottom: 5px;
     }
 
     .stat-row {
@@ -445,16 +476,16 @@
     }
 
     .stat-sub-label {
-      font-size: 9.5px;
+      font-size: 10px;
       font-weight: 700;
-      color: #94a3b8;
+      color: #cbd5e1;
       text-transform: uppercase;
+      margin-bottom: 2px;
     }
 
     .stat-sub-val {
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 800;
-      color: #0f2b5c;
     }
   </style>
 </head>
@@ -530,9 +561,9 @@
       <div class="duty-container" id="dutyList"></div>
     </div>
 
-    <!-- 2 ബോക്സുകൾ: VISITORS & SEARCHES -->
+    <!-- 2 ബോക്സുകൾ (VISITORS & SEARCHES) -->
     <div class="stats-footer">
-      <div class="stat-card">
+      <div class="stat-card-visitors">
         <div class="stat-card-title">Visitors</div>
         <div class="stat-row">
           <div class="stat-sub-item">
@@ -546,7 +577,7 @@
         </div>
       </div>
 
-      <div class="stat-card">
+      <div class="stat-card-searches">
         <div class="stat-card-title">Searches</div>
         <div class="stat-row">
           <div class="stat-sub-item">
@@ -598,7 +629,7 @@
               document.getElementById("portalHeading").innerText = res.title;
             }
             if (res.bgUrl) {
-              document.body.style.background = `linear-gradient(rgba(11, 25, 44, 0.40), rgba(11, 25, 44, 0.45)), url('${res.bgUrl}') no-repeat center center fixed`;
+              document.body.style.background = `linear-gradient(rgba(7, 19, 38, 0.45), rgba(7, 19, 38, 0.55)), url('${res.bgUrl}') no-repeat center center fixed`;
               document.body.style.backgroundSize = "cover";
             }
             updateStatsDisplay(res.stats);
