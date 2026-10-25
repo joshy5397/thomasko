@@ -1,1594 +1,606 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MULTI PURPOSE FORM</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title id="pageTitle">DUTY SEARCH PORTAL</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, #e0f2fe 0%, #f3e8ff 100%);
-      margin: 0;
-      padding: 15px 10px;
-      color: #111827;
+    :root {
+      --primary: #0f2b5c;
+      --primary-hover: #0a1c3d;
+      --border-color: #cbd5e1;
+      --title-color: #0b192c;
+      --sub-color: #475569;
+      --whatsapp-green: #25d366;
+      --whatsapp-hover: #1ebc57;
     }
-    .container {
-      max-width: 1300px;
-      margin: auto;
-      background: #ffffff;
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
       padding: 0;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-      overflow: hidden;
-      border: 1px solid #cbd5e1;
+      -webkit-tap-highlight-color: transparent;
     }
-    .header-banner {
-      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-      color: #ffffff;
-      padding: 18px 20px;
-      text-align: center;
-    }
-    .header-banner h2 {
-      margin: 0;
-      font-size: 22px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-weight: 800;
-    }
-    
-    .tab-bar {
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
       display: flex;
-      background: #0f172a;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      color: #0f172a;
+      background: linear-gradient(135deg, #0b192c 0%, #1e3e62 50%, #000000 100%);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
     }
-    .tab-btn {
-      flex: 1;
-      padding: 13px 20px;
+
+    .wrapper {
+      width: 100%;
+      max-width: 460px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.55);
+      padding: 26px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .header {
       text-align: center;
-      background: #0f172a;
-      color: #94a3b8;
-      border: none;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .tab-btn:hover { background: #1e293b; color: #ffffff; }
-    .tab-btn.active { background: #ffffff; color: #1e40af; border-bottom: 3px solid #2563eb; }
-
-    .content-area { padding: 22px; }
-
-    .form-group { margin-bottom: 16px; position: relative; }
-    label { display: block; margin-bottom: 6px; font-weight: 700; color: #0f172a; font-size: 14px; }
-    .req { color: #dc2626; font-weight: bold; margin-left: 3px; }
-    input[type="text"], input[type="email"], input[type="date"], select, textarea {
-      width: 100%; padding: 10px 12px; border: 2px solid #94a3b8; border-radius: 7px;
-      box-sizing: border-box; font-size: 14px; color: #000000; font-weight: 500;
-      background-color: #f8fafc; transition: all 0.2s;
-    }
-    input[type="text"]:focus, input[type="email"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
-      outline: none; border-color: #2563eb; background-color: #ffffff;
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
-    }
-    textarea { height: 55px; resize: vertical; }
-
-    .field-error-border, .field-error-border:focus {
-      border: 2px solid #dc2626 !important; background-color: #fef2f2 !important;
-      box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.25) !important; outline: none !important;
-    }
-    .error-msg { color: #dc2626; font-size: 13px; font-weight: 700; margin-top: 5px; display: none; }
-    .char-count { float: right; font-size: 13px; font-weight: 700; color: #475569; }
-
-    .purpose-container {
-      display: flex; flex-wrap: wrap; gap: 10px; background: #f1f5f9;
-      border: 2px dashed #94a3b8; padding: 12px; border-radius: 8px;
-    }
-    .purpose-item {
-      display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px;
-      background: #ffffff; padding: 7px 12px; border-radius: 20px; border: 2px solid #cbd5e1;
-      cursor: pointer; user-select: none; transition: all 0.2s; color: #1e293b; font-weight: 600;
-    }
-    .purpose-item:hover { border-color: #3b82f6; background: #eff6ff; }
-    .purpose-item input { margin: 0; width: 16px; height: 16px; cursor: pointer; accent-color: #2563eb; }
-    .purpose-item.selected { background: #dbeafe; border-color: #2563eb; color: #1e40af; }
-    .purpose-item.disabled { opacity: 0.35; cursor: not-allowed; background: #e2e8f0; border-color: #cbd5e1; color: #64748b; text-decoration: line-through; }
-
-    .captcha-container { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
-    .captcha-badge {
-      background: #1e293b; color: #38bdf8; font-size: 18px; font-weight: 800; letter-spacing: 2px;
-      padding: 8px 16px; border-radius: 7px; user-select: none;
-    }
-    .btn-refresh {
-      background: #e2e8f0; color: #1e293b; border: 1px solid #cbd5e1; padding: 9px 15px;
-      border-radius: 7px; cursor: pointer; font-weight: 700; font-size: 13.5px;
-    }
-    .btn-refresh:hover { background: #cbd5e1; }
-    .captcha-input { max-width: 130px; text-align: center; font-size: 16px !important; font-weight: bold !important; }
-
-    .button-group { display: flex; gap: 15px; margin-top: 18px; }
-    .btn-submit {
-      flex: 2; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff;
-      padding: 13px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 15px;
-      font-weight: 700; text-transform: uppercase;
-    }
-    .btn-clear {
-      flex: 1; background: #ef4444; color: #ffffff; padding: 13px 20px; border: none;
-      border-radius: 8px; cursor: pointer; font-size: 14.5px; font-weight: 700; text-transform: uppercase;
-    }
-    .btn-next { background: #059669; color: white; padding: 11px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 14.5px; font-weight: 700; }
-    .btn-export { background: #10b981; color: white; border: none; padding: 9px 16px; border-radius: 7px; cursor: pointer; font-weight: 700; font-size: 13.5px; }
-    .btn-export:hover { background: #059669; }
-
-    #status { padding: 12px; border-radius: 8px; margin-bottom: 18px; display: none; font-weight: 700; text-align: center; }
-    .error { background-color: #fee2e2; color: #991b1b; border: 2px solid #ef4444; }
-    .loading { background-color: #e0f2fe; color: #0369a1; border: 2px solid #0284c7; }
-
-    #successBox {
-      display: none; background: #ecfdf5; border: 2px solid #10b981; padding: 22px;
-      border-radius: 10px; margin-bottom: 22px; text-align: center;
-    }
-
-    /* Status Mini Cards */
-    .status-cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
       margin-bottom: 20px;
     }
-    .status-mini-card {
-      padding: 12px 10px;
-      border-radius: 10px;
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.2s ease;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.06);
-      border: 2px solid transparent;
-    }
-    .status-mini-card:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.12); }
-    .status-mini-card.active-card {
-      border: 2px solid #0f172a !important;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.4) !important;
-      transform: scale(1.03);
-    }
-    .status-mini-card h5 { margin: 0; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.9; }
-    .status-mini-card .val { font-size: 24px; font-weight: 800; margin-top: 4px; }
-    
-    .card-total { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: #ffffff; }
-    .card-pending { background: linear-gradient(135deg, #fef08a 0%, #fde047 100%); color: #854d0e; }
-    .card-created { background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%); color: #166534; }
-    .card-approved { background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; }
-    .card-rejected { background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%); color: #991b1b; }
-    .card-offices { background: linear-gradient(135deg, #0f172a 0%, #334155 100%); color: #ffffff; cursor: default; }
 
-    /* Filter Panel */
-    .filter-panel { background: #f8fafc; border: 1px solid #cbd5e1; padding: 16px; border-radius: 8px; margin-bottom: 18px; }
-    .filter-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 14px; }
-    .dropdown-check-list { position: relative; }
-    .dropdown-check-list .anchor {
-      position: relative; cursor: pointer; display: block; padding: 10px 12px; border: 2px solid #94a3b8;
-      border-radius: 6px; background: #ffffff; font-size: 13.5px; font-weight: 600; color: #334155; user-select: none;
-    }
-    .dropdown-check-list .anchor:after {
-      position: absolute; content: ""; border-left: 5px solid transparent; border-right: 5px solid transparent;
-      border-top: 5px solid #475569; right: 12px; top: 17px;
-    }
-    .dropdown-check-list ul.items {
-      padding: 8px 10px; display: none; margin: 2px 0 0 0; border: 1px solid #94a3b8; position: absolute;
-      top: 100%; left: 0; background: #fff; width: 100%; max-height: 200px; overflow-y: auto; z-index: 100;
-      border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); box-sizing: border-box; list-style: none;
-    }
-    .dropdown-check-list.visible ul.items { display: block; }
-    .dropdown-check-list ul.items li { margin-bottom: 6px; font-size: 13px; }
-    .dropdown-check-list ul.items label { display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; margin: 0; }
-
-    .search-row { margin-bottom: 12px; }
-    .search-input-group { display: flex; gap: 8px; }
-    .search-input-group input[type="text"] { flex: 1; padding: 11px 14px; font-size: 14px; background: #ffffff; border: 2px solid #2563eb; border-radius: 7px; }
-    .btn-search { background: #2563eb; color: white; border: none; padding: 11px 20px; border-radius: 7px; cursor: pointer; font-weight: 700; font-size: 14px; white-space: nowrap; }
-    .btn-search:hover { background: #1d4ed8; }
-
-    .action-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
-    .date-range-box { display: flex; align-items: center; gap: 8px; }
-    .date-range-box input[type="date"] { width: 140px; padding: 8px 10px; font-size: 13px; }
-    .date-range-box span { font-size: 12.5px; font-weight: 700; color: #334155; }
-    .btn-actions { display: flex; gap: 8px; }
-
-    /* Bulk Action Bar */
-    .bulk-action-bar {
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      background: #eff6ff;
-      border: 2px dashed #3b82f6;
-      padding: 10px 14px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-    }
-    .bulk-left-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .bulk-action-bar select {
-      width: auto;
-      padding: 6px 12px;
-      font-weight: 700;
-      border: 2px solid #2563eb;
-      border-radius: 6px;
-      font-size: 13px;
-    }
-    .btn-bulk-apply {
-      background: #2563eb;
-      color: #ffffff;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 13px;
-    }
-    .btn-bulk-apply:hover { background: #1d4ed8; }
-
-    .btn-save-changes {
-      background: #059669;
-      color: #ffffff;
-      border: none;
-      padding: 9px 18px;
-      border-radius: 6px;
-      cursor: pointer;
+    .header h2 {
+      font-size: 23px;
       font-weight: 800;
-      font-size: 13.5px;
-      display: none;
-      animation: pulse 1.5s infinite;
-    }
-    .btn-save-changes:hover { background: #047857; }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.4); }
-      70% { box-shadow: 0 0 0 8px rgba(5, 150, 105, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); }
-    }
-
-    /* Admin Toggle Checkbox */
-    .admin-toggle-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 13.5px;
-      font-weight: 700;
-      color: #1e3a8a;
-      background: #f1f5f9;
-      padding: 5px 12px;
-      border-radius: 20px;
-      border: 1px solid #cbd5e1;
-      cursor: pointer;
-      user-select: none;
-    }
-    .admin-toggle-wrapper input {
-      cursor: pointer;
-      width: 16px;
-      height: 16px;
-      accent-color: #1e40af;
-      margin: 0;
-    }
-
-    .table-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13.5px; font-weight: 600; color: #334155; }
-    .table-top-bar select { width: auto; display: inline-block; padding: 5px 8px; font-size: 13px; }
-
-    .table-container { overflow-x: auto; border-radius: 8px; border: 2px solid #cbd5e1; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
-    th { background: #1e40af; color: #ffffff; white-space: nowrap; font-weight: 700; text-transform: uppercase; font-size: 12px; position: sticky; top: 0; z-index: 2; }
-    
-    th.col-check, td.col-check { 
-      text-align: center; 
-      width: 40px; 
-      min-width: 40px; 
-      display: none; 
-    }
-    th.col-date, td.col-date { white-space: nowrap; font-size: 12px; width: 140px; min-width: 140px; max-width: 140px; }
-    th.col-status, td.col-status { white-space: nowrap; font-size: 12px; width: 140px; min-width: 140px; max-width: 140px; text-align: center; }
-    tr:nth-child(even) { background-color: #f8fafc; }
-    tr:hover { background-color: #eff6ff; }
-
-    .table-status-select {
-      width: 100%;
-      padding: 6px 8px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 800;
+      color: var(--title-color);
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
       text-transform: uppercase;
+    }
+
+    .header p {
+      color: var(--sub-color);
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    .search-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 14px 44px 14px 44px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+      background: rgba(248, 250, 252, 0.95);
+      border: 2px solid var(--border-color);
+      border-radius: 14px;
       outline: none;
-      text-align: center;
-      transition: all 0.2s;
-      border: 2px solid transparent;
-    }
-    .table-status-select:disabled {
-      cursor: not-allowed;
-      opacity: 0.95;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background-image: none !important;
-    }
-    .table-status-select:not(:disabled) {
-      cursor: pointer;
-    }
-    .row-pending-save {
-      background-color: #fef9c3 !important;
-    }
-    .select-pending-save {
-      border: 2px dashed #ca8a04 !important;
+      transition: all 0.25s ease;
+      font-family: inherit;
     }
 
-    .status-select-pending { background-color: #fef08a; color: #854d0e; border-color: #ca8a04; }
-    .status-select-approved, .status-select-created { background-color: #bbf7d0; color: #166534; border-color: #16a34a; }
-    .status-select-rejected { background-color: #fecaca; color: #991b1b; border-color: #dc2626; }
+    .input-field::placeholder {
+      color: #94a3b8;
+      font-weight: 500;
+    }
 
-    .pagination-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 13.5px; color: #334155; }
-    .pagination-controls { display: flex; gap: 5px; }
-    .page-btn { background: #ffffff; border: 1px solid #94a3b8; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.15s; }
-    .page-btn:hover:not(:disabled) { background: #2563eb; color: white; border-color: #2563eb; }
-    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .page-btn.active { background: #1e40af; color: white; border-color: #1e40af; }
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      width: 20px;
+      height: 20px;
+      stroke: #64748b;
+      pointer-events: none;
+    }
 
-    /* Modal Styling */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(3px);
+    .btn-clear-inline {
+      position: absolute;
+      right: 10px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      color: #334155;
+      border: none;
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+      touch-action: manipulation;
     }
-    .modal-card {
+
+    .btn-clear-inline:active {
+      background: #94a3b8;
+      color: #ffffff;
+    }
+
+    .input-field:focus {
       background: #ffffff;
-      width: 90%;
-      max-width: 400px;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-search {
+      flex: 2;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 700;
       border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-      border: 1px solid #cbd5e1;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(15, 43, 92, 0.25);
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+    }
+
+    .btn-search:active {
+      background: var(--primary-hover);
+      transform: scale(0.98);
+    }
+
+    .btn-reset {
+      flex: 1;
+      background: rgba(241, 245, 249, 0.95);
+      color: #475569;
+      border: 1.5px solid var(--border-color);
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+    }
+
+    .btn-reset:active {
+      background: #e2e8f0;
+      color: #0f172a;
+      transform: scale(0.98);
+    }
+
+    .loader {
+      display: none;
       text-align: center;
-      animation: popIn 0.2s ease-out;
+      padding: 14px;
+      font-size: 14px;
+      color: #475569;
+      font-weight: 600;
     }
-    @keyframes popIn {
-      0% { transform: scale(0.9); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+
+    .spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 3px solid rgba(37, 99, 235, 0.2);
+      border-radius: 50%;
+      border-top-color: #2563eb;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 6px;
     }
-    .modal-card h3 { margin: 0 0 10px 0; color: #1e3a8a; font-size: 18px; font-weight: 800; }
-    .modal-card p { margin: 0 0 16px 0; font-size: 14px; color: #475569; }
-    .modal-card input[type="password"] {
-      width: 100%; padding: 11px 14px; border: 2px solid #2563eb; border-radius: 7px;
-      font-size: 16px; box-sizing: border-box; outline: none; margin-bottom: 18px;
-      text-align: center; letter-spacing: 2px;
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
-    .modal-btn-group { display: flex; gap: 10px; }
-    .btn-modal-confirm { flex: 1; background: #2563eb; color: white; border: none; padding: 11px; border-radius: 6px; font-weight: 700; cursor: pointer; }
-    .btn-modal-cancel { flex: 1; background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; padding: 11px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+
+    .result-card {
+      display: none;
+      background: #ffffff;
+      border-radius: 18px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      margin-top: 10px;
+      animation: slideUp 0.35s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .officer-profile-card {
+      background: linear-gradient(135deg, #091e42 0%, #173877 100%);
+      color: #ffffff;
+      padding: 18px 20px;
+    }
+
+    .officer-name {
+      font-size: 19px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .officer-rank-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 3px 12px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #93c5fd;
+      letter-spacing: 0.5px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .detail-item span {
+      display: block;
+      color: #bfdbfe;
+      font-size: 11px;
+      margin-bottom: 2px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .detail-item strong {
+      font-size: 14px;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .phone-link {
+      color: #ffffff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .phone-icon-svg {
+      width: 14px;
+      height: 14px;
+      fill: #93c5fd;
+    }
+
+    .whatsapp-bar {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-whatsapp {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: var(--whatsapp-green);
+      color: #ffffff;
+      border: none;
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);
+      touch-action: manipulation;
+    }
+
+    .btn-whatsapp svg {
+      width: 18px;
+      height: 18px;
+      fill: #ffffff;
+    }
+
+    .duty-container {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #f8fafc;
+    }
+
+    .duty-box {
+      padding: 12px 14px;
+      border-radius: 10px;
+      border-width: 1.5px;
+      border-style: solid;
+      border-left-width: 6px;
+    }
+
+    .duty-title {
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .duty-content {
+      font-size: 14px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      font-weight: 800;
+    }
+
+    .duty-theme-0 { background: #fffbeb; border-color: #fde68a; border-left-color: #d97706; }
+    .duty-theme-0 .duty-title { color: #92400e; }
+    .duty-theme-0 .duty-content { color: #78350f; }
+
+    .duty-theme-1 { background: #f0fdf4; border-color: #bbf7d0; border-left-color: #16a34a; }
+    .duty-theme-1 .duty-title { color: #166534; }
+    .duty-theme-1 .duty-content { color: #14532d; }
+
+    .duty-theme-2 { background: #faf5ff; border-color: #e9d5ff; border-left-color: #9333ea; }
+    .duty-theme-2 .duty-title { color: #6b21a8; }
+    .duty-theme-2 .duty-content { color: #581c87; }
+
+    .duty-theme-3 { background: #f0f9ff; border-color: #bae6fd; border-left-color: #0284c7; }
+    .duty-theme-3 .duty-title { color: #075985; }
+    .duty-theme-3 .duty-content { color: #0c4a6e; }
+
+    .duty-theme-4 { background: #fff1f2; border-color: #fecdd3; border-left-color: #e11d48; }
+    .duty-theme-4 .duty-title { color: #9f1239; }
+    .duty-theme-4 .duty-content { color: #881337; }
+
+    .error-msg {
+      display: none;
+      background: #fef2f2;
+      color: #b91c1c;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 700;
+      border: 1px solid #fecaca;
+      text-align: center;
+      margin-bottom: 8px;
+    }
   </style>
 </head>
 <body>
 
-  <!-- In-page Authentication & Confirmation Modal -->
-  <div id="passwordModal" class="modal-overlay">
-    <div class="modal-card">
-      <h3 id="modalTitleText">🔑 Admin Authentication</h3>
-      <p id="modalPromptText">Enter Admin Password:</p>
-      <input type="password" id="modalPasswordInput" placeholder="Password" onkeydown="if(event.key==='Enter') submitPasswordModal()">
-      <div class="modal-btn-group">
-        <button type="button" class="btn-modal-confirm" id="btnModalConfirm" onclick="submitPasswordModal()">Confirm</button>
-        <button type="button" class="btn-modal-cancel" id="btnModalCancel" onclick="closePasswordModal()">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="container">
-    <div class="header-banner">
-      <h2>MULTI PURPOSE FORM</h2>
+  <div class="wrapper">
+    <div class="header">
+      <h2 id="portalHeading">DUTY SEARCH</h2>
+      <p>Enter PEN Number or Mobile Number</p>
     </div>
 
-    <div class="tab-bar">
-      <button class="tab-btn active" id="tabBtnForm" onclick="switchTab('form')">📝 Form Entry</button>
-      <button class="tab-btn" id="tabBtnDash" onclick="switchTab('dash')">📊 Dashboard & Records</button>
+    <form id="dutyForm" onsubmit="event.preventDefault(); searchDuty();" class="search-box">
+      <div class="input-wrapper">
+        <input type="text" id="queryInput" class="input-field" placeholder="e.g. 149944 or 9447254736" autocomplete="off" inputmode="numeric">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <button type="button" id="inlineClearBtn" class="btn-clear-inline" onclick="clearInput()" title="Clear">✕</button>
+      </div>
+
+      <div class="action-buttons">
+        <button type="submit" class="btn-search" id="btnSearch">Search</button>
+        <button type="button" class="btn-reset" onclick="clearInput()">Clear</button>
+      </div>
+    </form>
+
+    <div id="loader" class="loader">
+      <div class="spinner"></div>
+      <div>Searching duty records...</div>
     </div>
+    
+    <div id="errorMsg" class="error-msg"></div>
 
-    <div class="content-area">
-      <div id="status"></div>
+    <div id="resultCard" class="result-card">
+      <div class="officer-profile-card">
+        <div class="officer-name" id="officerName">-</div>
+        <div class="officer-rank-badge" id="officerDesig">-</div>
 
-      <!-- TAB 1: FORM ENTRY -->
-      <div id="sectionForm">
-        <div id="successBox">
-          <h4 style="color:#065f46; margin:0 0 10px 0; font-size:18px;">🎉 Form Submitted Successfully!</h4>
-          <p id="successMessageDetails" style="color: #047857; font-size: 14.5px; font-weight: 600; margin-bottom: 16px;"></p>
-          <button type="button" class="btn-next" onclick="prepareNextEntry()">+ Submit Next Entry</button>
+        <div class="details-grid">
+          <div class="detail-item">
+            <span>PEN NUMBER</span>
+            <strong id="officerPen">-</strong>
+          </div>
+          <div class="detail-item">
+            <span>MOBILE NUMBER</span>
+            <strong id="officerMobileContainer">-</strong>
+          </div>
+          <div class="detail-item">
+            <span>GL NO</span>
+            <strong id="officerGl">-</strong>
+          </div>
+          <div class="detail-item">
+            <span>POLICE STATION</span>
+            <strong id="officerStation">-</strong>
+          </div>
+          <div class="detail-item" style="grid-column: span 2;">
+            <span>DISTRICT</span>
+            <strong id="officerDistrict">-</strong>
+          </div>
         </div>
 
-        <form id="entryForm" onsubmit="submitForm(event)">
-          <div class="form-group">
-            <label>OFFICE <span class="req">*</span></label>
-            <select id="officeSelect" required>
-              <option value="">-- Select Office --</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>NAME <span class="req">*</span></label>
-            <input type="text" id="name" required placeholder="Enter full name in English" oninput="validateField(this, 'name')">
-            <div id="err_name" class="error-msg"></div>
-          </div>
-
-          <div class="form-group">
-            <label>RANK <span class="req">*</span></label>
-            <select id="rankSelect" onchange="handleRankChange()" required>
-              <option value="">-- Select Rank --</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>GL. NO (Optional)</label>
-            <input type="text" id="glNo" placeholder="Enter general number (English)" oninput="validateField(this, 'glNo')">
-            <div id="err_glNo" class="error-msg"></div>
-          </div>
-
-          <div class="form-group">
-            <label>PEN <span class="req">*</span> (6 or 7 Digits)</label>
-            <input type="text" id="pen" required placeholder="Enter 6 or 7 digit PEN" maxlength="7" oninput="validateField(this, 'pen')">
-            <div id="err_pen" class="error-msg"></div>
-          </div>
-
-          <div class="form-group">
-            <label>MOBILE NUMBER (PERSONAL) <span class="req">*</span> (10 Digits)</label>
-            <input type="text" id="mobile" required placeholder="Enter 10-digit mobile number" maxlength="10" oninput="validateField(this, 'mobile')">
-            <div id="err_mobile" class="error-msg"></div>
-          </div>
-
-          <div class="form-group">
-            <label>EMAIL ID (PERSONAL) <span class="req">*</span></label>
-            <input type="email" id="email" required placeholder="name@example.com" oninput="validateField(this, 'email')">
-            <div id="err_email" class="error-msg"></div>
-          </div>
-
-          <div class="form-group">
-            <label>PURPOSE <span class="req">*</span> (Select one or more)</label>
-            <div id="purposeContainer" class="purpose-container"></div>
-          </div>
-
-          <div class="form-group">
-            <label>
-              REMARKS (Optional)
-              <span class="char-count"><span id="charCount">0</span> / 25</span>
-            </label>
-            <textarea id="remarks" maxlength="25" placeholder="Max 25 characters (English)..." oninput="handleRemarksInput(this)"></textarea>
-            <div id="err_remarks" class="error-msg"></div>
-          </div>
-
-          <div class="form-group">
-            <label>VERIFICATION CODE <span class="req">*</span></label>
-            <div class="captcha-container">
-              <span id="captchaText" class="captcha-badge">-- + --</span>
-              <button type="button" class="btn-refresh" onclick="generateCaptcha()" title="Refresh Captcha">🔄 Change</button>
-              <input type="text" id="captchaAnswer" class="captcha-input" required placeholder="Answer" maxlength="4" oninput="validateField(this, 'captcha')">
-            </div>
-            <div id="err_captcha" class="error-msg"></div>
-          </div>
-
-          <div class="button-group">
-            <button type="submit" class="btn-submit">Submit Record</button>
-            <button type="button" class="btn-clear" onclick="clearForm()">Clear Form</button>
-          </div>
-        </form>
+        <div class="whatsapp-bar" id="whatsappBar" style="display: none;">
+          <a id="whatsappBtn" class="btn-whatsapp" target="_blank">
+            <svg viewBox="0 0 24 24">
+              <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 15 3.8 13.47 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67M9.04 7.64C8.86 7.64 8.57 7.71 8.33 7.97C8.08 8.23 7.42 8.85 7.42 10.12C7.42 11.39 8.35 12.61 8.47 12.78C8.6 12.95 10.3 15.58 12.9 16.7C13.52 16.97 14 17.13 14.38 17.25C15 17.45 15.56 17.42 16 17.36C16.49 17.29 17.5 16.75 17.71 16.16C17.92 15.57 17.92 15.06 17.86 14.96C17.8 14.86 17.63 14.8 17.37 14.67C17.11 14.54 15.84 13.91 15.6 13.82C15.37 13.73 15.21 13.69 15.04 13.95C14.88 14.21 14.39 14.78 14.24 14.95C14.09 15.12 13.94 15.14 13.68 15.01C13.42 14.88 12.59 14.61 11.61 13.74C10.85 13.06 10.33 12.22 10.18 11.96C10.03 11.7 10.16 11.56 10.29 11.43C10.41 11.31 10.55 11.13 10.69 10.97C10.83 10.81 10.87 10.69 10.96 10.52C11.05 10.35 11 10.2 10.94 10.07C10.88 9.94 10.39 8.74 10.18 8.25C9.98 7.77 9.78 7.84 9.63 7.83C9.48 7.82 9.31 7.82 9.15 7.82L9.04 7.64Z"/>
+            </svg>
+            <span>Send Duty to WhatsApp</span>
+          </a>
+        </div>
       </div>
 
-      <!-- TAB 2: DASHBOARD & LIVE RECORDS -->
-      <div id="sectionDash" style="display: none;">
-        
-        <!-- Status Boxes Grid -->
-        <div class="status-cards-grid">
-          <div class="status-mini-card card-total" id="card_TOTAL" onclick="filterByStatusCard(null)" title="Click to view all records">
-            <h5>Total</h5>
-            <div class="val" id="statTotal">0</div>
-          </div>
-          <div class="status-mini-card card-pending" id="card_PENDING" onclick="filterByStatusCard('PENDING')" title="Click to filter Pending">
-            <h5>Pending</h5>
-            <div class="val" id="statPending">0</div>
-          </div>
-          <div class="status-mini-card card-created" id="card_CREATED" onclick="filterByStatusCard('CREATED')" title="Click to filter Created">
-            <h5>Created</h5>
-            <div class="val" id="statCreated">0</div>
-          </div>
-          <div class="status-mini-card card-approved" id="card_APPROVED" onclick="filterByStatusCard('APPROVED')" title="Click to filter Approved">
-            <h5>Approved</h5>
-            <div class="val" id="statApproved">0</div>
-          </div>
-          <div class="status-mini-card card-rejected" id="card_REJECTED" onclick="filterByStatusCard('REJECTED')" title="Click to filter Rejected">
-            <h5>Rejected</h5>
-            <div class="val" id="statRejected">0</div>
-          </div>
-          <div class="status-mini-card card-offices" title="Total Unique Offices">
-            <h5>Offices</h5>
-            <div class="val" id="statOffices">0</div>
-          </div>
-        </div>
-
-        <!-- Filter Panel -->
-        <div class="filter-panel">
-          <div class="filter-grid-3">
-            <div>
-              <label>Filter by Office (Multi-select):</label>
-              <div id="officeCheckList" class="dropdown-check-list">
-                <span class="anchor" onclick="toggleDropdown('officeCheckList')">Select Offices</span>
-                <ul class="items" id="filterOfficeList"></ul>
-              </div>
-            </div>
-
-            <div>
-              <label>Filter by Purpose (Multi-select):</label>
-              <div id="purposeCheckList" class="dropdown-check-list">
-                <span class="anchor" onclick="toggleDropdown('purposeCheckList')">Select Purposes</span>
-                <ul class="items" id="filterPurposeList"></ul>
-              </div>
-            </div>
-
-            <div>
-              <label>Filter by Status (Multi-select):</label>
-              <div id="statusCheckList" class="dropdown-check-list">
-                <span class="anchor" onclick="toggleDropdown('statusCheckList')">Select Statuses</span>
-                <ul class="items" id="filterStatusList"></ul>
-              </div>
-            </div>
-          </div>
-
-          <!-- Search Bar -->
-          <div class="search-row">
-            <label>Search Record (Type & Click Search or Press Enter):</label>
-            <div class="search-input-group">
-              <input type="text" id="dashSearch" placeholder="🔍 Search by PEN, Name, Mobile, Rank, GL No..." onkeydown="handleSearchKeyDown(event)">
-              <button type="button" class="btn-search" onclick="filterDashboardTable()">🔍 Search</button>
-            </div>
-          </div>
-
-          <!-- Date Range & Action Buttons -->
-          <div class="action-row">
-            <div class="date-range-box">
-              <span>FROM:</span>
-              <input type="date" id="filterFromDate" onchange="filterDashboardTable()" title="From Date">
-              <span>TO:</span>
-              <input type="date" id="filterToDate" onchange="filterDashboardTable()" title="To Date">
-            </div>
-
-            <div class="btn-actions">
-              <button type="button" class="btn-refresh" onclick="resetFilters()">Reset All</button>
-              <button type="button" class="btn-refresh" onclick="loadDashboard()">🔄 Refresh</button>
-              <button type="button" class="btn-export" onclick="exportToExcel()">📥 Export to Excel</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bulk Action Bar & Save Option -->
-        <div class="bulk-action-bar" id="adminBulkBar">
-          <div class="bulk-left-group">
-            <span style="font-weight: 700; color: #1e3a8a;">Selected: <span id="selectedCountText">0</span> items</span>
-            <select id="bulkStatusSelect">
-              <option value="">-- Change Status To --</option>
-            </select>
-            <button type="button" class="btn-bulk-apply" onclick="promptBulkApplyConfirmation()">Apply to Selected</button>
-          </div>
-          
-          <button type="button" class="btn-save-changes" id="btnSaveChanges" onclick="promptSaveConfirmation()">💾 Save Changes (<span id="pendingSaveCountText">0</span>)</button>
-        </div>
-
-        <div class="table-top-bar">
-          <div>
-            Show 
-            <select id="rowsPerPageSelect" onchange="changeRowsPerPage()">
-              <option value="10">10</option>
-              <option value="25" selected>25</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-            entries
-          </div>
-          
-          <!-- Admin Mode Toggle Option -->
-          <label class="admin-toggle-wrapper">
-            <input type="checkbox" id="adminModeCheckbox" onchange="toggleAdminMode(this)">
-            <span>🔒 Admin Mode</span>
-          </label>
-
-          <div id="tableCountText">Showing 0 to 0 of 0 entries</div>
-        </div>
-
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th class="col-check" id="thSelectAll"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" title="Select All"></th>
-                <th>SL. NO</th>
-                <th class="col-date">DATE & TIME</th>
-                <th>OFFICE</th>
-                <th>NAME</th>
-                <th>RANK</th>
-                <th>GL. NO</th>
-                <th>PEN</th>
-                <th>MOBILE</th>
-                <th>EMAIL</th>
-                <th>PURPOSE</th>
-                <th>REMARKS</th>
-                <th class="col-status">STATUS</th>
-              </tr>
-            </thead>
-            <tbody id="dashTableBody"></tbody>
-          </table>
-        </div>
-
-        <div class="pagination-bar">
-          <div id="paginationInfo">Page 1 of 1</div>
-          <div class="pagination-controls" id="paginationBtns"></div>
-        </div>
-
-      </div>
-
+      <div class="duty-container" id="dutyList"></div>
     </div>
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2yeyopDU6acCg8IAJbbTZfmFrrHiU3FlfSzf1IYgAyFoqCSjC0cATjuZvECuDSEg2/exec";
+    // ⚠️ നിങ്ങളുടെ APPS SCRIPT URL ഇവിടെ നൽകുക
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwrfO6oNdOpew0Hza8dNtuUiFlQqaBSLZxE_2k1-UCbHFBX0zKIXlkKOS8UVUMX9itQ/exec";
 
-    const RESTRICTED_RANKS = ["CPO", "GSCPO", "SCPO", "GASI", "ASI", "GSI"];
-    const RESTRICTED_PURPOSES = ["ETR5", "ECHALLAN"];
+    const input = document.getElementById("queryInput");
+    const inlineClear = document.getElementById("inlineClearBtn");
 
-    let expectedCaptcha = null;
-    let allDashboardRows = [];
-    let currentFilteredRows = [];
-    let currentPage = 1;
-    let rowsPerPage = 25;
-    let activeStatusCard = null;
-    let masterPurposesList = [];
-    let availableStatuses = ["PENDING", "APPROVED", "CREATED", "REJECTED"];
+    // പേജ് തുറക്കുമ്പോൾ DETAILS ഷീറ്റിൽ നിന്നുള്ള ടൈറ്റിലും ഫോട്ടോയും ലോഡ് ചെയ്യുന്നു
+    window.addEventListener("DOMContentLoaded", function() {
+      fetch(SCRIPT_URL)
+        .then(res => res.json())
+        .then(res => {
+          if (res.status === "init") {
+            if (res.title) {
+              document.getElementById("pageTitle").innerText = res.title;
+              document.getElementById("portalHeading").innerText = res.title;
+            }
+            if (res.bgUrl) {
+              document.body.style.background = `linear-gradient(rgba(11, 25, 44, 0.40), rgba(11, 25, 44, 0.45)), url('${res.bgUrl}') no-repeat center center fixed`;
+              document.body.style.backgroundSize = "cover";
+            }
+          }
+        })
+        .catch(err => console.log(err));
+    });
 
-    let isAdminUnlocked = false;
-    let verifiedAdminPassword = "";
-    let selectedSlNos = new Set();
-    let pendingStatusEdits = {}; // { slNo: newStatus }
-    let pendingActionType = null;
-    let stagedBulkStatus = "";
-
-    const MALAYALAM_REGEX = /[\u0D00-\u0D7F]/;
-    const GENERAL_UNSUPPORTED_CHARS = /[^\x20-\x7E]/;
-    const STARTS_WITH_SPECIAL = /^[^a-zA-Z0-9\s]/;
-
-    function toggleDropdown(id) {
-      var checkList = document.getElementById(id);
-      if (checkList.classList.contains('visible')) {
-        checkList.classList.remove('visible');
+    input.addEventListener("input", function() {
+      if (this.value && this.value.length > 0) {
+        inlineClear.style.display = "flex";
       } else {
-        document.querySelectorAll('.dropdown-check-list').forEach(el => el.classList.remove('visible'));
-        checkList.classList.add('visible');
-      }
-    }
-
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('.dropdown-check-list')) {
-        document.querySelectorAll('.dropdown-check-list').forEach(el => el.classList.remove('visible'));
+        inlineClear.style.display = "none";
       }
     });
 
-    function switchTab(tab) {
-      if (tab === 'form') {
-        document.getElementById('sectionForm').style.display = 'block';
-        document.getElementById('sectionDash').style.display = 'none';
-        document.getElementById('tabBtnForm').classList.add('active');
-        document.getElementById('tabBtnDash').classList.remove('active');
-      } else {
-        document.getElementById('sectionForm').style.display = 'none';
-        document.getElementById('sectionDash').style.display = 'block';
-        document.getElementById('tabBtnForm').classList.remove('active');
-        document.getElementById('tabBtnDash').classList.add('active');
-        loadDashboard();
-      }
+    function clearInput() {
+      input.value = "";
+      inlineClear.style.display = "none";
+      document.getElementById("resultCard").style.display = "none";
+      document.getElementById("errorMsg").style.display = "none";
+      document.getElementById("dutyList").innerHTML = "";
+      document.getElementById("whatsappBar").style.display = "none";
+      input.focus();
     }
 
-    function generateCaptcha() {
-      const num1 = Math.floor(Math.random() * 41) + 10;
-      const num2 = Math.floor(Math.random() * 9) + 1;
-      expectedCaptcha = num1 + num2;
-      document.getElementById('captchaText').innerText = num1 + " + " + num2;
-      document.getElementById('captchaAnswer').value = "";
-      const errCaptcha = document.getElementById('err_captcha');
-      if (errCaptcha) {
-        errCaptcha.innerText = "";
-        errCaptcha.style.display = "none";
-      }
-    }
+    async function searchDuty() {
+      if (input) input.blur();
 
-    window.onload = function() {
-      generateCaptcha();
-      showStatus("Loading options from Server...", "loading");
-      
-      fetch(SCRIPT_URL + "?action=getDropdownData")
-        .then(res => res.json())
-        .then(data => {
-          hideStatus();
-          var officeSel = document.getElementById('officeSelect');
-          if (data && data.offices) {
-            data.offices.forEach(function(o) {
-              var opt = document.createElement('option');
-              opt.value = o; opt.text = o;
-              officeSel.appendChild(opt);
-            });
-          }
+      const query = input.value ? input.value.trim() : "";
+      const loader = document.getElementById("loader");
+      const errorMsg = document.getElementById("errorMsg");
+      const resultCard = document.getElementById("resultCard");
+      const dutyList = document.getElementById("dutyList");
+      const whatsappBar = document.getElementById("whatsappBar");
 
-          var rankSel = document.getElementById('rankSelect');
-          if (data && data.ranks) {
-            data.ranks.forEach(function(r) {
-              var opt = document.createElement('option');
-              opt.value = r; opt.text = r;
-              rankSel.appendChild(opt);
-            });
-          }
+      dutyList.innerHTML = "";
+      errorMsg.style.display = "none";
+      resultCard.style.display = "none";
+      whatsappBar.style.display = "none";
 
-          if (data && data.statuses && data.statuses.length > 0) {
-            availableStatuses = data.statuses;
-          }
-
-          var bulkSel = document.getElementById('bulkStatusSelect');
-          bulkSel.innerHTML = '<option value="">-- Change Status To --</option>';
-          availableStatuses.forEach(function(st) {
-            bulkSel.innerHTML += `<option value="${st.toUpperCase()}">${st.toUpperCase()}</option>`;
-          });
-
-          var purpContainer = document.getElementById('purposeContainer');
-          if (data && data.purposes) {
-            masterPurposesList = data.purposes;
-            data.purposes.forEach(function(p) {
-              var labelItem = document.createElement('label');
-              labelItem.className = "purpose-item";
-              labelItem.id = "wrap_" + p.replace(/\s+/g, '_');
-
-              var cb = document.createElement('input');
-              cb.type = "checkbox";
-              cb.value = p;
-              cb.name = "purposeCb";
-              cb.id = "purp_" + p.replace(/\s+/g, '_');
-
-              cb.onchange = function() {
-                if (this.checked) {
-                  labelItem.classList.add('selected');
-                } else {
-                  labelItem.classList.remove('selected');
-                }
-              };
-
-              var span = document.createElement('span');
-              span.innerText = p;
-
-              labelItem.appendChild(cb);
-              labelItem.appendChild(span);
-              purpContainer.appendChild(labelItem);
-            });
-          }
-        })
-        .catch(err => {
-          showStatus("Failed to load options: " + err, "error");
-        });
-    };
-
-    function handleRankChange() {
-      var selectedRank = document.getElementById('rankSelect').value.trim().toUpperCase();
-      var isRestricted = RESTRICTED_RANKS.indexOf(selectedRank) !== -1;
-
-      var checkboxes = document.querySelectorAll('input[name="purposeCb"]');
-      checkboxes.forEach(function(cb) {
-        var val = cb.value.trim().toUpperCase();
-        var parent = cb.parentElement;
-
-        if (isRestricted && RESTRICTED_PURPOSES.indexOf(val) !== -1) {
-          cb.checked = false;
-          cb.disabled = true;
-          parent.classList.add('disabled');
-          parent.classList.remove('selected');
-        } else {
-          cb.disabled = false;
-          parent.classList.remove('disabled');
-        }
-      });
-    }
-
-    function validateField(elem, type) {
-      const val = elem.value;
-      const errElem = document.getElementById('err_' + type);
-      let error = "";
-
-      if (MALAYALAM_REGEX.test(val)) {
-        error = "⚠️ Malayalam characters are not allowed. Please enter in English only.";
-      }
-      else if (GENERAL_UNSUPPORTED_CHARS.test(val)) {
-        const invalidChars = val.match(/[^\x20-\x7E]/g);
-        error = "⚠️ Unsupported special character (" + (invalidChars ? invalidChars[0] : "") + ") detected.";
-      }
-      else if (val.length > 0 && STARTS_WITH_SPECIAL.test(val)) {
-        error = "⚠️ Cannot start with a special character.";
-      }
-      else if (val.startsWith(" ")) {
-        error = "⚠️ Cannot start with a space.";
-      }
-      else if (/\s{2,}/.test(val)) {
-        error = "⚠️ Double space is not allowed. Only single space allowed between words.";
-      }
-      else if (val.endsWith(" ")) {
-        error = "⚠️ Cannot end with a space. Please remove trailing space.";
-      }
-      else if (type === 'name') {
-        if (/[^a-zA-Z\s.]/.test(val)) {
-          const match = val.match(/[^a-zA-Z\s.]/);
-          error = "⚠️ Special character or number '" + match[0] + "' is not supported in Name.";
-        }
-      } 
-      else if (type === 'pen') {
-        if (/\D/.test(val)) {
-          error = "⚠️ Only numbers are allowed in PEN.";
-        } else if (val.length > 0 && val.length < 6) {
-          error = "⚠️ PEN must be 6 or 7 digits (Current: " + val.length + " digits).";
-        }
-      } 
-      else if (type === 'mobile') {
-        if (/\D/.test(val)) {
-          error = "⚠️ Only digits allowed in Mobile Number.";
-        } else if (val.length > 0 && val.length < 10) {
-          error = "⚠️ Mobile Number must be 10 digits (Current: " + val.length + " digits).";
-        }
-      } 
-      else if (type === 'email') {
-        if (/[^a-zA-Z0-9@._-]/.test(val)) {
-          const match = val.match(/[^a-zA-Z0-9@._-]/);
-          error = "⚠️ Unsupported character '" + match[0] + "' in Email.";
-        }
-      }
-      else if (type === 'captcha') {
-        if (/\D/.test(val)) {
-          error = "⚠️ Only numbers allowed in captcha answer.";
-        }
-      }
-
-      if (error) {
-        elem.classList.add('field-error-border');
-        errElem.innerText = error;
-        errElem.style.display = "block";
-        return false;
-      } else {
-        elem.classList.remove('field-error-border');
-        errElem.innerText = "";
-        errElem.style.display = "none";
-        return true;
-      }
-    }
-
-    function handleRemarksInput(elem) {
-      document.getElementById('charCount').innerText = elem.value.length;
-      validateField(elem, 'remarks');
-    }
-
-    function clearForm() {
-      document.getElementById('entryForm').reset();
-      document.getElementById('charCount').innerText = "0";
-      
-      document.querySelectorAll('.error-msg').forEach(el => {
-        el.innerText = "";
-        el.style.display = "none";
-      });
-      document.querySelectorAll('.field-error-border').forEach(el => {
-        el.classList.remove('field-error-border');
-      });
-
-      document.querySelectorAll('.purpose-item').forEach(el => {
-        el.classList.remove('selected');
-      });
-      handleRankChange();
-      generateCaptcha();
-    }
-
-    function submitForm(e) {
-      e.preventDefault();
-
-      const isNameValid = validateField(document.getElementById('name'), 'name');
-      const isGlNoValid = validateField(document.getElementById('glNo'), 'glNo');
-      const isPenValid = validateField(document.getElementById('pen'), 'pen');
-      const isMobileValid = validateField(document.getElementById('mobile'), 'mobile');
-      const isEmailValid = validateField(document.getElementById('email'), 'email');
-      const isRemarksValid = validateField(document.getElementById('remarks'), 'remarks');
-      const isCaptchaValid = validateField(document.getElementById('captchaAnswer'), 'captcha');
-
-      const penVal = document.getElementById('pen').value;
-      const mobileVal = document.getElementById('mobile').value;
-      const emailVal = document.getElementById('email').value;
-
-      if (!isNameValid || !isGlNoValid || !isPenValid || !isMobileValid || !isEmailValid || !isRemarksValid || !isCaptchaValid) {
-        showCustomNotice("⚠️ Please resolve the highlighted errors before submitting.");
+      if (!query) {
+        errorMsg.innerText = "Please enter PEN or Mobile number.";
+        errorMsg.style.display = "block";
         return;
       }
 
-      if (penVal.length !== 6 && penVal.length !== 7) {
-        showCustomNotice("⚠️ PEN must be exactly 6 or 7 digits.");
-        document.getElementById('pen').focus();
-        return;
-      }
+      loader.style.display = "block";
 
-      if (mobileVal.length !== 10) {
-        showCustomNotice("⚠️ Mobile Number must be exactly 10 digits.");
-        document.getElementById('mobile').focus();
-        return;
-      }
+      try {
+        const response = await fetch(`${SCRIPT_URL}?q=${encodeURIComponent(query)}`);
+        const res = await response.json();
 
-      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailPattern.test(emailVal)) {
-        showCustomNotice("⚠️ Please enter a valid Email ID.");
-        document.getElementById('email').focus();
-        return;
-      }
+        loader.style.display = "none";
 
-      var userAnswer = parseInt(document.getElementById('captchaAnswer').value, 10);
-      if (userAnswer !== expectedCaptcha) {
-        showCustomNotice("⚠️ Captcha answer is incorrect. Please check the math and try again.");
-        generateCaptcha();
-        document.getElementById('captchaAnswer').focus();
-        return;
-      }
-
-      var selectedPurposes = [];
-      document.querySelectorAll('input[name="purposeCb"]:checked').forEach(function(cb) {
-        selectedPurposes.push(cb.value);
-      });
-
-      if (selectedPurposes.length === 0) {
-        showCustomNotice("⚠️ Please select at least one PURPOSE.");
-        return;
-      }
-
-      showStatus("Saving record...", "loading");
-
-      var record = {
-        office: document.getElementById('officeSelect').value,
-        name: document.getElementById('name').value,
-        rank: document.getElementById('rankSelect').value,
-        glNo: document.getElementById('glNo').value,
-        pen: penVal,
-        mobile: mobileVal,
-        email: emailVal,
-        purposes: selectedPurposes,
-        remarks: document.getElementById('remarks').value
-      };
-
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify(record)
-      })
-      .then(res => res.json())
-      .then(res => {
         if (res.status === "success") {
-          hideStatus();
-          document.getElementById('entryForm').style.display = 'none';
-          document.getElementById('successBox').style.display = 'block';
-          document.getElementById('successMessageDetails').innerText = res.message;
-        } else {
-          showStatus("❌ " + res.message, "error");
-          generateCaptcha();
-        }
-      })
-      .catch(err => {
-        showStatus("❌ Error: " + err, "error");
-        generateCaptcha();
-      });
-    }
-
-    function prepareNextEntry() {
-      clearForm();
-      document.getElementById('successBox').style.display = 'none';
-      document.getElementById('entryForm').style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function loadDashboard() {
-      showStatus("Loading Dashboard data...", "loading");
-      fetch(SCRIPT_URL + "?action=getDashboardData")
-        .then(res => res.json())
-        .then(res => {
-          hideStatus();
-          if (res.error) {
-            showCustomNotice("Error: " + res.error);
-            return;
-          }
-          allDashboardRows = res.rows || [];
-
-          selectedSlNos.clear();
-          pendingStatusEdits = {};
-          updatePendingSaveButton();
-          updateSelectedCount();
-
-          setupFilterOptions();
-          updatePermanentCardCounts();
-          filterDashboardTable();
-        })
-        .catch(err => {
-          showStatus("Failed to load dashboard: " + err, "error");
-        });
-    }
-
-    function setupFilterOptions() {
-      var offices = new Set();
-      var purposes = new Set(masterPurposesList);
-      var statuses = new Set(availableStatuses);
-
-      allDashboardRows.forEach(function(r) {
-        if (r[2]) offices.add(r[2].toString().trim());
-        if (r[9]) purposes.add(r[9].toString().trim());
-        if (r[11]) statuses.add(r[11].toString().trim().toUpperCase());
-      });
-
-      var officeList = document.getElementById('filterOfficeList');
-      officeList.innerHTML = "";
-      Array.from(offices).sort().forEach(function(o) {
-        var li = document.createElement('li');
-        li.innerHTML = `<label><input type="checkbox" value="${o}" onchange="filterDashboardTable(); updateDropdownLabel('officeCheckList', 'Offices');"> ${o}</label>`;
-        officeList.appendChild(li);
-      });
-
-      var purposeList = document.getElementById('filterPurposeList');
-      purposeList.innerHTML = "";
-      Array.from(purposes).sort().forEach(function(p) {
-        var li = document.createElement('li');
-        li.innerHTML = `<label><input type="checkbox" value="${p}" onchange="filterDashboardTable(); updateDropdownLabel('purposeCheckList', 'Purposes');"> ${p}</label>`;
-        purposeList.appendChild(li);
-      });
-
-      var statusList = document.getElementById('filterStatusList');
-      statusList.innerHTML = "";
-      Array.from(statuses).sort().forEach(function(s) {
-        var li = document.createElement('li');
-        li.innerHTML = `<label><input type="checkbox" value="${s}" onchange="filterDashboardTable(); updateDropdownLabel('statusCheckList', 'Statuses');"> ${s}</label>`;
-        statusList.appendChild(li);
-      });
-    }
-
-    function updateDropdownLabel(id, defaultName) {
-      var checked = document.querySelectorAll('#' + id + ' input:checked');
-      var anchor = document.querySelector('#' + id + ' .anchor');
-      if (checked.length === 0) {
-        anchor.innerText = 'Select ' + defaultName;
-      } else if (checked.length === 1) {
-        anchor.innerText = checked[0].value;
-      } else {
-        anchor.innerText = checked.length + ' ' + defaultName + ' Selected';
-      }
-    }
-
-    function parseDateToComparable(str) {
-      if (!str) return null;
-      var clean = str.trim().split(" ")[0];
-      var parts = clean.split("-");
-      if (parts.length === 3) {
-        return parts[2] + parts[1] + parts[0];
-      }
-      return null;
-    }
-
-    function handleSearchKeyDown(event) {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        filterDashboardTable();
-      }
-    }
-
-    function filterByStatusCard(targetStatus) {
-      if (!targetStatus) {
-        activeStatusCard = null;
-      } else if (activeStatusCard === targetStatus) {
-        activeStatusCard = null;
-      } else {
-        activeStatusCard = targetStatus;
-      }
-
-      updateActiveCardHighlight();
-
-      document.querySelectorAll('#filterStatusList input').forEach(function(cb) {
-        cb.checked = (activeStatusCard ? cb.value.toUpperCase() === activeStatusCard.toUpperCase() : false);
-      });
-      updateDropdownLabel('statusCheckList', 'Statuses');
-      filterDashboardTable();
-    }
-
-    function updateActiveCardHighlight() {
-      document.querySelectorAll('.status-mini-card').forEach(function(card) {
-        card.classList.remove('active-card');
-      });
-      if (activeStatusCard) {
-        var activeEl = document.getElementById('card_' + activeStatusCard);
-        if (activeEl) activeEl.classList.add('active-card');
-      } else {
-        var totalEl = document.getElementById('card_TOTAL');
-        if (totalEl) totalEl.classList.add('active-card');
-      }
-    }
-
-    function updatePermanentCardCounts() {
-      var total = allDashboardRows.length;
-      var pendingCount = 0;
-      var createdCount = 0;
-      var approvedCount = 0;
-      var rejectedCount = 0;
-      var officesSet = new Set();
-
-      allDashboardRows.forEach(function(r) {
-        if (r[2]) officesSet.add(r[2].toString().trim());
-        var st = (r[11] && r[11].toString().trim() !== "") ? r[11].toString().trim().toUpperCase() : "PENDING";
-        
-        if (st === "PENDING") pendingCount++;
-        else if (st === "CREATED") createdCount++;
-        else if (st === "APPROVED") approvedCount++;
-        else if (st === "REJECTED") rejectedCount++;
-      });
-
-      document.getElementById('statTotal').innerText = total;
-      document.getElementById('statPending').innerText = pendingCount;
-      document.getElementById('statCreated').innerText = createdCount;
-      document.getElementById('statApproved').innerText = approvedCount;
-      document.getElementById('statRejected').innerText = rejectedCount;
-      document.getElementById('statOffices').innerText = officesSet.size;
-
-      updateActiveCardHighlight();
-    }
-
-    function filterDashboardTable() {
-      var query = document.getElementById('dashSearch').value.toLowerCase().trim();
-      var fromDateVal = document.getElementById('filterFromDate').value;
-      var toDateVal = document.getElementById('filterToDate').value;
-
-      var fromComparable = fromDateVal ? fromDateVal.replace(/-/g, "") : null;
-      var toComparable = toDateVal ? toDateVal.replace(/-/g, "") : null;
-
-      var selectedOffices = [];
-      document.querySelectorAll('#filterOfficeList input:checked').forEach(function(cb) {
-        selectedOffices.push(cb.value);
-      });
-
-      var selectedPurposes = [];
-      document.querySelectorAll('#filterPurposeList input:checked').forEach(function(cb) {
-        selectedPurposes.push(cb.value);
-      });
-
-      var selectedStatuses = [];
-      if (activeStatusCard) {
-        selectedStatuses.push(activeStatusCard);
-      } else {
-        document.querySelectorAll('#filterStatusList input:checked').forEach(function(cb) {
-          selectedStatuses.push(cb.value);
-        });
-      }
-
-      currentFilteredRows = allDashboardRows.filter(function(row) {
-        if (fromComparable || toComparable) {
-          var rowDateComp = parseDateToComparable(row[1]);
-          if (rowDateComp) {
-            if (fromComparable && rowDateComp < fromComparable) return false;
-            if (toComparable && rowDateComp > toComparable) return false;
-          }
-        }
-
-        if (selectedOffices.length > 0) {
-          var rowOffice = (row[2] || "").toString().trim();
-          if (!selectedOffices.includes(rowOffice)) return false;
-        }
-
-        if (selectedPurposes.length > 0) {
-          var rowPurpose = (row[9] || "").toString().trim();
-          if (!selectedPurposes.includes(rowPurpose)) return false;
-        }
-
-        if (selectedStatuses.length > 0) {
-          var rowStatus = (row[11] && row[11].toString().trim() !== "") ? row[11].toString().trim().toUpperCase() : "PENDING";
-          if (!selectedStatuses.includes(rowStatus)) return false;
-        }
-
-        if (query) {
-          var textMatch = row.some(function(cell) {
-            return cell.toString().toLowerCase().includes(query);
-          });
-          if (!textMatch) return false;
-        }
-
-        return true;
-      });
-
-      currentPage = 1;
-      renderPaginatedTable();
-    }
-
-    // --- Admin Mode Toggle ---
-    function toggleAdminMode(checkbox) {
-      if (checkbox.checked) {
-        pendingActionType = "UNLOCK_ADMIN";
-        document.getElementById('modalTitleText').innerText = "🔒 Admin Login";
-        document.getElementById('modalPromptText').innerText = "Enter Admin Password to enable management:";
-        document.getElementById('modalPasswordInput').value = "";
-        document.getElementById('modalPasswordInput').style.display = "block";
-        document.getElementById('btnModalConfirm').innerText = "Confirm";
-        document.getElementById('btnModalConfirm').onclick = submitPasswordModal;
-        document.getElementById('btnModalCancel').style.display = "inline-block";
-        document.getElementById('passwordModal').style.display = "flex";
-        setTimeout(() => document.getElementById('modalPasswordInput').focus(), 100);
-      } else {
-        isAdminUnlocked = false;
-        verifiedAdminPassword = "";
-        document.getElementById('adminBulkBar').style.display = "none";
-        document.getElementById('thSelectAll').style.display = "none";
-        document.querySelectorAll('th.col-check, td.col-check').forEach(td => td.style.display = "none");
-        
-        document.querySelectorAll('.table-status-select').forEach(sel => sel.disabled = true);
-        
-        selectedSlNos.clear();
-        pendingStatusEdits = {};
-        updatePendingSaveButton();
-        updateSelectedCount();
-        renderPaginatedTable();
-      }
-    }
-
-    function toggleRowSelection(cb, slNo) {
-      if (cb.checked) {
-        selectedSlNos.add(slNo);
-      } else {
-        selectedSlNos.delete(slNo);
-      }
-      updateSelectedCount();
-    }
-
-    function toggleSelectAll(masterCb) {
-      var checkboxes = document.querySelectorAll('.row-select-cb');
-      checkboxes.forEach(function(cb) {
-        cb.checked = masterCb.checked;
-        var sl = cb.getAttribute('data-sl');
-        if (masterCb.checked) {
-          selectedSlNos.add(sl);
-        } else {
-          selectedSlNos.delete(sl);
-        }
-      });
-      updateSelectedCount();
-    }
-
-    function updateSelectedCount() {
-      document.getElementById('selectedCountText').innerText = selectedSlNos.size;
-    }
-
-    // 1. Bulk Apply Confirmation
-    function promptBulkApplyConfirmation() {
-      if (!isAdminUnlocked) return;
-
-      if (selectedSlNos.size === 0) {
-        showCustomNotice("⚠️ Please select at least one record from the table!");
-        return;
-      }
-
-      var newStatus = document.getElementById('bulkStatusSelect').value;
-      if (!newStatus) {
-        showCustomNotice("⚠️ Please choose a status to apply!");
-        return;
-      }
-
-      stagedBulkStatus = newStatus;
-      pendingActionType = "CONFIRM_BULK_APPLY";
-      
-      document.getElementById('modalTitleText').innerText = "⚡ Confirm Selection";
-      document.getElementById('modalPromptText').innerText = 
-        `Change status of ${selectedSlNos.size} selected record(s) to "${newStatus}"?`;
-      document.getElementById('modalPasswordInput').style.display = "none";
-      document.getElementById('btnModalConfirm').innerText = "Yes, Apply";
-      document.getElementById('btnModalConfirm').onclick = submitPasswordModal;
-      document.getElementById('btnModalCancel').style.display = "inline-block";
-      document.getElementById('passwordModal').style.display = "flex";
-    }
-
-    function executeBulkApply() {
-      selectedSlNos.forEach(function(sl) {
-        pendingStatusEdits[sl] = stagedBulkStatus;
-      });
-
-      document.getElementById('bulkStatusSelect').value = "";
-      selectedSlNos.clear();
-      updateSelectedCount();
-      var masterCb = document.getElementById('selectAllCheckbox');
-      if (masterCb) masterCb.checked = false;
-
-      updatePendingSaveButton();
-      renderPaginatedTable();
-      stagedBulkStatus = "";
-    }
-
-    // 2. Direct In-place Change
-    function handleStatusDropdownChange(selectElem, slNo) {
-      if (!isAdminUnlocked) return;
-
-      var newStatus = selectElem.value;
-      var originalStatus = selectElem.getAttribute('data-original');
-
-      if (newStatus === originalStatus) {
-        delete pendingStatusEdits[slNo];
-      } else {
-        pendingStatusEdits[slNo] = newStatus;
-      }
-
-      updatePendingSaveButton();
-      renderPaginatedTable();
-    }
-
-    function updatePendingSaveButton() {
-      var count = Object.keys(pendingStatusEdits).length;
-      var btnSave = document.getElementById('btnSaveChanges');
-      var countSpan = document.getElementById('pendingSaveCountText');
-      countSpan.innerText = count;
-
-      if (count > 0 && isAdminUnlocked) {
-        btnSave.style.display = "inline-block";
-      } else {
-        btnSave.style.display = "none";
-      }
-    }
-
-    // 3. Save Confirmation Dialog
-    function promptSaveConfirmation() {
-      var count = Object.keys(pendingStatusEdits).length;
-      if (count === 0) return;
-
-      pendingActionType = "CONFIRM_SAVE";
-      document.getElementById('modalTitleText').innerText = "💾 Save Confirmation";
-      document.getElementById('modalPromptText').innerText = 
-        `Are you sure you want to save ${count} status update(s) to Google Sheet?`;
-      document.getElementById('modalPasswordInput').style.display = "none";
-      document.getElementById('btnModalConfirm').innerText = "Yes, Save Now";
-      document.getElementById('btnModalConfirm').onclick = submitPasswordModal;
-      document.getElementById('btnModalCancel').style.display = "inline-block";
-      document.getElementById('passwordModal').style.display = "flex";
-    }
-
-    // Notice Modal (ക്ലിക്ക് ചെയ്താൽ ഉറപ്പായും ക്ലോസ് ആകുന്ന രീതിയിൽ ക്രമീകരിച്ചു)
-    function showCustomNotice(msg) {
-      document.getElementById('modalTitleText').innerText = "ℹ️ Message";
-      document.getElementById('modalPromptText').innerText = msg;
-      document.getElementById('modalPasswordInput').style.display = "none";
-      document.getElementById('btnModalConfirm').innerText = "OK";
-      document.getElementById('btnModalConfirm').onclick = closePasswordModal;
-      document.getElementById('btnModalCancel').style.display = "none";
-      document.getElementById('passwordModal').style.display = "flex";
-    }
-
-    function closePasswordModal() {
-      document.getElementById('passwordModal').style.display = "none";
-      if (pendingActionType === "UNLOCK_ADMIN" && !isAdminUnlocked) {
-        document.getElementById('adminModeCheckbox').checked = false;
-      }
-      pendingActionType = null;
-    }
-
-    // Esc കീ അടിച്ചാൽ മോഡൽ ക്ലോസ് ആവാനുള്ള സൗകര്യം
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closePasswordModal();
-      }
-    });
-
-    function submitPasswordModal() {
-      if (pendingActionType === "UNLOCK_ADMIN") {
-        var password = document.getElementById('modalPasswordInput').value;
-        if (password === "admin123") {
-          isAdminUnlocked = true;
-          verifiedAdminPassword = password;
-          document.getElementById('passwordModal').style.display = "none";
-          document.getElementById('adminBulkBar').style.display = "flex";
-          document.getElementById('thSelectAll').style.display = "table-cell";
-          document.querySelectorAll('th.col-check, td.col-check').forEach(td => td.style.display = "table-cell");
-          document.querySelectorAll('.table-status-select').forEach(sel => sel.disabled = false);
-          pendingActionType = null;
-        } else {
-          document.getElementById('adminModeCheckbox').checked = false;
-          showCustomNotice("❌ Incorrect Admin Password!");
-        }
-        return;
-      }
-
-      if (pendingActionType === "CONFIRM_BULK_APPLY") {
-        document.getElementById('passwordModal').style.display = "none";
-        executeBulkApply();
-        pendingActionType = null;
-        return;
-      }
-
-      if (pendingActionType === "CONFIRM_SAVE") {
-        document.getElementById('passwordModal').style.display = "none";
-        showStatus("Saving changes to Google Sheet...", "loading");
-
-        fetch(SCRIPT_URL, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "saveBatchStatuses",
-            updates: pendingStatusEdits,
-            password: verifiedAdminPassword
-          })
-        })
-        .then(res => res.json())
-        .then(res => {
-          hideStatus();
-          if (res.status === "success") {
-            allDashboardRows.forEach(function(r) {
-              var sl = r[0].toString();
-              if (pendingStatusEdits.hasOwnProperty(sl)) {
-                r[11] = pendingStatusEdits[sl];
-              }
-            });
-
-            pendingStatusEdits = {};
-            updatePendingSaveButton();
-            updatePermanentCardCounts();
-            filterDashboardTable();
-
-            showCustomNotice("✅ " + res.message);
-          } else {
-            showCustomNotice("❌ " + res.message);
-          }
-        })
-        .catch(err => {
-          hideStatus();
-          showCustomNotice("❌ Error: " + err);
-        });
-      }
-    }
-
-    function getStatusColorClass(status) {
-      var s = (status || "").toUpperCase();
-      if (s === "APPROVED" || s === "CREATED") return "status-select-approved";
-      if (s === "REJECTED") return "status-select-rejected";
-      return "status-select-pending";
-    }
-
-    function renderPaginatedTable() {
-      var totalRows = currentFilteredRows.length;
-      var totalPages = Math.ceil(totalRows / rowsPerPage) || 1;
-
-      if (currentPage > totalPages) currentPage = totalPages;
-
-      var startIdx = (currentPage - 1) * rowsPerPage;
-      var endIdx = Math.min(startIdx + rowsPerPage, totalRows);
-      var pageRows = currentFilteredRows.slice(startIdx, endIdx);
-
-      var tbody = document.getElementById('dashTableBody');
-      tbody.innerHTML = "";
-
-      var masterCb = document.getElementById('selectAllCheckbox');
-      if (masterCb) masterCb.checked = false;
-
-      if (pageRows.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='13' style='text-align:center;'>No matching records found</td></tr>";
-      } else {
-        pageRows.forEach(function(row) {
-          var tr = document.createElement('tr');
-          var slNo = row[0].toString();
+          const d = res.data;
+          document.getElementById("officerName").innerText = d.name || "-";
+          document.getElementById("officerDesig").innerText = d.designation || "-";
+          document.getElementById("officerPen").innerText = d.pen || "-";
+          document.getElementById("officerGl").innerText = d.glNo || "-";
+          document.getElementById("officerStation").innerText = d.station || "-";
+          document.getElementById("officerDistrict").innerText = d.district || "-";
+
+          const mobContainer = document.getElementById("officerMobileContainer");
+          const rawMobile = d.mobile ? d.mobile.toString() : "";
+          const cleanPhone = rawMobile.replace(/[^0-9]/g, "");
           
-          var originalStatus = (row[11] && row[11].toString().trim() !== "") ? row[11].toString().trim().toUpperCase() : "PENDING";
-          var isModified = pendingStatusEdits.hasOwnProperty(slNo);
-          var currentDisplayStatus = isModified ? pendingStatusEdits[slNo] : originalStatus;
-
-          if (isModified) {
-            tr.className = "row-pending-save";
+          if (cleanPhone && cleanPhone.length >= 10) {
+            mobContainer.innerHTML = `<a href="tel:${cleanPhone}" class="phone-link" title="Click to Call">
+              <svg class="phone-icon-svg" viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+              ${rawMobile}</a>`;
+          } else {
+            mobContainer.innerText = rawMobile || "-";
           }
 
-          var tdCheck = document.createElement('td');
-          tdCheck.className = "col-check";
-          if (isAdminUnlocked) tdCheck.style.display = "table-cell";
-          var isChecked = selectedSlNos.has(slNo) ? "checked" : "";
-          tdCheck.innerHTML = `<input type="checkbox" class="row-select-cb" data-sl="${slNo}" ${isChecked} onchange="toggleRowSelection(this, '${slNo}')">`;
-          tr.appendChild(tdCheck);
+          let dutyMsgText = "";
+          if (d.duties && d.duties.length > 0) {
+            const totalThemes = 5;
+            d.duties.forEach((item, index) => {
+              const box = document.createElement("div");
+              box.className = `duty-box duty-theme-${index % totalThemes}`;
+              box.innerHTML = `<div class="duty-title">${item.title}</div><div class="duty-content">${item.value}</div>`;
+              dutyList.appendChild(box);
+              dutyMsgText += `\n📌 *${item.title}:*\n${item.value}\n`;
+            });
+            dutyList.style.display = "flex";
+          } else {
+            dutyList.innerHTML = `<div class="duty-box duty-theme-0"><div class="duty-content">No duty details assigned.</div></div>`;
+            dutyList.style.display = "flex";
+            dutyMsgText = "\nNo specific duties assigned.\n";
+          }
 
-          row.slice(0, 11).forEach(function(cell, idx) {
-            var td = document.createElement('td');
-            if (idx === 1) td.className = "col-date";
-            td.innerText = cell;
-            tr.appendChild(td);
-          });
+          if (cleanPhone && cleanPhone.length >= 10) {
+            const fullPhone = cleanPhone.length === 10 ? ("91" + cleanPhone) : cleanPhone;
+            const portalHeader = document.getElementById("portalHeading").innerText || "DUTY DETAILS";
+            
+            const message = `*${portalHeader}*\n` +
+                          `---------------------------\n` +
+                          `👤 *Name:* ${d.name} (${d.designation})\n` +
+                          `🆔 *PEN:* ${d.pen} | *GL:* ${d.glNo}\n` +
+                          `🏢 *Station:* ${d.station}\n` +
+                          `📍 *District:* ${d.district}\n` +
+                          `---------------------------` +
+                          dutyMsgText + `\n` +
+                          `_Generated from Duty Search Portal_`;
 
-          var tdStatus = document.createElement('td');
-          tdStatus.className = "col-status";
+            const waBtn = document.getElementById("whatsappBtn");
+            waBtn.href = `https://wa.me/${fullPhone}?text=${encodeURIComponent(message)}`;
+            whatsappBar.style.display = "block";
+          }
 
-          var disabledAttr = isAdminUnlocked ? "" : "disabled";
-          var modifiedClass = isModified ? "select-pending-save" : "";
-
-          var selectHtml = `<select class="table-status-select ${getStatusColorClass(currentDisplayStatus)} ${modifiedClass}" data-original="${originalStatus}" ${disabledAttr} onchange="handleStatusDropdownChange(this, '${slNo}')">`;
-          availableStatuses.forEach(function(st) {
-            var isSel = (st.toUpperCase() === currentDisplayStatus) ? "selected" : "";
-            selectHtml += `<option value="${st.toUpperCase()}" ${isSel}>${st.toUpperCase()}</option>`;
-          });
-          selectHtml += `</select>`;
-
-          tdStatus.innerHTML = selectHtml;
-          tr.appendChild(tdStatus);
-
-          tbody.appendChild(tr);
-        });
+          resultCard.style.display = "block";
+        } else {
+          errorMsg.innerText = res.message || "No records found.";
+          errorMsg.style.display = "block";
+        }
+      } catch (err) {
+        loader.style.display = "none";
+        errorMsg.innerText = "Error fetching details. Please check internet connection.";
+        errorMsg.style.display = "block";
       }
-
-      var displayStart = totalRows === 0 ? 0 : startIdx + 1;
-      document.getElementById('tableCountText').innerText = 
-        `Showing ${displayStart} to ${endIdx} of ${totalRows} entries`;
-
-      document.getElementById('paginationInfo').innerText = `Page ${currentPage} of ${totalPages}`;
-
-      var btnContainer = document.getElementById('paginationBtns');
-      btnContainer.innerHTML = "";
-
-      btnContainer.innerHTML += `<button class="page-btn" onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>« First</button>`;
-      btnContainer.innerHTML += `<button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹ Prev</button>`;
-      btnContainer.innerHTML += `<button class="page-btn active">${currentPage}</button>`;
-      btnContainer.innerHTML += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages || totalRows === 0 ? 'disabled' : ''}>Next ›</button>`;
-      btnContainer.innerHTML += `<button class="page-btn" onclick="goToPage(${totalPages})" ${currentPage === totalPages || totalRows === 0 ? 'disabled' : ''}>Last »</button>`;
-    }
-
-    function goToPage(page) {
-      currentPage = page;
-      renderPaginatedTable();
-    }
-
-    function changeRowsPerPage() {
-      rowsPerPage = parseInt(document.getElementById('rowsPerPageSelect').value, 10);
-      currentPage = 1;
-      renderPaginatedTable();
-    }
-
-    function exportToExcel() {
-      if (!currentFilteredRows || currentFilteredRows.length === 0) {
-        showCustomNotice("No records available to export!");
-        return;
-      }
-
-      var headers = [
-        "SL. NO", "DATE & TIME", "OFFICE", "NAME", "RANK", "GL. NO", 
-        "PEN", "MOBILE NUMBER", "EMAIL ID", "PURPOSE", "REMARKS", "STATUS"
-      ];
-
-      var exportData = [headers].concat(currentFilteredRows);
-      var ws = XLSX.utils.aoa_to_sheet(exportData);
-      var wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Portal_Records");
-
-      var dateStr = new Date().toISOString().slice(0, 10);
-      XLSX.writeFile(wb, "Multi_Purpose_Records_" + dateStr + ".xlsx");
-    }
-
-    function resetFilters() {
-      activeStatusCard = null;
-      document.getElementById('dashSearch').value = "";
-      document.getElementById('filterFromDate').value = "";
-      document.getElementById('filterToDate').value = "";
-      document.querySelectorAll('#filterOfficeList input').forEach(function(cb) { cb.checked = false; });
-      document.querySelectorAll('#filterPurposeList input').forEach(function(cb) { cb.checked = false; });
-      document.querySelectorAll('#filterStatusList input').forEach(function(cb) { cb.checked = false; });
-      updateDropdownLabel('officeCheckList', 'Offices');
-      updateDropdownLabel('purposeCheckList', 'Purposes');
-      updateDropdownLabel('statusCheckList', 'Statuses');
-
-      updateActiveCardHighlight();
-      filterDashboardTable();
-    }
-
-    function showStatus(msg, type) {
-      var s = document.getElementById('status');
-      s.innerText = msg;
-      s.className = type;
-      s.style.display = "block";
-    }
-
-    function hideStatus() {
-      document.getElementById('status').style.display = "none";
     }
   </script>
 </body>
