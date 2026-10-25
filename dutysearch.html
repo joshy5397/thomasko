@@ -280,20 +280,28 @@
 
     .phone-link {
       color: #ffffff;
-      text-decoration: none;
+      text-decoration: underline;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
+      word-break: break-all;
     }
 
     .phone-link:active {
       color: #93c5fd;
     }
 
+    .duty-box .phone-link {
+      color: #1d4ed8 !important;
+      font-weight: 800;
+      text-decoration: underline;
+    }
+
     .phone-icon-svg {
       width: 14px;
       height: 14px;
-      fill: #93c5fd;
+      fill: currentColor;
+      flex-shrink: 0;
     }
 
     .whatsapp-bar {
@@ -475,6 +483,17 @@
     const input = document.getElementById("queryInput");
     const inlineClear = document.getElementById("inlineClearBtn");
 
+    // 10 അക്ക മൊബൈൽ നമ്പറുകളെ ലിങ്കാക്കുന്ന ഫംഗ്ഷൻ (6-9ൽ തുടങ്ങുന്ന 10 അക്കങ്ങൾ)
+    function linkifyPhoneNumbers(text) {
+      if (!text) return "";
+      const phoneRegex = /\b([6-9]\d{9})\b/g;
+      return text.toString().replace(phoneRegex, function(match) {
+        return `<a href="tel:${match}" class="phone-link" title="Click to Call">
+          <svg class="phone-icon-svg" viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          ${match}</a>`;
+      });
+    }
+
     window.addEventListener("DOMContentLoaded", function() {
       fetch(`${SCRIPT_URL}?api=init&_=${new Date().getTime()}`, { method: 'GET', redirect: 'follow' })
         .then(res => res.json())
@@ -552,26 +571,23 @@
           document.getElementById("officerStation").innerText = d.station || "-";
           document.getElementById("officerDistrict").innerText = d.district || "-";
 
+          // പ്രധാന മൊബൈൽ നമ്പർ ലിങ്കാക്കുന്നു
           const mobContainer = document.getElementById("officerMobileContainer");
           const rawMobile = d.mobile ? d.mobile.toString() : "";
-          const cleanPhone = rawMobile.replace(/[^0-9]/g, "");
-          
-          if (cleanPhone && cleanPhone.length >= 10) {
-            mobContainer.innerHTML = `<a href="tel:${cleanPhone}" class="phone-link" title="Click to Call">
-              <svg class="phone-icon-svg" viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-              ${rawMobile}</a>`;
-          } else {
-            mobContainer.innerText = rawMobile || "-";
-          }
+          mobContainer.innerHTML = linkifyPhoneNumbers(rawMobile) || "-";
 
+          // ഡ്യൂട്ടി വിവരങ്ങളിലുള്ള 10 അക്ക നമ്പറുകളും ലിങ്കാക്കുന്നു
           let dutyMsgText = "";
           if (d.duties && d.duties.length > 0) {
             const totalThemes = 5;
             d.duties.forEach((item, index) => {
               const box = document.createElement("div");
               box.className = `duty-box duty-theme-${index % totalThemes}`;
-              box.innerHTML = `<div class="duty-title">${item.title}</div><div class="duty-content">${item.value}</div>`;
+              
+              const formattedValue = linkifyPhoneNumbers(item.value);
+              box.innerHTML = `<div class="duty-title">${item.title}</div><div class="duty-content">${formattedValue}</div>`;
               dutyList.appendChild(box);
+
               dutyMsgText += `\n📌 *${item.title}:*\n${item.value}\n`;
             });
             dutyList.style.display = "flex";
@@ -581,6 +597,7 @@
             dutyMsgText = "\nNo specific duties assigned.\n";
           }
 
+          const cleanPhone = rawMobile.replace(/[^0-9]/g, "");
           if (cleanPhone && cleanPhone.length >= 10) {
             const fullPhone = cleanPhone.length === 10 ? ("91" + cleanPhone) : cleanPhone;
             const portalHeader = document.getElementById("portalHeading").innerText || "DUTY DETAILS";
