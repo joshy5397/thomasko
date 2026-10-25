@@ -475,9 +475,8 @@
     const input = document.getElementById("queryInput");
     const inlineClear = document.getElementById("inlineClearBtn");
 
-    // പേജ് ലോഡ് ചെയ്യുമ്പോൾ DETAILS ഷീറ്റിലെ വിവരങ്ങൾ എടുക്കുന്നു
     window.addEventListener("DOMContentLoaded", function() {
-      fetch(`${SCRIPT_URL}?_=${new Date().getTime()}`, { method: 'GET', redirect: 'follow' })
+      fetch(`${SCRIPT_URL}?api=init&_=${new Date().getTime()}`, { method: 'GET', redirect: 'follow' })
         .then(res => res.json())
         .then(res => {
           if (res && res.status === "init") {
@@ -491,7 +490,7 @@
             }
           }
         })
-        .catch(err => console.log("Init fetch:", err));
+        .catch(err => console.log("Init fetch error:", err));
     });
 
     input.addEventListener("input", function() {
@@ -536,7 +535,6 @@
       loader.style.display = "block";
 
       try {
-        // Redirect കൃത്യമായി ഹാൻഡ്‌ൽ ചെയ്യുന്നതിനുള്ള കോൾ
         const response = await fetch(`${SCRIPT_URL}?q=${encodeURIComponent(query)}&_=${new Date().getTime()}`, {
           method: 'GET',
           redirect: 'follow'
