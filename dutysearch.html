@@ -79,7 +79,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .input-wrapper {
@@ -189,6 +189,22 @@
       transform: scale(0.98);
     }
 
+    /* സെർച്ച് ഓപ്ഷന് താഴെയുള്ള നോട്ടിഫിക്കേഷൻ ബോക്സ് */
+    .portal-notice-box {
+      margin-top: 4px;
+      margin-bottom: 12px;
+      padding: 10px 14px;
+      background: rgba(30, 58, 138, 0.35);
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      border-radius: 12px;
+      color: #bfdbfe;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.45;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
     .loader {
       display: none;
       text-align: center;
@@ -290,6 +306,11 @@
 
     .phone-link:active {
       color: #93c5fd;
+    }
+
+    .portal-notice-box .phone-link {
+      color: #93c5fd !important;
+      font-weight: 700;
     }
 
     .duty-box .phone-link {
@@ -406,11 +427,11 @@
 
     /* VISITORS & SEARCHES ബോക്സുകൾ */
     .stats-footer {
-      margin-top: 20px;
+      margin-top: 16px;
       padding-top: 16px;
       border-top: 1px solid rgba(255, 255, 255, 0.15);
       display: grid;
-      grid-template-columns: 1fr 1.6fr; /* Searches-ൽ 4 ഐറ്റങ്ങൾ ഉള്ളതിനാൽ അല്പം വീതി കൂട്ടി */
+      grid-template-columns: 1fr 1.6fr;
       gap: 10px;
     }
 
@@ -514,6 +535,9 @@
       </div>
     </form>
 
+    <!-- സെർച്ച് ബട്ടണുകൾക്ക് താഴെ വരുന്ന ഡൈനാമിക് മെസ്സേജ് ബോക്സ് -->
+    <div id="portalNotice" class="portal-notice-box" style="display: none;"></div>
+
     <div id="loader" class="loader">
       <div class="spinner"></div>
       <div>Searching duty records...</div>
@@ -562,7 +586,7 @@
       <div class="duty-container" id="dutyList"></div>
     </div>
 
-    <!-- VISITORS & SEARCHES (TODAY, TOTAL, FOUND, NOT FOUND ഉൾപ്പെടെ) -->
+    <!-- VISITORS & SEARCHES ബോക്സുകൾ -->
     <div class="stats-footer">
       <div class="stat-card-visitors">
         <div class="stat-card-title">Visitors</div>
@@ -642,6 +666,11 @@
             if (res.bgUrl) {
               document.body.style.background = `linear-gradient(rgba(7, 19, 38, 0.45), rgba(7, 19, 38, 0.55)), url('${res.bgUrl}') no-repeat center center fixed`;
               document.body.style.backgroundSize = "cover";
+            }
+            if (res.notice && res.notice !== "") {
+              const noticeBox = document.getElementById("portalNotice");
+              noticeBox.innerHTML = linkifyPhoneNumbers(res.notice);
+              noticeBox.style.display = "block";
             }
             updateStatsDisplay(res.stats);
           }
