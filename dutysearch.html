@@ -42,7 +42,6 @@
       background-attachment: fixed;
     }
 
-    /* പ്രധാന കാർഡിന്റെ പുതിയ പ്രീമിയം കളർ ഡിസൈൻ */
     .wrapper {
       width: 100%;
       max-width: 460px;
@@ -405,7 +404,6 @@
       margin-bottom: 8px;
     }
 
-    /* ആകർഷകമായ നിറങ്ങളോടുകൂടിയ VISITORS & SEARCHES ബോക്സുകൾ */
     .stats-footer {
       margin-top: 20px;
       padding-top: 16px;
@@ -415,10 +413,9 @@
       gap: 12px;
     }
 
-    /* Visitors Card - Soft Royal Blue Theme */
     .stat-card-visitors {
       background: linear-gradient(135deg, rgba(30, 58, 138, 0.45) 0%, rgba(59, 130, 246, 0.2) 100%);
-      padding: 12px 14px;
+      padding: 12px 10px;
       border-radius: 14px;
       border: 1px solid rgba(96, 165, 250, 0.35);
       text-align: center;
@@ -435,10 +432,9 @@
       text-shadow: 0 0 10px rgba(147, 197, 253, 0.5);
     }
 
-    /* Searches Card - Soft Emerald Mint Theme */
     .stat-card-searches {
       background: linear-gradient(135deg, rgba(6, 78, 59, 0.45) 0%, rgba(16, 185, 129, 0.2) 100%);
-      padding: 12px 14px;
+      padding: 12px 10px;
       border-radius: 14px;
       border: 1px solid rgba(52, 211, 153, 0.35);
       text-align: center;
@@ -448,11 +444,6 @@
     .stat-card-searches .stat-card-title {
       color: #6ee7b7;
       border-bottom: 1px dashed rgba(110, 231, 183, 0.35);
-    }
-
-    .stat-card-searches .stat-sub-val {
-      color: #ffffff;
-      text-shadow: 0 0 10px rgba(110, 231, 183, 0.5);
     }
 
     .stat-card-title {
@@ -476,7 +467,7 @@
     }
 
     .stat-sub-label {
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 700;
       color: #cbd5e1;
       text-transform: uppercase;
@@ -484,8 +475,17 @@
     }
 
     .stat-sub-val {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 800;
+      color: #ffffff;
+    }
+
+    .found-color {
+      color: #86efac !important;
+    }
+
+    .notfound-color {
+      color: #fca5a5 !important;
     }
   </style>
 </head>
@@ -561,7 +561,7 @@
       <div class="duty-container" id="dutyList"></div>
     </div>
 
-    <!-- 2 ബോക്സുകൾ (VISITORS & SEARCHES) -->
+    <!-- VISITORS & SEARCHES (Found / Not Found ഉൾപ്പെടെ) -->
     <div class="stats-footer">
       <div class="stat-card-visitors">
         <div class="stat-card-title">Visitors</div>
@@ -585,8 +585,12 @@
             <span class="stat-sub-val" id="statTodaySearches">0</span>
           </div>
           <div class="stat-sub-item">
-            <span class="stat-sub-label">Total</span>
-            <span class="stat-sub-val" id="statTotalSearches">0</span>
+            <span class="stat-sub-label">Found</span>
+            <span class="stat-sub-val found-color" id="statFoundTotal">0</span>
+          </div>
+          <div class="stat-sub-item">
+            <span class="stat-sub-label">Not Found</span>
+            <span class="stat-sub-val notfound-color" id="statNotFoundTotal">0</span>
           </div>
         </div>
       </div>
@@ -615,7 +619,8 @@
         document.getElementById("statTodayVisits").innerText = stats.todayVisits || 0;
         document.getElementById("statTotalVisits").innerText = stats.totalVisits || 0;
         document.getElementById("statTodaySearches").innerText = stats.todaySearches || 0;
-        document.getElementById("statTotalSearches").innerText = stats.totalSearches || 0;
+        document.getElementById("statFoundTotal").innerText = stats.foundTotal || 0;
+        document.getElementById("statNotFoundTotal").innerText = stats.notFoundTotal || 0;
       }
     }
 
