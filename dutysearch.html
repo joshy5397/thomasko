@@ -189,20 +189,21 @@
       transform: scale(0.98);
     }
 
-    /* സെർച്ച് ഓപ്ഷന് താഴെയുള്ള നോട്ടിഫിക്കേഷൻ ബോക്സ് */
+    /* Left-Aligned മെസ്സേജ് ബോക്സ് */
     .portal-notice-box {
       margin-top: 4px;
       margin-bottom: 12px;
-      padding: 10px 14px;
+      padding: 12px 16px;
       background: rgba(30, 58, 138, 0.35);
       border: 1px solid rgba(96, 165, 250, 0.3);
       border-radius: 12px;
       color: #bfdbfe;
       font-size: 13px;
       font-weight: 600;
-      line-height: 1.45;
-      text-align: center;
+      line-height: 1.5;
+      text-align: left; /* ഇടതുവശത്തേക്ക് അലൈൻ ചെയ്തു */
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      word-break: break-word;
     }
 
     .loader {
@@ -425,7 +426,6 @@
       margin-bottom: 8px;
     }
 
-    /* VISITORS & SEARCHES ബോക്സുകൾ */
     .stats-footer {
       margin-top: 16px;
       padding-top: 16px;
@@ -535,7 +535,7 @@
       </div>
     </form>
 
-    <!-- സെർച്ച് ബട്ടണുകൾക്ക് താഴെ വരുന്ന ഡൈനാമിക് മെസ്സേജ് ബോക്സ് -->
+    <!-- സെർച്ച് ബട്ടണുകൾക്ക് താഴെ വരുന്ന മെസ്സേജ് -->
     <div id="portalNotice" class="portal-notice-box" style="display: none;"></div>
 
     <div id="loader" class="loader">
@@ -633,11 +633,13 @@
     const input = document.getElementById("queryInput");
     const inlineClear = document.getElementById("inlineClearBtn");
 
+    // 10 അക്ക മൊബൈൽ നമ്പറുകളും (6-9ൽ തുടങ്ങുന്നത്) 11 അക്ക നമ്പറുകളും (0 ൽ തുടങ്ങുന്നവയും STD ലാൻഡ്‌ലൈനുകളും) ലിങ്കാക്കുന്നു
     function linkifyPhoneNumbers(text) {
       if (!text) return "";
-      const phoneRegex = /\b([6-9]\d{9})\b/g;
+      const phoneRegex = /\b(0\d{10}|[6-9]\d{9})\b/g;
       return text.toString().replace(phoneRegex, function(match) {
-        return `<a href="tel:${match}" class="phone-link" title="Click to Call">
+        const cleanCallNumber = match.replace(/[^0-9]/g, "");
+        return `<a href="tel:${cleanCallNumber}" class="phone-link" title="Click to Call">
           <svg class="phone-icon-svg" viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
           ${match}</a>`;
       });
