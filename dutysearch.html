@@ -144,6 +144,69 @@
       box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.25);
     }
 
+    /* Math Captcha Box Style */
+    .captcha-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .captcha-display {
+      flex: 1.3;
+      background: rgba(30, 58, 138, 0.4);
+      border: 1.5px solid rgba(96, 165, 250, 0.4);
+      border-radius: 12px;
+      padding: 10px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #93c5fd;
+      font-weight: 800;
+      font-size: 15px;
+      user-select: none;
+    }
+
+    .captcha-refresh-btn {
+      background: transparent;
+      border: none;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+    }
+
+    .captcha-refresh-btn:hover {
+      color: #ffffff;
+    }
+
+    .captcha-input {
+      flex: 1;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      outline: none;
+      font-family: inherit;
+      text-align: center;
+    }
+
+    .captcha-input:focus {
+      border-color: #60a5fa;
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .captcha-input::placeholder {
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
     .action-buttons {
       display: flex;
       gap: 10px;
@@ -189,7 +252,6 @@
       transform: scale(0.98);
     }
 
-    /* Left-Aligned മെസ്സേജ് ബോക്സ് */
     .portal-notice-box {
       margin-top: 4px;
       margin-bottom: 12px;
@@ -201,7 +263,7 @@
       font-size: 13px;
       font-weight: 600;
       line-height: 1.5;
-      text-align: left; /* ഇടതുവശത്തേക്ക് അലൈൻ ചെയ്തു */
+      text-align: left;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       word-break: break-word;
     }
@@ -529,13 +591,25 @@
         <button type="button" id="inlineClearBtn" class="btn-clear-inline" onclick="clearInput()" title="Clear">✕</button>
       </div>
 
+      <!-- Math Captcha Row -->
+      <div class="captcha-row">
+        <div class="captcha-display">
+          <span id="captchaQuestion">? + ? =</span>
+          <button type="button" class="captcha-refresh-btn" onclick="generateCaptcha()" title="Change Question">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+          </button>
+        </div>
+        <input type="number" id="captchaAnswer" class="captcha-input" placeholder="Answer" autocomplete="off" inputmode="numeric">
+      </div>
+
       <div class="action-buttons">
         <button type="submit" class="btn-search" id="btnSearch">Search</button>
         <button type="button" class="btn-reset" onclick="clearInput()">Clear</button>
       </div>
     </form>
 
-    <!-- സെർച്ച് ബട്ടണുകൾക്ക് താഴെ വരുന്ന മെസ്സേജ് -->
     <div id="portalNotice" class="portal-notice-box" style="display: none;"></div>
 
     <div id="loader" class="loader">
@@ -586,7 +660,6 @@
       <div class="duty-container" id="dutyList"></div>
     </div>
 
-    <!-- VISITORS & SEARCHES ബോക്സുകൾ -->
     <div class="stats-footer">
       <div class="stat-card-visitors">
         <div class="stat-card-title">Visitors</div>
@@ -632,8 +705,17 @@
 
     const input = document.getElementById("queryInput");
     const inlineClear = document.getElementById("inlineClearBtn");
+    let currentCaptchaSum = 0;
 
-    // 10 അക്ക മൊബൈൽ നമ്പറുകളും (6-9ൽ തുടങ്ങുന്നത്) 11 അക്ക നമ്പറുകളും (0 ൽ തുടങ്ങുന്നവയും STD ലാൻഡ്‌ലൈനുകളും) ലിങ്കാക്കുന്നു
+    // ലളിതമായ മാത്ത് ക്യാപ്ച തയ്യാറാക്കുന്നു
+    function generateCaptcha() {
+      const num1 = Math.floor(Math.random() * 9) + 1; // 1 മുതൽ 9 വരെ
+      const num2 = Math.floor(Math.random() * 9) + 1;
+      currentCaptchaSum = num1 + num2;
+      document.getElementById("captchaQuestion").innerText = `${num1} + ${num2} =`;
+      document.getElementById("captchaAnswer").value = "";
+    }
+
     function linkifyPhoneNumbers(text) {
       if (!text) return "";
       const phoneRegex = /\b(0\d{10}|[6-9]\d{9})\b/g;
@@ -657,6 +739,8 @@
     }
 
     window.addEventListener("DOMContentLoaded", function() {
+      generateCaptcha();
+
       fetch(`${SCRIPT_URL}?api=init&_=${new Date().getTime()}`, { method: 'GET', redirect: 'follow' })
         .then(res => res.json())
         .then(res => {
@@ -695,6 +779,7 @@
       document.getElementById("errorMsg").style.display = "none";
       document.getElementById("dutyList").innerHTML = "";
       document.getElementById("whatsappBar").style.display = "none";
+      generateCaptcha();
       input.focus();
     }
 
@@ -702,6 +787,7 @@
       if (input) input.blur();
 
       const query = input.value ? input.value.trim() : "";
+      const captchaAns = document.getElementById("captchaAnswer").value.trim();
       const loader = document.getElementById("loader");
       const errorMsg = document.getElementById("errorMsg");
       const resultCard = document.getElementById("resultCard");
@@ -716,6 +802,15 @@
       if (!query) {
         errorMsg.innerText = "Please enter PEN or Mobile number.";
         errorMsg.style.display = "block";
+        return;
+      }
+
+      // ക്യാപ്ച വെരിഫിക്കേഷൻ
+      if (!captchaAns || parseInt(captchaAns, 10) !== currentCaptchaSum) {
+        errorMsg.innerText = "Incorrect Captcha answer. Please try again.";
+        errorMsg.style.display = "block";
+        generateCaptcha();
+        document.getElementById("captchaAnswer").focus();
         return;
       }
 
