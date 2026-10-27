@@ -39,10 +39,6 @@
       --duty-box-border: #cbd5e1;
       --duty-box-text: #0f172a;
       --link-color: #1d4ed8;
-      --stats-bg: #ffffff;
-      --stats-border: #cbd5e1;
-      --stats-label: #64748b;
-      --stats-val: #0f172a;
       --toggle-bg: #ffffff;
       --toggle-border: #0f172a;
       --toggle-text: #0f172a;
@@ -77,10 +73,6 @@
       --duty-box-border: #334155;
       --duty-box-text: #f8fafc;
       --link-color: #38bdf8;
-      --stats-bg: #0f172a;
-      --stats-border: #334155;
-      --stats-label: #94a3b8;
-      --stats-val: #ffffff;
       --toggle-bg: #1e293b;
       --toggle-border: #94a3b8;
       --toggle-text: #ffffff;
@@ -122,7 +114,7 @@
       font-size: 12.5px;
       font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
     .theme-floating-btn:active {
@@ -134,7 +126,7 @@
       max-width: 460px;
       background: var(--card-bg);
       border-radius: 22px;
-      box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.12);
       padding: 26px 20px;
       border: 1.5px solid var(--card-border);
     }
@@ -540,63 +532,6 @@
       text-align: center;
       margin-bottom: 8px;
     }
-
-    .external-stats-wrapper {
-      width: 100%;
-      max-width: 460px;
-      margin-top: 14px;
-      display: grid;
-      grid-template-columns: 1fr 1.6fr;
-      gap: 10px;
-    }
-
-    .stat-card-visitors, .stat-card-searches {
-      background: var(--stats-bg);
-      padding: 12px 8px;
-      border-radius: 14px;
-      border: 1.5px solid var(--stats-border);
-      text-align: center;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
-    }
-
-    .stat-card-title {
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      margin-bottom: 8px;
-      padding-bottom: 4px;
-      color: var(--stats-label);
-      border-bottom: 1.5px dashed var(--stats-border);
-    }
-
-    .stat-row {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-    }
-
-    .stat-sub-item {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .stat-sub-label {
-      font-size: 9.5px;
-      font-weight: 800;
-      color: var(--stats-label);
-      text-transform: uppercase;
-      margin-bottom: 2px;
-    }
-
-    .stat-sub-val {
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--stats-val);
-    }
-
-    .found-color { color: #15803d !important; }
-    .notfound-color { color: #b91c1c !important; }
   </style>
 </head>
 <body>
@@ -670,44 +605,6 @@
     </div>
   </div>
 
-  <div class="external-stats-wrapper">
-    <div class="stat-card-visitors">
-      <div class="stat-card-title">Visitors</div>
-      <div class="stat-row">
-        <div class="stat-sub-item">
-          <span class="stat-sub-label">Today</span>
-          <span class="stat-sub-val" id="statTodayVisits">0</span>
-        </div>
-        <div class="stat-sub-item">
-          <span class="stat-sub-label">Total</span>
-          <span class="stat-sub-val" id="statTotalVisits">0</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="stat-card-searches">
-      <div class="stat-card-title">Searches</div>
-      <div class="stat-row">
-        <div class="stat-sub-item">
-          <span class="stat-sub-label">Today</span>
-          <span class="stat-sub-val" id="statTodaySearches">0</span>
-        </div>
-        <div class="stat-sub-item">
-          <span class="stat-sub-label">Total</span>
-          <span class="stat-sub-val" id="statTotalSearches">0</span>
-        </div>
-        <div class="stat-sub-item">
-          <span class="stat-sub-label">Found</span>
-          <span class="stat-sub-val found-color" id="statFoundTotal">0</span>
-        </div>
-        <div class="stat-sub-item">
-          <span class="stat-sub-label">Not Found</span>
-          <span class="stat-sub-val notfound-color" id="statNotFoundTotal">0</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwrfO6oNdOpew0Hza8dNtuUiFlQqaBSLZxE_2k1-UCbHFBX0zKIXlkKOS8UVUMX9itQ/exec";
 
@@ -772,17 +669,6 @@
       });
     }
 
-    function updateStatsDisplay(stats) {
-      if (stats) {
-        document.getElementById("statTodayVisits").innerText = stats.todayVisits || 0;
-        document.getElementById("statTotalVisits").innerText = stats.totalVisits || 0;
-        document.getElementById("statTodaySearches").innerText = stats.todaySearches || 0;
-        document.getElementById("statTotalSearches").innerText = stats.totalSearches || 0;
-        document.getElementById("statFoundTotal").innerText = stats.foundTotal || 0;
-        document.getElementById("statNotFoundTotal").innerText = stats.notFoundTotal || 0;
-      }
-    }
-
     window.addEventListener("DOMContentLoaded", function() {
       applySavedTheme();
       generateCaptcha();
@@ -800,7 +686,6 @@
               noticeBox.innerHTML = formatContentLinks(res.notice);
               noticeBox.style.display = "block";
             }
-            updateStatsDisplay(res.stats);
           }
         })
         .catch(err => console.log("Init fetch error:", err));
@@ -824,6 +709,19 @@
       document.getElementById("whatsappBar").style.display = "none";
       generateCaptcha();
       input.focus();
+    }
+
+    // സെർവർ തിരക്കിലാണെങ്കിൽ സ്വയം വീണ്ടും റിക്വസ്റ്റ് അയക്കുന്ന ഫംഗ്ഷൻ (Auto-Retry)
+    async function fetchWithRetry(url, retries = 2, delay = 800) {
+      for (let i = 0; i <= retries; i++) {
+        try {
+          const res = await fetch(url, { method: 'GET', redirect: 'follow' });
+          if (res.ok) return await res.json();
+        } catch (e) {
+          if (i === retries) throw e;
+          await new Promise(r => setTimeout(r, delay));
+        }
+      }
     }
 
     async function searchDuty() {
@@ -861,17 +759,8 @@
       loader.style.display = "block";
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?q=${encodeURIComponent(query)}&_=${new Date().getTime()}`, {
-          method: 'GET',
-          redirect: 'follow'
-        });
-        const res = await response.json();
-
+        const res = await fetchWithRetry(`${SCRIPT_URL}?q=${encodeURIComponent(query)}&_=${new Date().getTime()}`);
         loader.style.display = "none";
-
-        if (res && res.stats) {
-          updateStatsDisplay(res.stats);
-        }
 
         if (res && res.status === "success") {
           const d = res.data;
@@ -935,7 +824,7 @@
         }
       } catch (err) {
         loader.style.display = "none";
-        errorMsg.innerText = "Error fetching details. Please check internet connection.";
+        errorMsg.innerText = "Network busy. Please tap Search again.";
         errorMsg.style.display = "block";
       }
     }
