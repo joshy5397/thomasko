@@ -537,8 +537,8 @@
 <body>
 
   <button type="button" class="theme-floating-btn" onclick="toggleTheme()" id="themeBtn" title="Switch Theme">
-    <span id="themeBtnIcon">☀️</span>
-    <span id="themeBtnText">LIGHT</span>
+    <span id="themeBtnIcon">🌙</span>
+    <span id="themeBtnText">DARK</span>
   </button>
 
   <div class="wrapper">
@@ -633,11 +633,11 @@
       const icon = document.getElementById("themeBtnIcon");
       const text = document.getElementById("themeBtnText");
       if (isDark) {
-        icon.innerText = "🌙";
-        text.innerText = "DARK";
-      } else {
         icon.innerText = "☀️";
         text.innerText = "LIGHT";
+      } else {
+        icon.innerText = "🌙";
+        text.innerText = "DARK";
       }
     }
 
@@ -761,7 +761,7 @@
         const res = await fetchWithRetry(`${SCRIPT_URL}?q=${encodeURIComponent(query)}&_=${new Date().getTime()}`);
         loader.style.display = "none";
 
-        // അടുത്ത സെർച്ചിനായി ക്യാപ്ചയും ഇൻപുട്ടും ക്ലിയർ ചെയ്ത് പുതിയ ചോദ്യം നൽകുന്നു
+        // അടുത്ത സെർച്ചിനായി ഇൻപുട്ടും ക്യാപ്ചയും ക്ലിയർ ചെയ്യുന്നു
         input.value = "";
         inlineClear.style.display = "none";
         generateCaptcha();
