@@ -13,7 +13,7 @@
     :root {
       --primary: #3b82f6;
       --primary-hover: #2563eb;
-      --card-bg: rgba(15, 23, 42, 0.88);
+      --card-bg: rgba(15, 23, 42, 0.92);
       --profile-bg: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
       --border-color: rgba(255, 255, 255, 0.12);
       --accent-gold: #fbbf24;
@@ -399,6 +399,10 @@
       gap: 4px;
     }
 
+    .web-link:active {
+      color: #7dd3fc !important;
+    }
+
     .web-link-icon {
       width: 14px;
       height: 14px;
@@ -761,7 +765,7 @@
               document.getElementById("portalHeading").innerText = res.title;
             }
             if (res.bgUrl) {
-              document.body.style.background = `linear-gradient(rgba(10, 15, 29, 0.75), rgba(10, 15, 29, 0.85)), url('${res.bgUrl}') no-repeat center center fixed`;
+              document.body.style.background = `linear-gradient(rgba(10, 15, 29, 0.8), rgba(10, 15, 29, 0.88)), url('${res.bgUrl}') no-repeat center center fixed`;
               document.body.style.backgroundSize = "cover";
             }
             if (res.notice && res.notice !== "") {
