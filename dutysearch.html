@@ -656,28 +656,7 @@
         <div class="officer-name" id="officerName">-</div>
         <div class="officer-rank-badge" id="officerDesig">-</div>
 
-        <div class="details-grid">
-          <div class="detail-item">
-            <span>PEN NUMBER</span>
-            <strong id="officerPen">-</strong>
-          </div>
-          <div class="detail-item">
-            <span>MOBILE NUMBER</span>
-            <strong id="officerMobileContainer">-</strong>
-          </div>
-          <div class="detail-item">
-            <span>GL NO</span>
-            <strong id="officerGl">-</strong>
-          </div>
-          <div class="detail-item">
-            <span>POLICE STATION</span>
-            <strong id="officerStation">-</strong>
-          </div>
-          <div class="detail-item" style="grid-column: span 2;">
-            <span>DISTRICT</span>
-            <strong id="officerDistrict">-</strong>
-          </div>
-        </div>
+        <div class="details-grid" id="profileGrid"></div>
 
         <div class="whatsapp-bar" id="whatsappBar" style="display: none;">
           <a id="whatsappBtn" class="btn-whatsapp" target="_blank">
@@ -746,12 +725,10 @@
       document.getElementById("captchaAnswer").value = "";
     }
 
-    // പിഴവുകളില്ലാത്ത ലളിതമായ ലിങ്ക് ഫോർമാറ്റിംഗ് ഫംഗ്ഷൻ
     function formatContentLinks(text) {
       if (!text) return "";
       let str = text.toString();
 
-      // വെബ് ലിങ്ക് ആണെങ്കിൽ (<a href>)
       const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
       if (urlRegex.test(str)) {
         return str.replace(urlRegex, function(url) {
@@ -762,7 +739,6 @@
         });
       }
 
-      // ഫോൺ നമ്പർ ആണെങ്കിൽ (<a href="tel:">)
       const phoneRegex = /\b(0\d{10}|[6-9]\d{9})\b/g;
       return str.replace(phoneRegex, function(match) {
         const cleanCallNumber = match.replace(/[^0-9]/g, "");
@@ -822,6 +798,7 @@
       inlineClear.style.display = "none";
       document.getElementById("resultCard").style.display = "none";
       document.getElementById("errorMsg").style.display = "none";
+      document.getElementById("profileGrid").innerHTML = "";
       document.getElementById("dutyList").innerHTML = "";
       document.getElementById("whatsappBar").style.display = "none";
       generateCaptcha();
@@ -836,9 +813,11 @@
       const loader = document.getElementById("loader");
       const errorMsg = document.getElementById("errorMsg");
       const resultCard = document.getElementById("resultCard");
+      const profileGrid = document.getElementById("profileGrid");
       const dutyList = document.getElementById("dutyList");
       const whatsappBar = document.getElementById("whatsappBar");
 
+      profileGrid.innerHTML = "";
       dutyList.innerHTML = "";
       errorMsg.style.display = "none";
       resultCard.style.display = "none";
@@ -877,14 +856,18 @@
           const d = res.data;
           document.getElementById("officerName").innerText = d.name || "-";
           document.getElementById("officerDesig").innerText = d.designation || "-";
-          document.getElementById("officerPen").innerText = d.pen || "-";
-          document.getElementById("officerGl").innerText = d.glNo || "-";
-          document.getElementById("officerStation").innerText = d.station || "-";
-          document.getElementById("officerDistrict").innerText = d.district || "-";
 
-          const mobContainer = document.getElementById("officerMobileContainer");
-          const rawMobile = d.mobile ? d.mobile.toString() : "";
-          mobContainer.innerHTML = formatContentLinks(rawMobile) || "-";
+          let whatsappProfileText = `👤 *Name:* ${d.name} (${d.designation})\n`;
+          if (d.profileItems && d.profileItems.length > 0) {
+            d.profileItems.forEach(item => {
+              const div = document.createElement("div");
+              div.className = "detail-item";
+              div.innerHTML = `<span>${item.label}</span><strong>${formatContentLinks(item.value)}</strong>`;
+              profileGrid.appendChild(div);
+
+              whatsappProfileText += `🔹 *${item.label}:* ${item.value}\n`;
+            });
+          }
 
           let dutyMsgText = "";
           if (d.duties && d.duties.length > 0) {
@@ -906,6 +889,7 @@
             dutyMsgText = "\nNo specific duties assigned.\n";
           }
 
+          const rawMobile = d.mobile ? d.mobile.toString() : "";
           const cleanPhone = rawMobile.replace(/[^0-9]/g, "");
           if (cleanPhone && cleanPhone.length >= 10) {
             const fullPhone = cleanPhone.length === 10 ? ("91" + cleanPhone) : cleanPhone;
@@ -913,10 +897,7 @@
             
             const message = `*${portalHeader}*\n` +
                           `---------------------------\n` +
-                          `👤 *Name:* ${d.name} (${d.designation})\n` +
-                          `🆔 *PEN:* ${d.pen} | *GL:* ${d.glNo}\n` +
-                          `🏢 *Station:* ${d.station}\n` +
-                          `📍 *District:* ${d.district}\n` +
+                          whatsappProfileText +
                           `---------------------------` +
                           dutyMsgText + `\n` +
                           `_Generated from Duty Search Portal_`;
