@@ -711,7 +711,6 @@
       input.focus();
     }
 
-    // സെർവർ തിരക്കിലാണെങ്കിൽ സ്വയം വീണ്ടും റിക്വസ്റ്റ് അയക്കുന്ന ഫംഗ്ഷൻ (Auto-Retry)
     async function fetchWithRetry(url, retries = 2, delay = 800) {
       for (let i = 0; i <= retries; i++) {
         try {
@@ -761,6 +760,11 @@
       try {
         const res = await fetchWithRetry(`${SCRIPT_URL}?q=${encodeURIComponent(query)}&_=${new Date().getTime()}`);
         loader.style.display = "none";
+
+        // അടുത്ത സെർച്ചിനായി ക്യാപ്ചയും ഇൻപുട്ടും ക്ലിയർ ചെയ്ത് പുതിയ ചോദ്യം നൽകുന്നു
+        input.value = "";
+        inlineClear.style.display = "none";
+        generateCaptcha();
 
         if (res && res.status === "success") {
           const d = res.data;
@@ -824,6 +828,7 @@
         }
       } catch (err) {
         loader.style.display = "none";
+        generateCaptcha();
         errorMsg.innerText = "Network busy. Please tap Search again.";
         errorMsg.style.display = "block";
       }
