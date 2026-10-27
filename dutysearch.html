@@ -11,16 +11,73 @@
 
   <style>
     :root {
-      --primary: #1d4ed8;
-      --primary-hover: #1e40af;
       --bg-page: #e2e8f0;
       --card-bg: #ffffff;
-      --profile-bg: #0f172a;
-      --text-main: #020617;
+      --card-border: #cbd5e1;
+      --text-main: #0f172a;
       --text-sub: #475569;
-      --border-solid: #cbd5e1;
-      --whatsapp-green: #15803d;
-      --whatsapp-hover: #166534;
+      --input-bg: #f8fafc;
+      --input-border: #94a3b8;
+      --input-text: #0f172a;
+      --btn-reset-bg: #f1f5f9;
+      --btn-reset-text: #0f172a;
+      --primary: #1d4ed8;
+      --primary-hover: #1e40af;
+      --notice-bg: #fffbeb;
+      --notice-border: #fde68a;
+      --notice-strip: #d97706;
+      --notice-text: #78350f;
+      --profile-bg: #0f172a;
+      --profile-border: #0f172a;
+      --profile-name: #ffffff;
+      --profile-badge-bg: #334155;
+      --profile-badge-text: #38bdf8;
+      --profile-label: #94a3b8;
+      --profile-val: #ffffff;
+      --duty-container-bg: #f8fafc;
+      --duty-box-bg: #ffffff;
+      --duty-box-border: #cbd5e1;
+      --duty-box-text: #0f172a;
+      --link-color: #1d4ed8;
+      --stats-bg: #ffffff;
+      --stats-border: #cbd5e1;
+      --stats-label: #64748b;
+      --stats-val: #0f172a;
+    }
+
+    body.dark-mode {
+      --bg-page: #090d16;
+      --card-bg: #0f172a;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --input-bg: #1e293b;
+      --input-border: #475569;
+      --input-text: #ffffff;
+      --btn-reset-bg: #1e293b;
+      --btn-reset-text: #cbd5e1;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --notice-bg: #1e293b;
+      --notice-border: #475569;
+      --notice-strip: #f59e0b;
+      --notice-text: #fde68a;
+      --profile-bg: #090d16;
+      --profile-border: #334155;
+      --profile-name: #ffffff;
+      --profile-badge-bg: #1e293b;
+      --profile-badge-text: #38bdf8;
+      --profile-label: #94a3b8;
+      --profile-val: #ffffff;
+      --duty-container-bg: #090d16;
+      --duty-box-bg: #1e293b;
+      --duty-box-border: #334155;
+      --duty-box-text: #f8fafc;
+      --link-color: #38bdf8;
+      --stats-bg: #0f172a;
+      --stats-border: #334155;
+      --stats-label: #94a3b8;
+      --stats-val: #ffffff;
     }
 
     * {
@@ -28,6 +85,7 @@
       margin: 0;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
 
     body {
@@ -39,28 +97,61 @@
       justify-content: center;
       padding: 20px 14px;
       color: var(--text-main);
-      background: #e2e8f0;
+      background-color: var(--bg-page);
     }
 
     .wrapper {
+      position: relative;
       width: 100%;
       max-width: 460px;
       background: var(--card-bg);
-      border-radius: 20px;
-      box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      border-radius: 22px;
+      box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.15);
       padding: 26px 20px;
-      border: 1.5px solid var(--border-solid);
+      border: 1.5px solid var(--card-border);
+    }
+
+    .theme-toggle-btn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .theme-toggle-btn:active {
+      transform: scale(0.92);
+    }
+
+    .theme-toggle-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .header {
       text-align: center;
       margin-bottom: 20px;
+      padding-top: 6px;
     }
 
     .header h2 {
       font-size: 21px;
       font-weight: 800;
-      color: #0f172a;
+      color: var(--text-main);
       letter-spacing: -0.3px;
       margin-bottom: 6px;
       text-transform: uppercase;
@@ -91,17 +182,16 @@
       padding: 14px 44px 14px 44px;
       font-size: 16px;
       font-weight: 800;
-      color: #0f172a;
-      background: #f8fafc;
-      border: 2px solid #94a3b8;
+      color: var(--input-text);
+      background: var(--input-bg);
+      border: 2px solid var(--input-border);
       border-radius: 12px;
       outline: none;
-      transition: all 0.2s ease;
       font-family: inherit;
     }
 
     .input-field::placeholder {
-      color: #64748b;
+      color: var(--text-sub);
       font-weight: 600;
     }
 
@@ -110,7 +200,7 @@
       left: 14px;
       width: 20px;
       height: 20px;
-      stroke: #334155;
+      stroke: var(--text-sub);
       pointer-events: none;
     }
 
@@ -120,8 +210,8 @@
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: #cbd5e1;
-      color: #0f172a;
+      background: var(--card-border);
+      color: var(--text-main);
       border: none;
       display: none;
       align-items: center;
@@ -129,15 +219,9 @@
       cursor: pointer;
       font-size: 13px;
       font-weight: 800;
-      touch-action: manipulation;
-    }
-
-    .btn-clear-inline:active {
-      background: #94a3b8;
     }
 
     .input-field:focus {
-      background: #ffffff;
       border-color: var(--primary);
       box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.15);
     }
@@ -150,15 +234,15 @@
     }
 
     .captcha-display {
-      background: #f1f5f9;
-      border: 2px solid #94a3b8;
+      background: var(--input-bg);
+      border: 2px solid var(--input-border);
       border-radius: 12px;
       padding: 0 12px;
       height: 48px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      color: #0f172a;
+      color: var(--text-main);
       font-weight: 800;
       font-size: 16px;
       user-select: none;
@@ -168,17 +252,13 @@
     .captcha-refresh-btn {
       background: transparent;
       border: none;
-      color: #334155;
+      color: var(--text-sub);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 4px;
       border-radius: 50%;
-    }
-
-    .captcha-refresh-btn:active {
-      background: #cbd5e1;
     }
 
     .captcha-input {
@@ -188,9 +268,9 @@
       padding: 0 14px;
       font-size: 16px;
       font-weight: 800;
-      color: #0f172a;
-      background: #f8fafc;
-      border: 2px solid #94a3b8;
+      color: var(--input-text);
+      background: var(--input-bg);
+      border: 2px solid var(--input-border);
       border-radius: 12px;
       outline: none;
       font-family: inherit;
@@ -199,12 +279,11 @@
 
     .captcha-input:focus {
       border-color: var(--primary);
-      background: #ffffff;
       box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.15);
     }
 
     .captcha-input::placeholder {
-      color: #64748b;
+      color: var(--text-sub);
       font-size: 13.5px;
       font-weight: 600;
     }
@@ -226,31 +305,25 @@
       border-radius: 12px;
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(29, 78, 216, 0.3);
-      transition: all 0.2s ease;
-      touch-action: manipulation;
     }
 
     .btn-search:active {
-      background: var(--primary-hover);
       transform: scale(0.98);
     }
 
     .btn-reset {
       flex: 1;
-      background: #f1f5f9;
-      color: #0f172a;
-      border: 2px solid #94a3b8;
+      background: var(--btn-reset-bg);
+      color: var(--btn-reset-text);
+      border: 2px solid var(--input-border);
       padding: 14px;
       font-size: 15px;
       font-weight: 800;
       border-radius: 12px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      touch-action: manipulation;
     }
 
     .btn-reset:active {
-      background: #e2e8f0;
       transform: scale(0.98);
     }
 
@@ -258,13 +331,13 @@
       margin-top: 4px;
       margin-bottom: 4px;
       padding: 12px 16px;
-      background: #fffbeb;
-      border-left: 5px solid #d97706;
-      border-top: 1px solid #fde68a;
-      border-right: 1px solid #fde68a;
-      border-bottom: 1px solid #fde68a;
+      background: var(--notice-bg);
+      border-left: 5px solid var(--notice-strip);
+      border-top: 1px solid var(--notice-border);
+      border-right: 1px solid var(--notice-border);
+      border-bottom: 1px solid var(--notice-border);
       border-radius: 10px;
-      color: #78350f;
+      color: var(--notice-text);
       font-size: 14px;
       font-weight: 700;
       line-height: 1.5;
@@ -285,7 +358,7 @@
       display: inline-block;
       width: 24px;
       height: 24px;
-      border: 3px solid #cbd5e1;
+      border: 3px solid var(--card-border);
       border-radius: 50%;
       border-top-color: var(--primary);
       animation: spin 0.8s linear infinite;
@@ -298,9 +371,9 @@
 
     .result-card {
       display: none;
-      background: #ffffff;
+      background: var(--card-bg);
       border-radius: 16px;
-      border: 2px solid #0f172a;
+      border: 2px solid var(--profile-border);
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
       overflow: hidden;
       margin-top: 14px;
@@ -314,14 +387,14 @@
 
     .officer-profile-card {
       background: var(--profile-bg);
-      color: #ffffff;
+      color: var(--profile-val);
       padding: 18px 20px;
     }
 
     .officer-name {
       font-size: 20px;
       font-weight: 800;
-      color: #ffffff;
+      color: var(--profile-name);
       letter-spacing: 0.2px;
     }
 
@@ -329,11 +402,11 @@
       display: inline-block;
       margin-top: 6px;
       padding: 4px 10px;
-      background: #334155;
+      background: var(--profile-badge-bg);
       border-radius: 6px;
       font-size: 12px;
       font-weight: 800;
-      color: #38bdf8;
+      color: var(--profile-badge-text);
       letter-spacing: 0.5px;
     }
 
@@ -343,12 +416,12 @@
       gap: 12px 10px;
       margin-top: 16px;
       padding-top: 14px;
-      border-top: 1px solid #334155;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .detail-item span {
       display: block;
-      color: #94a3b8;
+      color: var(--profile-label);
       font-size: 11px;
       margin-bottom: 2px;
       font-weight: 800;
@@ -358,22 +431,18 @@
 
     .detail-item strong {
       font-size: 14.5px;
-      color: #ffffff;
+      color: var(--profile-val);
       font-weight: 700;
     }
 
-    .phone-link {
-      color: #38bdf8 !important;
+    .phone-link, .web-link {
+      color: var(--link-color) !important;
       text-decoration: underline;
       display: inline-flex;
       align-items: center;
       gap: 4px;
       font-weight: 800;
       word-break: break-all;
-    }
-
-    .phone-link:active {
-      color: #7dd3fc !important;
     }
 
     .phone-icon-svg {
@@ -383,28 +452,10 @@
       flex-shrink: 0;
     }
 
-    .web-link {
-      color: #38bdf8 !important;
-      text-decoration: underline !important;
-      font-weight: 800;
-      word-break: break-all;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .duty-box .web-link {
-      color: #1d4ed8 !important;
-    }
-
-    .duty-box .phone-link {
-      color: #1d4ed8 !important;
-    }
-
     .whatsapp-bar {
       margin-top: 16px;
       padding-top: 14px;
-      border-top: 1px dashed #334155;
+      border-top: 1px dashed rgba(255, 255, 255, 0.2);
     }
 
     .btn-whatsapp {
@@ -413,7 +464,7 @@
       justify-content: center;
       gap: 8px;
       width: 100%;
-      background: var(--whatsapp-green);
+      background: #15803d;
       color: #ffffff;
       border: none;
       padding: 12px 14px;
@@ -423,11 +474,6 @@
       cursor: pointer;
       text-decoration: none;
       box-shadow: 0 4px 10px rgba(21, 128, 61, 0.3);
-      touch-action: manipulation;
-    }
-
-    .btn-whatsapp:active {
-      background: var(--whatsapp-hover);
     }
 
     .btn-whatsapp svg {
@@ -441,7 +487,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      background: #f8fafc;
+      background: var(--duty-container-bg);
     }
 
     .duty-box {
@@ -450,7 +496,7 @@
       border-width: 1.5px;
       border-style: solid;
       border-left-width: 6px;
-      background: #ffffff;
+      background: var(--duty-box-bg);
       box-shadow: 0 2px 4px rgba(0,0,0,0.04);
     }
 
@@ -467,23 +513,23 @@
       line-height: 1.55;
       white-space: pre-wrap;
       font-weight: 700;
-      color: #0f172a;
+      color: var(--duty-box-text);
       word-break: break-word;
     }
 
-    .duty-theme-0 { border-color: #cbd5e1; border-left-color: #b45309; }
+    .duty-theme-0 { border-color: var(--duty-box-border); border-left-color: #b45309; }
     .duty-theme-0 .duty-title { color: #b45309; }
 
-    .duty-theme-1 { border-color: #cbd5e1; border-left-color: #15803d; }
+    .duty-theme-1 { border-color: var(--duty-box-border); border-left-color: #15803d; }
     .duty-theme-1 .duty-title { color: #15803d; }
 
-    .duty-theme-2 { border-color: #cbd5e1; border-left-color: #7e22ce; }
+    .duty-theme-2 { border-color: var(--duty-box-border); border-left-color: #7e22ce; }
     .duty-theme-2 .duty-title { color: #7e22ce; }
 
-    .duty-theme-3 { border-color: #cbd5e1; border-left-color: #0369a1; }
+    .duty-theme-3 { border-color: var(--duty-box-border); border-left-color: #0369a1; }
     .duty-theme-3 .duty-title { color: #0369a1; }
 
-    .duty-theme-4 { border-color: #cbd5e1; border-left-color: #be123c; }
+    .duty-theme-4 { border-color: var(--duty-box-border); border-left-color: #be123c; }
     .duty-theme-4 .duty-title { color: #be123c; }
 
     .error-msg {
@@ -508,36 +554,13 @@
       gap: 10px;
     }
 
-    .stat-card-visitors {
-      background: #ffffff;
+    .stat-card-visitors, .stat-card-searches {
+      background: var(--stats-bg);
       padding: 12px 8px;
       border-radius: 14px;
-      border: 1.5px solid var(--border-solid);
+      border: 1.5px solid var(--stats-border);
       text-align: center;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
-    }
-
-    .stat-card-visitors .stat-card-title {
-      color: #475569;
-      border-bottom: 1.5px dashed #cbd5e1;
-    }
-
-    .stat-card-visitors .stat-sub-val {
-      color: #0f172a;
-    }
-
-    .stat-card-searches {
-      background: #ffffff;
-      padding: 12px 8px;
-      border-radius: 14px;
-      border: 1.5px solid var(--border-solid);
-      text-align: center;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
-    }
-
-    .stat-card-searches .stat-card-title {
-      color: #475569;
-      border-bottom: 1.5px dashed #cbd5e1;
     }
 
     .stat-card-title {
@@ -547,6 +570,8 @@
       letter-spacing: 0.6px;
       margin-bottom: 8px;
       padding-bottom: 4px;
+      color: var(--stats-label);
+      border-bottom: 1.5px dashed var(--stats-border);
     }
 
     .stat-row {
@@ -563,7 +588,7 @@
     .stat-sub-label {
       font-size: 9.5px;
       font-weight: 800;
-      color: #64748b;
+      color: var(--stats-label);
       text-transform: uppercase;
       margin-bottom: 2px;
     }
@@ -571,21 +596,30 @@
     .stat-sub-val {
       font-size: 15px;
       font-weight: 800;
-      color: #0f172a;
+      color: var(--stats-val);
     }
 
-    .found-color {
-      color: #15803d !important;
-    }
-
-    .notfound-color {
-      color: #b91c1c !important;
-    }
+    .found-color { color: #15803d !important; }
+    .notfound-color { color: #b91c1c !important; }
   </style>
 </head>
 <body>
 
   <div class="wrapper">
+    <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn" title="Switch Theme">
+      <svg id="themeIcon" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="21" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+    </button>
+
     <div class="header">
       <h2 id="portalHeading">DUTY SEARCH</h2>
       <p>Enter PEN Number or Mobile Number</p>
@@ -694,6 +728,32 @@
     const inlineClear = document.getElementById("inlineClearBtn");
     let currentCaptchaSum = 0;
 
+    function applySavedTheme() {
+      const saved = localStorage.getItem("portal_theme");
+      if (saved === "dark") {
+        document.body.classList.add("dark-mode");
+        renderThemeIcon(true);
+      } else {
+        document.body.classList.remove("dark-mode");
+        renderThemeIcon(false);
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.body.classList.toggle("dark-mode");
+      localStorage.setItem("portal_theme", isDark ? "dark" : "light");
+      renderThemeIcon(isDark);
+    }
+
+    function renderThemeIcon(isDark) {
+      const icon = document.getElementById("themeIcon");
+      if (isDark) {
+        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+      } else {
+        icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+      }
+    }
+
     function generateCaptcha() {
       const num1 = Math.floor(Math.random() * 9) + 1;
       const num2 = Math.floor(Math.random() * 9) + 1;
@@ -710,8 +770,7 @@
       if (urlRegex.test(str)) {
         return str.replace(urlRegex, function(url) {
           const fullHref = url.toLowerCase().startsWith("http") ? url : ("http://" + url);
-          return `<a href="${fullHref}" target="_blank" rel="noopener noreferrer" class="web-link" title="Open Link">
-            ${url}</a>`;
+          return `<a href="${fullHref}" target="_blank" rel="noopener noreferrer" class="web-link" title="Open Link">${url}</a>`;
         });
       }
 
@@ -736,6 +795,7 @@
     }
 
     window.addEventListener("DOMContentLoaded", function() {
+      applySavedTheme();
       generateCaptcha();
 
       fetch(`${SCRIPT_URL}?api=init&_=${new Date().getTime()}`, { method: 'GET', redirect: 'follow' })
