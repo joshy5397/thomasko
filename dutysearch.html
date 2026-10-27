@@ -396,6 +396,28 @@
       flex-shrink: 0;
     }
 
+    /* Clickable Web Link Styles */
+    .web-link {
+      color: #1d4ed8;
+      text-decoration: underline;
+      font-weight: 800;
+      word-break: break-all;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .web-link:active {
+      color: #2563eb;
+    }
+
+    .web-link-icon {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
     .whatsapp-bar {
       margin-top: 14px;
       padding-top: 12px;
@@ -460,6 +482,7 @@
       line-height: 1.5;
       white-space: pre-wrap;
       font-weight: 800;
+      word-break: break-word;
     }
 
     .duty-theme-0 { background: #fffbeb; border-color: #fde68a; border-left-color: #d97706; }
@@ -495,7 +518,6 @@
       margin-bottom: 8px;
     }
 
-    /* കാർഡിന് പുറത്ത് വരുന്ന ഫ്ലോട്ടിംഗ് STATS കണ്ടെയ്‌നർ */
     .external-stats-wrapper {
       width: 100%;
       max-width: 460px;
@@ -587,7 +609,6 @@
 </head>
 <body>
 
-  <!-- പ്രധാന സെർച്ച് കാർഡ് -->
   <div class="wrapper">
     <div class="header">
       <h2 id="portalHeading">DUTY SEARCH</h2>
@@ -673,7 +694,6 @@
     </div>
   </div>
 
-  <!-- കാർഡിന് പുറത്ത് വെവ്വേറെ നിൽക്കുന്ന STATS ബാർ -->
   <div class="external-stats-wrapper">
     <div class="stat-card-visitors">
       <div class="stat-card-title">Visitors</div>
@@ -727,15 +747,35 @@
       document.getElementById("captchaAnswer").value = "";
     }
 
-    function linkifyPhoneNumbers(text) {
+    // ഫോൺ നമ്പറുകളും വെബ് ലിങ്കുകളും തനിയെ ക്ലിക്കബിൾ ആക്കുന്ന ഫംഗ്ഷൻ
+    function formatContentLinks(text) {
       if (!text) return "";
+      let str = text.toString();
+
+      // വെബ് ലിങ്കുകൾ കണ്ടെത്തുന്നു (http, https, www)
+      const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
+      str = str.replace(urlRegex, function(url) {
+        const fullHref = url.toLowerCase().startsWith("http") ? url : ("http://" + url);
+        return `<a href="${fullHref}" target="_blank" rel="noopener noreferrer" class="web-link" title="Open Link">
+          <svg class="web-link-icon" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+          ${url}</a>`;
+      });
+
+      // 10, 11 അക്ക ഫോൺ നമ്പറുകൾ കണ്ടെത്തുന്നു (നേരത്തെ ലിങ്ക് ചെയ്തവ ഒഴിവാക്കി)
       const phoneRegex = /\b(0\d{10}|[6-9]\d{9})\b/g;
-      return text.toString().replace(phoneRegex, function(match) {
+      str = str.replace(phoneRegex, function(match, offset, original) {
+        // ലിങ്കിന് ഉള്ളിലെ സംഖ്യയാണെങ്കിൽ ഒഴിവാക്കുന്നു
+        const prevText = original.substring(0, offset);
+        if (prevText.lastIndexOf("<a") > prevText.lastIndexOf("</a>")) {
+          return match;
+        }
         const cleanCallNumber = match.replace(/[^0-9]/g, "");
         return `<a href="tel:${cleanCallNumber}" class="phone-link" title="Click to Call">
           <svg class="phone-icon-svg" viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
           ${match}</a>`;
       });
+
+      return str;
     }
 
     function updateStatsDisplay(stats) {
@@ -766,7 +806,7 @@
             }
             if (res.notice && res.notice !== "") {
               const noticeBox = document.getElementById("portalNotice");
-              noticeBox.innerHTML = linkifyPhoneNumbers(res.notice);
+              noticeBox.innerHTML = formatContentLinks(res.notice);
               noticeBox.style.display = "block";
             }
             updateStatsDisplay(res.stats);
@@ -850,7 +890,7 @@
 
           const mobContainer = document.getElementById("officerMobileContainer");
           const rawMobile = d.mobile ? d.mobile.toString() : "";
-          mobContainer.innerHTML = linkifyPhoneNumbers(rawMobile) || "-";
+          mobContainer.innerHTML = formatContentLinks(rawMobile) || "-";
 
           let dutyMsgText = "";
           if (d.duties && d.duties.length > 0) {
@@ -859,7 +899,8 @@
               const box = document.createElement("div");
               box.className = `duty-box duty-theme-${index % totalThemes}`;
               
-              const formattedValue = linkifyPhoneNumbers(item.value);
+              // ലിങ്കുകളും ഫോൺ നമ്പറുകളും ഒരുമിച്ച് ഫോർമാറ്റ് ചെയ്യുന്നു
+              const formattedValue = formatContentLinks(item.value);
               box.innerHTML = `<div class="duty-title">${item.title}</div><div class="duty-content">${formattedValue}</div>`;
               dutyList.appendChild(box);
 
