@@ -33,6 +33,14 @@
     .btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
     #cameraInput { display: none; }
 
+    /* ഫോട്ടോ എടുത്ത ശേഷമുള്ള ചോയ്സ് ബോക്സ് (Crop / Next) */
+    #choiceModal { display: none; position: fixed; z-index: 9998; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.75); align-items: center; justify-content: center; padding: 16px; }
+    .choice-box { background: #ffffff; border-radius: 12px; padding: 20px; width: 100%; max-width: 340px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); text-align: center; }
+    .choice-box h3 { margin: 0 0 8px 0; font-size: 17px; color: #0f172a; }
+    .choice-box p { font-size: 13px; color: #64748b; margin: 0 0 16px 0; }
+    .choice-btn-crop { background: #0284c7; color: white; margin-bottom: 8px; }
+    .choice-btn-next { background: #16a34a; color: white; }
+
     /* ഫുൾ സ്ക്രീൻ ക്രോപ്പർ */
     #cropModal { display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; flex-direction: column; }
     .crop-top-bar { display: flex; gap: 6px; padding: 10px; background: #0f172a; align-items: center; }
@@ -46,7 +54,7 @@
     .crop-body { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; touch-action: none; overflow: hidden; }
     #cropCanvas { display: block; touch-action: none; background: #000; }
 
-    /* പ്രിവ്യൂ കാർഡ് & കൺട്രോളുകൾ */
+    /* പ്രിവ്യൂ കാർഡ് */
     .preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 12px 0; max-height: 290px; overflow-y: auto; background: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; }
     .preview-item { border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: #ffffff; display: flex; flex-direction: column; }
     .preview-item img { width: 100%; height: 115px; object-fit: contain; background: #111; }
@@ -58,8 +66,9 @@
     .del-btn { background: #ef4444; color: #fff; }
     .item-edit-btn { background: #0284c7; color: #fff; border: none; border-radius: 4px; padding: 6px 4px; font-size: 11px; font-weight: bold; cursor: pointer; flex: 1; }
 
-    .status { font-size: 13px; color: #334155; margin: 6px 0; font-weight: 500; min-height: 18px; }
-    
+    .status-box { background: #f1f5f9; padding: 8px 10px; border-radius: 6px; margin: 8px 0; border: 1px solid #e2e8f0; font-size: 13px; color: #1e293b; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .total-badge { background: #0284c7; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+
     .footer-credit { font-size: 12px; color: #64748b; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 8px; line-height: 1.5; }
     .counter-badge { display: inline-block; padding: 3px 10px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 11px; color: #475569; font-weight: 600; }
   </style>
@@ -78,7 +87,7 @@
     <div class="offline-notice">🔒 തികച്ചും ഓഫ്‌ലൈൻ ആയി ഉപയോഗിക്കാവുന്നതാണ്</div>
   </div>
 
-  <!-- ക്രമീകരണം -->
+  <!-- സെറ്റിംഗ്സ് -->
   <div class="settings-panel">
     <div class="settings-row">
       <label>പരമാവധി പേജ് സൈസ്:</label>
@@ -101,7 +110,11 @@
     📷 പേജ് ഫോട്ടോ എടുക്കുക
   </button>
 
-  <div class="status" id="statusText">പേജുകളൊന്നും ചേർത്തിട്ടില്ല</div>
+  <!-- തത്സമയ സ്റ്റാറ്റസും ആകെ ഫയൽ സൈസും -->
+  <div class="status-box" id="statusContainer">
+    <span id="statusPagesText">പേജുകളൊന്നും ചേർത്തിട്ടില്ല</span>
+    <span class="total-badge" id="totalSizeText" style="display: none;">ആകെ സൈസ്: 0 KB</span>
+  </div>
 
   <button class="btn btn-review-crop" id="reviewCropBtn" onclick="startBatchCrop(0)" style="display: none;">
     ✂️ ഓരോ പേജായി Crop ചെയ്യുക (Prev / Next)
@@ -109,7 +122,7 @@
 
   <div class="preview-grid" id="previewGrid"></div>
 
-  <!-- ഫയൽ നെയിം സെക്ഷൻ -->
+  <!-- ഫയൽ നെയിം ബോക്സ് -->
   <div id="downloadSection" style="display: none; margin-top: 12px;">
     <input type="text" id="pdfFileName" class="file-input-box" placeholder="ഫയലിന്റെ പേര് (നൽകിയില്ലെങ്കിൽ Date & Time വരും)">
     <button class="btn btn-download" id="downloadBtn" onclick="generatePDF()">
@@ -121,7 +134,6 @@
     എല്ലാം ഒഴിവാക്കുക
   </button>
 
-  <!-- ഫൂട്ടർ -->
   <div class="footer-credit">
     <div class="counter-badge" id="visitorCounter">
       👀 Total Visits: <span id="visitCount">...</span>
@@ -129,7 +141,17 @@
   </div>
 </div>
 
-<!-- ക്രോപ്പർ വിൻഡോ -->
+<!-- ഫോട്ടോ എടുത്ത ശേഷമുള്ള ചോയ്സ് മോഡൽ (Crop / Next) -->
+<div id="choiceModal">
+  <div class="choice-box">
+    <h3>ഫോട്ടോ ചേർത്തു</h3>
+    <p>ഈ പേജ് Crop ചെയ്യണമോ അതോ ക്രോപ്പ് ചെയ്യാതെ അടുത്ത ഫോട്ടോ എടുക്കണമോ?</p>
+    <button class="btn choice-btn-crop" onclick="proceedToCropFromChoice()">✂️ Crop ചെയ്യുക</button>
+    <button class="btn choice-btn-next" onclick="skipCropAndNextFromChoice()">➡️ Next (അടുത്ത ഫോട്ടോ)</button>
+  </div>
+</div>
+
+<!-- ക്രോപ്പർ മോഡൽ -->
 <div id="cropModal">
   <div class="crop-top-bar">
     <button class="btn-cancel" onclick="closeCropModal()">ക്ലോസ് ചെയ്യുക</button>
@@ -185,11 +207,13 @@
   const downloadBtn = document.getElementById('downloadBtn');
   const clearBtn = document.getElementById('clearBtn');
   const reviewCropBtn = document.getElementById('reviewCropBtn');
-  const statusText = document.getElementById('statusText');
+  const statusPagesText = document.getElementById('statusPagesText');
+  const totalSizeText = document.getElementById('totalSizeText');
   const targetSizeSelect = document.getElementById('targetSizeKb');
   const customKbInput = document.getElementById('customKbInput');
   const pdfFileNameInput = document.getElementById('pdfFileName');
 
+  const choiceModal = document.getElementById('choiceModal');
   const cropModal = document.getElementById('cropModal');
   const cropCanvas = document.getElementById('cropCanvas');
   const ctx = cropCanvas.getContext('2d');
@@ -202,6 +226,25 @@
   let currentEditingIndex = 0;
   let activeImage = new Image();
   let currentRotation = 0;
+
+  // കോൾ വരുമ്പോൾ ഡാറ്റ പോകാതിരിക്കാൻ ലോക്കൽ സ്റ്റോറേജിൽ നിന്ന് റീസ്റ്റോർ ചെയ്യുന്നു
+  window.addEventListener('load', () => {
+    const saved = localStorage.getItem('scanned_pages_backup');
+    if (saved) {
+      try {
+        pagesList = JSON.parse(saved);
+        updateUI();
+      } catch (e) {}
+    }
+  });
+
+  function saveBackup() {
+    try {
+      localStorage.setItem('scanned_pages_backup', JSON.stringify(pagesList));
+    } catch (e) {
+      // ക്വോട്ട കവിഞ്ഞാൽ ലോക്കൽ കാഷെ പ്രശ്നമില്ലാതെ തുടരും
+    }
+  }
 
   let pts = [
     { x: 0, y: 0 },
@@ -243,7 +286,7 @@
     const file = e.target.files[0];
     if (!file) return;
 
-    statusText.innerText = "പേജ് ചേർക്കുന്നു...";
+    statusPagesText.innerText = "പേജ് ചേർക്കുന്നു...";
 
     const reader = new FileReader();
     reader.onload = function(event) {
@@ -301,15 +344,31 @@
       rotation: 0
     });
 
+    saveBackup();
     updateUI();
+
+    // ഫോട്ടോ എടുത്തയുടൻ ചോയ്സ് ബോക്സ് തുറക്കുന്നു
+    choiceModal.style.display = 'flex';
   }
 
-  /* സ്ഥാനക്രമം മാറ്റാനുള്ള ഫംഗ്ഷനുകൾ */
+  function proceedToCropFromChoice() {
+    choiceModal.style.display = 'none';
+    startBatchCrop(pagesList.length - 1);
+  }
+
+  function skipCropAndNextFromChoice() {
+    choiceModal.style.display = 'none';
+    setTimeout(() => {
+      triggerCamera();
+    }, 250);
+  }
+
   function movePageLeft(index) {
     if (index > 0) {
       const temp = pagesList[index];
       pagesList[index] = pagesList[index - 1];
       pagesList[index - 1] = temp;
+      saveBackup();
       updateUI();
     }
   }
@@ -319,6 +378,7 @@
       const temp = pagesList[index];
       pagesList[index] = pagesList[index + 1];
       pagesList[index + 1] = temp;
+      saveBackup();
       updateUI();
     }
   }
@@ -326,6 +386,7 @@
   function deletePage(index) {
     if (confirm(`Page ${index + 1} നീക്കം ചെയ്യണമോ?`)) {
       pagesList.splice(index, 1);
+      saveBackup();
       updateUI();
     }
   }
@@ -539,7 +600,7 @@
   }
 
   function saveCroppedCurrent() {
-    statusText.innerText = "കംപ്രസ് ചെയ്യുന്നു...";
+    statusPagesText.innerText = "കംപ്രസ് ചെയ്യുന്നു...";
 
     let masterW = activeImage.width;
     let masterH = activeImage.height;
@@ -606,6 +667,7 @@
     pagesList[currentEditingIndex].sizeKb = sizeKb;
     pagesList[currentEditingIndex].rotation = currentRotation;
 
+    saveBackup();
     updateUI();
 
     if (currentEditingIndex < pagesList.length - 1) {
@@ -618,7 +680,10 @@
 
   function updateUI() {
     previewGrid.innerHTML = "";
+    let totalKb = 0;
+
     pagesList.forEach((item, index) => {
+      totalKb += item.sizeKb;
       const div = document.createElement('div');
       div.className = 'preview-item';
       div.innerHTML = `
@@ -634,11 +699,18 @@
       previewGrid.appendChild(div);
     });
 
-    statusText.innerText = `ആകെ ചേർത്ത പേജുകൾ: ${pagesList.length}`;
-    
     if (pagesList.length === 0) {
+      statusPagesText.innerText = "പേജുകളൊന്നും ചേർത്തിട്ടില്ല";
+      totalSizeText.style.display = "none";
       cameraBtn.innerText = "📷 പേജ് ഫോട്ടോ എടുക്കുക";
     } else {
+      statusPagesText.innerText = `ആകെ പേജുകൾ: ${pagesList.length}`;
+      
+      // MB / KB കാൽക്കുലേഷൻ
+      let sizeString = totalKb > 1024 ? `${(totalKb / 1024).toFixed(2)} MB (${totalKb} KB)` : `${totalKb} KB`;
+      totalSizeText.innerText = `ആകെ സൈസ്: ${sizeString}`;
+      totalSizeText.style.display = "inline-block";
+
       cameraBtn.innerText = "📷 അടുത്ത പേജ് ഫോട്ടോ എടുക്കുക";
     }
 
@@ -667,7 +739,7 @@
   async function generatePDF() {
     if (pagesList.length === 0) return;
 
-    statusText.innerText = "PDF തയ്യാറാക്കുന്നു...";
+    statusPagesText.innerText = "PDF തയ്യാറാക്കുന്നു...";
     downloadBtn.disabled = true;
 
     try {
@@ -714,9 +786,9 @@
         URL.revokeObjectURL(url);
       }, 1500);
 
-      statusText.innerText = `"${customName}" എന്ന പേരിൽ ഡൗൺലോഡ് ചെയ്തു!`;
+      statusPagesText.innerText = `"${customName}" എന്ന പേരിൽ ഡൗൺലോഡ് ചെയ്തു!`;
     } catch (err) {
-      statusText.innerText = "Error: " + err.message;
+      statusPagesText.innerText = "Error: " + err.message;
       alert("Error: " + err.message);
     } finally {
       downloadBtn.disabled = false;
@@ -726,8 +798,8 @@
   function resetAll() {
     if (confirm("എല്ലാ പേജുകളും നീക്കം ചെയ്യണമോ?")) {
       pagesList = [];
+      localStorage.removeItem('scanned_pages_backup');
       updateUI();
-      statusText.innerText = "പേജുകളൊന്നും ചേർത്തിട്ടില്ല";
     }
   }
 </script>
