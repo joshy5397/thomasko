@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title id="webTitle">Document Scanner</title>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; touch-action: manipulation; }
+    body { padding: 12px; background-color: #f1f5f9; text-align: center; margin: 0; color: #1e293b; }
+    .card { background: #ffffff; padding: 16px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-width: 480px; margin: auto; }
+    h2 { font-size: 19px; margin: 0 0 2px 0; color: #0f172a; }
+    .author-badge { font-size: 12px; color: #0284c7; font-weight: 600; margin-bottom: 6px; }
+    p.sub { font-size: 13px; color: #64748b; margin: 0 0 12px 0; }
+    
+    .settings-panel { background: #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; text-align: left; }
+    .settings-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .settings-row:last-child { margin-bottom: 0; }
+    .settings-row label { font-weight: 600; color: #334155; }
+    .settings-row select, .settings-row input { padding: 6px 8px; font-size: 13px; font-weight: 600; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; }
+    .custom-kb-box { display: none; width: 85px; margin-left: 6px; }
+
+    .file-input-box { width: 100%; padding: 10px; font-size: 14px; border-radius: 8px; border: 1.5px solid #cbd5e1; margin-bottom: 8px; font-weight: 500; text-align: left; }
+
+    .btn { display: block; width: 100%; padding: 13px; margin: 8px 0; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+    .btn-camera { background-color: #2563eb; color: #ffffff; }
+    .btn-review-crop { background-color: #0284c7; color: #ffffff; }
+    .btn-download { background-color: #16a34a; color: #ffffff; }
+    .btn-clear { background-color: #ef4444; color: #ffffff; }
+    .btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
+    #cameraInput { display: none; }
+
+    /* ഫുൾ സ്ക്രീൻ ക്രോപ്പർ */
+    #cropModal { display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; flex-direction: column; }
+    .crop-top-bar { display: flex; gap: 6px; padding: 10px; background: #0f172a; align-items: center; }
+    .crop-top-bar button { flex: 1; padding: 9px 4px; border-radius: 6px; font-weight: bold; border: none; font-size: 12px; cursor: pointer; }
+    .btn-nav { background: #334155; color: white; }
+    .btn-done { background: #16a34a; color: white; }
+    .btn-rotate { background: #0284c7; color: white; }
+    .btn-cancel { background: #dc2626; color: white; }
+    
+    .crop-page-title { color: #facc15; font-size: 13px; font-weight: bold; padding: 4px 10px; background: #1e293b; display: flex; justify-content: space-between; align-items: center; }
+    .crop-body { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; touch-action: none; overflow: hidden; }
+    #cropCanvas { display: block; touch-action: none; background: #000; }
+
+    .preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 12px 0; max-height: 280px; overflow-y: auto; background: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; }
+    .preview-item { border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: #ffffff; display: flex; flex-direction: column; }
+    .preview-item img { width: 100%; height: 120px; object-fit: contain; background: #111; }
+    .page-tag { background: #0f172a; color: #fff; font-size: 11px; padding: 4px; font-weight: 500; }
+    .item-edit-btn { background: #0284c7; color: #fff; border: none; padding: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
+    .status { font-size: 13px; color: #334155; margin: 6px 0; font-weight: 500; min-height: 18px; }
+    
+    .footer-credit { font-size: 12px; color: #64748b; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 8px; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <!-- ടൈറ്റിലും സബ് ടൈറ്റിലും തനിയെ ഇവിടെ ലോഡ് ആകും -->
+  <h2 id="displayTitle">സർവീസ് ബുക്ക് സ്കാനർ</h2>
+  <div class="author-badge" id="displayAuthor">Created by Joshy</div>
+  <p class="sub" id="displaySubtitle">ഓരോ പേജും നിശ്ചിത KB-യിൽ ഒതുക്കി PDF നിർമ്മിക്കുന്നു[cite: 1]</p>
+
+  <!-- സെറ്റിംഗ്സ് -->
+  <div class="settings-panel">
+    <div class="settings-row">
+      <label>പരമാവധി പേജ് സൈസ്:</label>
+      <div style="display: flex; align-items: center;">
+        <select id="targetSizeKb" onchange="toggleCustomKb(this.value)">
+          <option value="60">60 KB</option>
+          <option value="80">80 KB</option>
+          <option value="90">90 KB</option>
+          <option value="100" selected>100 KB</option>
+          <option value="custom">Custom</option>
+        </select>
+        <input type="number" id="customKbInput" class="custom-kb-box" placeholder="KB" min="20" max="500">
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="cameraInput" accept="image/*" capture="environment">
+
+  <button class="btn btn-camera" onclick="triggerCamera()">
+    📷 അടുത്ത പേജ് ഫോട്ടോ എടുക്കുക
+  </button>
+
+  <div class="status" id="statusText">പേജുകളൊന്നും ചേർത്തിട്ടില്ല</div>
+
+  <button class="btn btn-review-crop" id="reviewCropBtn" onclick="startBatchCrop(0)" style="display: none;">
+    ✂️ ഓരോ പേജായി Crop ചെയ്യുക (Prev / Next)
+  </button>
+
+  <div class="preview-grid" id="previewGrid"></div>
+
+  <!-- ഫയൽ നെയിം ബോക്സ് -->
+  <div id="downloadSection" style="display: none; margin-top: 12px;">
+    <input type="text" id="pdfFileName" class="file-input-box" placeholder="ഫയലിന്റെ പേര് (നൽകിയില്ലെങ്കിൽ Date & Time വരും)">
+    <button class="btn btn-download" id="downloadBtn" onclick="generatePDF()">
+      📄 PDF ഡൗൺലോഡ് ചെയ്യുക
+    </button>
+  </div>
+
+  <button class="btn btn-clear" id="clearBtn" onclick="resetAll()" style="display: none;">
+    എല്ലാം ഒഴിവാക്കുക
+  </button>
+
+  <div class="footer-credit" id="displayFooterAuthor">
+    Application Developed by: <b>Joshy</b>
+  </div>
+</div>
+
+<!-- ഫുൾ സ്ക്രീൻ ക്രോപ്പർ മോഡൽ -->
+<div id="cropModal">
+  <div class="crop-top-bar">
+    <button class="btn-cancel" onclick="closeCropModal()">ക്ലോസ് ചെയ്യുക</button>
+    <button class="btn-nav" id="prevBtn" onclick="navigateCrop(-1)">◀ Prev</button>
+    <button class="btn-rotate" onclick="rotateCurrent()">↻ തിരിക്കുക</button>
+    <button class="btn-done" onclick="saveCroppedCurrent()">ശരി (Save)</button>
+    <button class="btn-nav" id="nextBtn" onclick="navigateCrop(1)">Next ▶</button>
+  </div>
+  <div class="crop-page-title">
+    <span id="pageTitleText">Page 1 / 1</span>
+    <span style="font-size: 11px; font-weight: normal; color: #cbd5e1;">ഡോട്ടിലോ വരയിലോ പിടിച്ച് ക്രോപ്പ് ചെയ്യുക</span>
+  </div>
+  <div class="crop-body" id="cropContainer">
+    <canvas id="cropCanvas"></canvas>
+  </div>
+</div>
+
+<script>
+  // ==========================================
+  // 👇 ഇവിടെ നിങ്ങൾക്ക് പേരും ടൈറ്റിലും മാറ്റാം 👇
+  // ==========================================
+  const APP_CONFIG = {
+    title: "സർവീസ് ബുക്ക് സ്കാനർ",             // പ്രധാന ടൈറ്റിൽ
+    author: "Joshy",                          // നിങ്ങളുടെ പേര്
+    subtitle: "ഓരോ പേജും നിശ്ചിത KB-യിൽ ഒതുക്കി PDF നിർമ്മിക്കുന്നു" // സബ് ടൈറ്റിൽ
+  };
+
+  // പേജിലേക്ക് ടൈറ്റിലുകൾ നൽകുന്നു
+  document.getElementById('webTitle').innerText = APP_CONFIG.title;
+  document.getElementById('displayTitle').innerText = APP_CONFIG.title;
+  document.getElementById('displayAuthor').innerText = "Created by " + APP_CONFIG.author;
+  document.getElementById('displaySubtitle').innerText = APP_CONFIG.subtitle;
+  document.getElementById('displayFooterAuthor').innerHTML = "Application Developed by: <b>" + APP_CONFIG.author + "</b>";
+
+  // ==========================================
+
+  const cameraInput = document.getElementById('cameraInput');
+  const previewGrid = document.getElementById('previewGrid');
+  const downloadSection = document.getElementById('downloadSection');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const reviewCropBtn = document.getElementById('reviewCropBtn');
+  const statusText = document.getElementById('statusText');
+  const targetSizeSelect = document.getElementById('targetSizeKb');
+  const customKbInput = document.getElementById('customKbInput');
+  const pdfFileNameInput = document.getElementById('pdfFileName');
+
+  const cropModal = document.getElementById('cropModal');
+  const cropCanvas = document.getElementById('cropCanvas');
+  const ctx = cropCanvas.getContext('2d');
+  const cropContainer = document.getElementById('cropContainer');
+  const pageTitleText = document.getElementById('pageTitleText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  let pagesList = [];
+  let currentEditingIndex = 0;
+  let activeImage = new Image();
+  let currentRotation = 0;
+
+  let pts = [
+    { x: 0, y: 0 },
+    { x: 0, y: 0 },
+    { x: 0, y: 0 },
+    { x: 0, y: 0 }
+  ];
+
+  let activeTouchMode = null;
+  let activePtIndex = -1;
+  let activeLineIndices = [];
+  let lastTouchPos = { x: 0, y: 0 };
+
+  const TOUCH_RADIUS = 34;
+  const LINE_HIT_THRESHOLD = 26;
+
+  function toggleCustomKb(val) {
+    if (val === 'custom') {
+      customKbInput.style.display = 'inline-block';
+      customKbInput.focus();
+    } else {
+      customKbInput.style.display = 'none';
+    }
+  }
+
+  function getEffectiveTargetKb() {
+    if (targetSizeSelect.value === 'custom') {
+      const customVal = parseInt(customKbInput.value);
+      return (customVal && customVal > 15) ? customVal : 90;
+    }
+    return parseInt(targetSizeSelect.value) || 100;
+  }
+
+  function triggerCamera() {
+    document.getElementById('cameraInput').click();
+  }
+
+  cameraInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    statusText.innerText = "പേജ് ചേർക്കുന്നു...";
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const rawData = event.target.result;
+      const img = new Image();
+      img.onload = function() {
+        compressInitialPage(img, rawData);
+      };
+      img.src = rawData;
+      cameraInput.value = "";
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function compressInitialPage(img, rawData) {
+    const targetKb = getEffectiveTargetKb();
+    const limitDim = 950;
+    let outW = img.width;
+    let outH = img.height;
+    if (outW > limitDim) {
+      outH = Math.round((outH * limitDim) / outW);
+      outW = limitDim;
+    }
+
+    const outCanvas = document.createElement('canvas');
+    outCanvas.width = outW;
+    outCanvas.height = outH;
+    const outCtx = outCanvas.getContext('2d');
+    outCtx.drawImage(img, 0, 0, outW, outH);
+
+    // ഗ്രേസ്കെയിൽ
+    const imgData = outCtx.getImageData(0, 0, outW, outH);
+    const d = imgData.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const gray = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+      d[i] = gray;
+      d[i + 1] = gray;
+      d[i + 2] = gray;
+    }
+    outCtx.putImageData(imgData, 0, 0);
+
+    let q = 0.45;
+    let dataUrl = outCanvas.toDataURL('image/jpeg', q);
+    let sizeKb = Math.round(((dataUrl.length - dataUrl.indexOf(',') - 1) * 3/4) / 1024);
+
+    while (sizeKb > targetKb && q > 0.10) {
+      q -= 0.05;
+      dataUrl = outCanvas.toDataURL('image/jpeg', q);
+      sizeKb = Math.round(((dataUrl.length - dataUrl.indexOf(',') - 1) * 3/4) / 1024);
+    }
+
+    pagesList.push({
+      rawDataUrl: rawData,
+      processedDataUrl: dataUrl,
+      sizeKb: sizeKb,
+      rotation: 0
+    });
+
+    updateUI();
+  }
+
+  function startBatchCrop(index) {
+    if (pagesList.length === 0) return;
+    currentEditingIndex = Math.max(0, Math.min(index, pagesList.length - 1));
+    loadPageForCrop();
+  }
+
+  function loadPageForCrop() {
+    const item = pagesList[currentEditingIndex];
+    pageTitleText.innerText = `Page ${currentEditingIndex + 1} / ${pagesList.length} (${item.sizeKb} KB)`;
+    prevBtn.disabled = (currentEditingIndex === 0);
+    nextBtn.disabled = (currentEditingIndex === pagesList.length - 1);
+
+    currentRotation = item.rotation || 0;
+    activeImage = new Image();
+    activeImage.onload = function() {
+      cropModal.style.display = 'flex';
+      resizeCropCanvas();
+
+      const padX = cropCanvas.width * 0.06;
+      const padY = cropCanvas.height * 0.06;
+      const w = cropCanvas.width;
+      const h = cropCanvas.height;
+
+      pts = [
+        { x: padX, y: padY },
+        { x: w - padX, y: padY },
+        { x: w - padX, y: h - padY },
+        { x: padX, y: h - padY }
+      ];
+
+      drawCropScreen();
+    };
+    activeImage.src = item.rawDataUrl;
+  }
+
+  function navigateCrop(direction) {
+    const newIdx = currentEditingIndex + direction;
+    if (newIdx >= 0 && newIdx < pagesList.length) {
+      currentEditingIndex = newIdx;
+      loadPageForCrop();
+    }
+  }
+
+  function resizeCropCanvas() {
+    const maxW = cropContainer.clientWidth - 16;
+    const maxH = cropContainer.clientHeight - 16;
+
+    let srcW = activeImage.width;
+    let srcH = activeImage.height;
+
+    if (currentRotation === 90 || currentRotation === 270) {
+      srcW = activeImage.height;
+      srcH = activeImage.width;
+    }
+
+    const scale = Math.min(maxW / srcW, maxH / srcH);
+    cropCanvas.width = srcW * scale;
+    cropCanvas.height = srcH * scale;
+  }
+
+  function rotateCurrent() {
+    currentRotation = (currentRotation + 90) % 360;
+    resizeCropCanvas();
+    const padX = cropCanvas.width * 0.06;
+    const padY = cropCanvas.height * 0.06;
+    const w = cropCanvas.width;
+    const h = cropCanvas.height;
+
+    pts = [
+      { x: padX, y: padY },
+      { x: w - padX, y: padY },
+      { x: w - padX, y: h - padY },
+      { x: padX, y: h - padY }
+    ];
+    drawCropScreen();
+  }
+
+  function drawCropScreen() {
+    ctx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+
+    ctx.save();
+    ctx.translate(cropCanvas.width / 2, cropCanvas.height / 2);
+    ctx.rotate(currentRotation * Math.PI / 180);
+
+    let drawW = (currentRotation === 90 || currentRotation === 270) ? cropCanvas.height : cropCanvas.width;
+    let drawH = (currentRotation === 90 || currentRotation === 270) ? cropCanvas.width : cropCanvas.height;
+    ctx.drawImage(activeImage, -drawW / 2, -drawH / 2, drawW, drawH);
+    ctx.restore();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, cropCanvas.width, cropCanvas.height);
+    ctx.moveTo(pts[0].x, pts[0].y);
+    ctx.lineTo(pts[1].x, pts[1].y);
+    ctx.lineTo(pts[2].x, pts[2].y);
+    ctx.lineTo(pts[3].x, pts[3].y);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+    ctx.fill('evenodd');
+    ctx.restore();
+
+    const lines = [[0, 1], [1, 2], [2, 3], [3, 0]];
+    lines.forEach(([i1, i2]) => {
+      ctx.beginPath();
+      ctx.moveTo(pts[i1].x, pts[i1].y);
+      ctx.lineTo(pts[i2].x, pts[i2].y);
+      const isLineActive = (activeTouchMode === 'line' && activeLineIndices[0] === i1 && activeLineIndices[1] === i2);
+      ctx.strokeStyle = isLineActive ? '#facc15' : '#38bdf8';
+      ctx.lineWidth = isLineActive ? 4 : 2.5;
+      ctx.stroke();
+    });
+
+    pts.forEach((p, idx) => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 16, 0, Math.PI * 2);
+      ctx.fillStyle = (activeTouchMode === 'pt' && activePtIndex === idx) ? '#38bdf8' : '#0284c7';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3.5;
+      ctx.stroke();
+    });
+  }
+
+  function distToSegment(p, v, w) {
+    const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
+    if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
+    let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+    t = Math.max(0, Math.min(1, t));
+    return Math.hypot(p.x - (v.x + t * (w.x - v.x)), p.y - (v.y + t * (w.y - v.y)));
+  }
+
+  function getCanvasTouch(e) {
+    const rect = cropCanvas.getBoundingClientRect();
+    const t = e.touches[0] || e.changedTouches[0];
+    return {
+      x: t.clientX - rect.left,
+      y: t.clientY - rect.top
+    };
+  }
+
+  cropCanvas.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    const pos = getCanvasTouch(e);
+    lastTouchPos = pos;
+
+    activeTouchMode = null;
+    activePtIndex = -1;
+    activeLineIndices = [];
+
+    let closestPtDist = Infinity;
+    pts.forEach((p, idx) => {
+      const d = Math.hypot(pos.x - p.x, pos.y - p.y);
+      if (d < TOUCH_RADIUS && d < closestPtDist) {
+        closestPtDist = d;
+        activePtIndex = idx;
+        activeTouchMode = 'pt';
+      }
+    });
+
+    if (activeTouchMode !== 'pt') {
+      const lines = [[0, 1], [1, 2], [2, 3], [3, 0]];
+      let closestLineDist = Infinity;
+      lines.forEach(([i1, i2]) => {
+        const d = distToSegment(pos, pts[i1], pts[i2]);
+        if (d < LINE_HIT_THRESHOLD && d < closestLineDist) {
+          closestLineDist = d;
+          activeLineIndices = [i1, i2];
+          activeTouchMode = 'line';
+        }
+      });
+    }
+
+    drawCropScreen();
+  });
+
+  cropCanvas.addEventListener('touchmove', function(e) {
+    if (!activeTouchMode) return;
+    e.preventDefault();
+    const pos = getCanvasTouch(e);
+    const dx = pos.x - lastTouchPos.x;
+    const dy = pos.y - lastTouchPos.y;
+    lastTouchPos = pos;
+
+    if (activeTouchMode === 'pt') {
+      pts[activePtIndex].x = Math.max(0, Math.min(cropCanvas.width, pts[activePtIndex].x + dx));
+      pts[activePtIndex].y = Math.max(0, Math.min(cropCanvas.height, pts[activePtIndex].y + dy));
+    } else if (activeTouchMode === 'line') {
+      const [i1, i2] = activeLineIndices;
+      pts[i1].x = Math.max(0, Math.min(cropCanvas.width, pts[i1].x + dx));
+      pts[i1].y = Math.max(0, Math.min(cropCanvas.height, pts[i1].y + dy));
+      pts[i2].x = Math.max(0, Math.min(cropCanvas.width, pts[i2].x + dx));
+      pts[i2].y = Math.max(0, Math.min(cropCanvas.height, pts[i2].y + dy));
+    }
+
+    drawCropScreen();
+  });
+
+  cropCanvas.addEventListener('touchend', function() {
+    activeTouchMode = null;
+    activePtIndex = -1;
+    activeLineIndices = [];
+    drawCropScreen();
+  });
+
+  function closeCropModal() {
+    cropModal.style.display = 'none';
+  }
+
+  function saveCroppedCurrent() {
+    statusText.innerText = "കംപ്രസ് ചെയ്യുന്നു...";
+
+    let masterW = activeImage.width;
+    let masterH = activeImage.height;
+    if (currentRotation === 90 || currentRotation === 270) {
+      masterW = activeImage.height;
+      masterH = activeImage.width;
+    }
+
+    const tCanvas = document.createElement('canvas');
+    tCanvas.width = masterW;
+    tCanvas.height = masterH;
+    const tCtx = tCanvas.getContext('2d');
+    tCtx.translate(masterW / 2, masterH / 2);
+    tCtx.rotate(currentRotation * Math.PI / 180);
+    tCtx.drawImage(activeImage, -activeImage.width / 2, -activeImage.height / 2);
+
+    const factorX = masterW / cropCanvas.width;
+    const factorY = masterH / cropCanvas.height;
+
+    const minX = Math.min(pts[0].x, pts[1].x, pts[2].x, pts[3].x) * factorX;
+    const maxX = Math.max(pts[0].x, pts[1].x, pts[2].x, pts[3].x) * factorX;
+    const minY = Math.min(pts[0].y, pts[1].y, pts[2].y, pts[3].y) * factorY;
+    const maxY = Math.max(pts[0].y, pts[1].y, pts[2].y, pts[3].y) * factorY;
+
+    const realW = Math.max(50, maxX - minX);
+    const realH = Math.max(50, maxY - minY);
+
+    const limitDim = 950;
+    let outW = realW;
+    let outH = realH;
+    if (outW > limitDim) {
+      outH = Math.round((outH * limitDim) / outW);
+      outW = limitDim;
+    }
+
+    const outCanvas = document.createElement('canvas');
+    outCanvas.width = outW;
+    outCanvas.height = outH;
+    const outCtx = outCanvas.getContext('2d');
+    outCtx.drawImage(tCanvas, minX, minY, realW, realH, 0, 0, outW, outH);
+
+    const targetKb = getEffectiveTargetKb();
+    const imgData = outCtx.getImageData(0, 0, outW, outH);
+    const d = imgData.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const gray = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+      d[i] = gray;
+      d[i + 1] = gray;
+      d[i + 2] = gray;
+    }
+    outCtx.putImageData(imgData, 0, 0);
+
+    let q = 0.45;
+    let dataUrl = outCanvas.toDataURL('image/jpeg', q);
+    let sizeKb = Math.round(((dataUrl.length - dataUrl.indexOf(',') - 1) * 3/4) / 1024);
+
+    while (sizeKb > targetKb && q > 0.10) {
+      q -= 0.05;
+      dataUrl = outCanvas.toDataURL('image/jpeg', q);
+      sizeKb = Math.round(((dataUrl.length - dataUrl.indexOf(',') - 1) * 3/4) / 1024);
+    }
+
+    pagesList[currentEditingIndex].processedDataUrl = dataUrl;
+    pagesList[currentEditingIndex].sizeKb = sizeKb;
+    pagesList[currentEditingIndex].rotation = currentRotation;
+
+    updateUI();
+
+    if (currentEditingIndex < pagesList.length - 1) {
+      navigateCrop(1);
+    } else {
+      closeCropModal();
+      alert("എല്ലാ പേജുകളും ക്രമീകരിച്ചു കഴിഞ്ഞു!");
+    }
+  }
+
+  function updateUI() {
+    previewGrid.innerHTML = "";
+    pagesList.forEach((item, index) => {
+      const div = document.createElement('div');
+      div.className = 'preview-item';
+      div.innerHTML = `
+        <img src="${item.processedDataUrl}">
+        <span class="page-tag">P.${index + 1} — <b>${item.sizeKb} KB</b></span>
+        <button class="item-edit-btn" onclick="startBatchCrop(${index})">✂️ Crop / Edit</button>
+      `;
+      previewGrid.appendChild(div);
+    });
+
+    statusText.innerText = `ആകെ ചേർത്ത പേജുകൾ: ${pagesList.length}`;
+    clearBtn.style.display = pagesList.length > 0 ? "block" : "none";
+    reviewCropBtn.style.display = pagesList.length > 0 ? "block" : "none";
+    downloadSection.style.display = pagesList.length > 0 ? "block" : "none";
+  }
+
+  function base64ToUint8Array(base64) {
+    const raw = window.atob(base64.split(',')[1]);
+    const uint8Array = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) {
+      uint8Array[i] = raw.charCodeAt(i);
+    }
+    return uint8Array;
+  }
+
+  function getDefaultDocName() {
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const dateStr = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    const timeStr = `${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`;
+    return `Doc_${dateStr}_${timeStr}`;
+  }
+
+  async function generatePDF() {
+    if (pagesList.length === 0) return;
+
+    statusText.innerText = "PDF തയ്യാറാക്കുന്നു...";
+    downloadBtn.disabled = true;
+
+    try {
+      const { PDFDocument } = PDFLib;
+      const pdfDoc = await PDFDocument.create();
+
+      const a4Width = 595.28;
+      const a4Height = 841.89;
+
+      for (let i = 0; i < pagesList.length; i++) {
+        const imageBytes = base64ToUint8Array(pagesList[i].processedDataUrl);
+        const jpgImage = await pdfDoc.embedJpg(imageBytes);
+
+        const page = pdfDoc.addPage([a4Width, a4Height]);
+        page.drawImage(jpgImage, {
+          x: 0,
+          y: 0,
+          width: a4Width,
+          height: a4Height,
+        });
+      }
+
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+
+      let customName = pdfFileNameInput.value.trim();
+      if (!customName) {
+        customName = getDefaultDocName();
+      }
+      if (!customName.toLowerCase().endsWith('.pdf')) {
+        customName += '.pdf';
+      }
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.download = customName;
+      document.body.appendChild(link);
+      link.click();
+
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 1500);
+
+      statusText.innerText = `"${customName}" എന്ന പേരിൽ ഡൗൺലോഡ് ചെയ്തു!`;
+    } catch (err) {
+      statusText.innerText = "Error: " + err.message;
+      alert("Error: " + err.message);
+    } finally {
+      downloadBtn.disabled = false;
+    }
+  }
+
+  function resetAll() {
+    if (confirm("എല്ലാ പേജുകളും നീക്കം ചെയ്യണമോ?")) {
+      pagesList = [];
+      updateUI();
+      statusText.innerText = "പേജുകളൊന്നും ചേർത്തിട്ടില്ല";
+    }
+  }
+</script>
+
+</body>
+</html>
