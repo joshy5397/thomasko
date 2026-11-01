@@ -33,13 +33,18 @@
     .btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
     #cameraInput { display: none; }
 
-    /* ഫോട്ടോ എടുത്ത ശേഷമുള്ള ചോയ്സ് ബോക്സ് (Crop / Next) */
-    #choiceModal { display: none; position: fixed; z-index: 9998; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.75); align-items: center; justify-content: center; padding: 16px; }
-    .choice-box { background: #ffffff; border-radius: 12px; padding: 20px; width: 100%; max-width: 340px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); text-align: center; }
-    .choice-box h3 { margin: 0 0 8px 0; font-size: 17px; color: #0f172a; }
-    .choice-box p { font-size: 13px; color: #64748b; margin: 0 0 16px 0; }
-    .choice-btn-crop { background: #0284c7; color: white; margin-bottom: 8px; }
-    .choice-btn-next { background: #16a34a; color: white; }
+    /* ഫോട്ടോ എടുത്തയുടൻ കാണിക്കുന്ന OK / RETRY മോഡൽ */
+    #quickReviewModal { display: none; position: fixed; z-index: 9998; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.88); flex-direction: column; align-items: center; justify-content: center; padding: 14px; }
+    .review-box { background: #ffffff; border-radius: 12px; padding: 14px; width: 100%; max-width: 360px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); text-align: center; }
+    .review-img-wrap { width: 100%; height: 260px; background: #111; border-radius: 8px; overflow: hidden; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; }
+    .review-img-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    
+    .btn-row { display: flex; gap: 8px; }
+    .btn-row button { flex: 1; padding: 11px 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 14px; cursor: pointer; }
+    .btn-retry { background: #dc2626; color: white; }
+    .btn-ok { background: #16a34a; color: white; }
+    .btn-next-step { background: #0284c7; color: white; }
+    .btn-close-step { background: #475569; color: white; }
 
     /* ഫുൾ സ്ക്രീൻ ക്രോപ്പർ */
     #cropModal { display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; flex-direction: column; }
@@ -83,7 +88,7 @@
       <span class="badge" id="dispCreatedBy">AI-യുടെ സഹായത്താൽ നിർമ്മിച്ചത്: Joshy Thomas K</span>
       <span class="badge" id="dispVersion">Ver: V-1.0</span>
     </div>
-    <p class="sub" id="dispSubtitle">ഓരോ പേജും നിശ്ചിത KB-യിൽ ഒതുക്കി PDF നിർമ്മിക്കുന്നു</p>
+    <p class="sub" id="dispSubtitle">ഓരോ പേജും നിശ്ചിത KB-യിൽ ഒതുക്കി PDF നിർമ്മിക്കുന്നു[cite: 1]</p>
     <div class="offline-notice">🔒 തികച്ചും ഓഫ്‌ലൈൻ ആയി ഉപയോഗിക്കാവുന്നതാണ്</div>
   </div>
 
@@ -141,13 +146,29 @@
   </div>
 </div>
 
-<!-- ഫോട്ടോ എടുത്ത ശേഷമുള്ള ചോയ്സ് മോഡൽ (Crop / Next) -->
-<div id="choiceModal">
-  <div class="choice-box">
-    <h3>ഫോട്ടോ ചേർത്തു</h3>
-    <p>ഈ പേജ് Crop ചെയ്യണമോ അതോ ക്രോപ്പ് ചെയ്യാതെ അടുത്ത ഫോട്ടോ എടുക്കണമോ?</p>
-    <button class="btn choice-btn-crop" onclick="proceedToCropFromChoice()">✂️ Crop ചെയ്യുക</button>
-    <button class="btn choice-btn-next" onclick="skipCropAndNextFromChoice()">➡️ Next (അടുത്ത ഫോട്ടോ)</button>
+<!-- ഫോട്ടോ എടുത്തയുടൻ കാണിക്കുന്ന OK / RETRY മോഡൽ -->
+<div id="quickReviewModal">
+  <div class="review-box">
+    <h3 style="margin: 0 0 8px 0; font-size: 16px;">ഫോട്ടോ പരിശോധിക്കുക</h3>
+    <div class="review-img-wrap">
+      <img id="tempPreviewImg" src="">
+    </div>
+
+    <!-- സ്റ്റേജ് 1: OK അല്ലെങ്കിൽ Retry ബട്ടണുകൾ -->
+    <div id="stage1Buttons" class="btn-row">
+      <button class="btn-retry" onclick="retryCurrentPhoto()">🔁 Retry (വീണ്ടും)</button>
+      <button class="btn-ok" onclick="confirmOkPhoto()">✅ OK (ശരി)</button>
+    </div>
+
+    <!-- സ്റ്റേജ് 2: OK അടിച്ച ശേഷം തെളിയുന്ന Next / Close ചോയ്സ് -->
+    <div id="stage2Buttons" style="display: none;">
+      <p style="font-size: 13px; color: #475569; margin: 4px 0 10px 0;">ഈ പേജ് ചേർത്തു. അടുത്തത് എന്താണ് ചെയ്യേണ്ടത്?</p>
+      <div class="btn-row" style="margin-bottom: 8px;">
+        <button class="btn-next-step" onclick="handleChoiceNext()">➡️ Next (അടുത്തത്)</button>
+        <button class="item-edit-btn" style="padding: 11px 8px; font-size: 13px;" onclick="handleChoiceCrop()">✂️ Crop</button>
+      </div>
+      <button class="btn btn-close-step" style="padding: 10px; margin: 0;" onclick="handleChoiceClose()">⏹️ Close (പൂർത്തിയായി)</button>
+    </div>
   </div>
 </div>
 
@@ -213,7 +234,11 @@
   const customKbInput = document.getElementById('customKbInput');
   const pdfFileNameInput = document.getElementById('pdfFileName');
 
-  const choiceModal = document.getElementById('choiceModal');
+  const quickReviewModal = document.getElementById('quickReviewModal');
+  const tempPreviewImg = document.getElementById('tempPreviewImg');
+  const stage1Buttons = document.getElementById('stage1Buttons');
+  const stage2Buttons = document.getElementById('stage2Buttons');
+
   const cropModal = document.getElementById('cropModal');
   const cropCanvas = document.getElementById('cropCanvas');
   const ctx = cropCanvas.getContext('2d');
@@ -226,8 +251,9 @@
   let currentEditingIndex = 0;
   let activeImage = new Image();
   let currentRotation = 0;
+  let tempRawData = null; // പുതിയതായി എടുത്ത ഫോട്ടോയുടെ ഡാറ്റ താത്കാലികമായി വെക്കാൻ
 
-  // കോൾ വരുമ്പോൾ ഡാറ്റ പോകാതിരിക്കാൻ ലോക്കൽ സ്റ്റോറേജിൽ നിന്ന് റീസ്റ്റോർ ചെയ്യുന്നു
+  // കോൾ വരുമ്പോൾ ഡാറ്റ പോകാതിരിക്കാൻ ബാക്കപ്പ് റീസ്റ്റോർ ചെയ്യുന്നു
   window.addEventListener('load', () => {
     const saved = localStorage.getItem('scanned_pages_backup');
     if (saved) {
@@ -241,9 +267,7 @@
   function saveBackup() {
     try {
       localStorage.setItem('scanned_pages_backup', JSON.stringify(pagesList));
-    } catch (e) {
-      // ക്വോട്ട കവിഞ്ഞാൽ ലോക്കൽ കാഷെ പ്രശ്നമില്ലാതെ തുടരും
-    }
+    } catch (e) {}
   }
 
   let pts = [
@@ -282,24 +306,68 @@
     document.getElementById('cameraInput').click();
   }
 
+  // ഫോട്ടോ എടുക്കുമ്പോൾ ക്വിക്ക് പ്രിവ്യൂ ബോക്സ് തുറക്കുന്നു
   cameraInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
 
-    statusPagesText.innerText = "പേജ് ചേർക്കുന്നു...";
-
     const reader = new FileReader();
     reader.onload = function(event) {
-      const rawData = event.target.result;
-      const img = new Image();
-      img.onload = function() {
-        compressInitialPage(img, rawData);
-      };
-      img.src = rawData;
+      tempRawData = event.target.result;
+      tempPreviewImg.src = tempRawData;
+
+      // സ്റ്റേജ് 1 (OK / Retry) കാണിക്കുന്നു
+      stage1Buttons.style.display = 'flex';
+      stage2Buttons.style.display = 'none';
+      quickReviewModal.style.display = 'flex';
+
       cameraInput.value = "";
     };
     reader.readAsDataURL(file);
   });
+
+  // Retry: വീണ്ടും ഫോട്ടോ എടുക്കുന്നു
+  function retryCurrentPhoto() {
+    tempRawData = null;
+    quickReviewModal.style.display = 'none';
+    setTimeout(() => {
+      triggerCamera();
+    }, 200);
+  }
+
+  // OK: സ്ഥിരീകരിച്ച് പേജ് ലിസ്റ്റിലേക്ക് കംപ്രസ് ചെയ്ത് ചേർക്കുന്നു
+  function confirmOkPhoto() {
+    if (!tempRawData) return;
+
+    statusPagesText.innerText = "പേജ് ചേർക്കുന്നു...";
+    const img = new Image();
+    img.onload = function() {
+      compressInitialPage(img, tempRawData);
+      // OK അടിച്ചയുടൻ സ്റ്റേജ് 2 ബട്ടണുകൾ (Next / Crop / Close) തുറക്കുന്നു
+      stage1Buttons.style.display = 'none';
+      stage2Buttons.style.display = 'block';
+    };
+    img.src = tempRawData;
+  }
+
+  // ചോയ്സ്: Next (അടുത്ത ഫോട്ടോ എടുക്കാൻ)
+  function handleChoiceNext() {
+    quickReviewModal.style.display = 'none';
+    setTimeout(() => {
+      triggerCamera();
+    }, 250);
+  }
+
+  // ചോയ്സ്: Crop
+  function handleChoiceCrop() {
+    quickReviewModal.style.display = 'none';
+    startBatchCrop(pagesList.length - 1);
+  }
+
+  // ചോയ്സ്: Close (സ്കാനിംഗ് പൂർത്തിയായി)
+  function handleChoiceClose() {
+    quickReviewModal.style.display = 'none';
+  }
 
   function compressInitialPage(img, rawData) {
     const targetKb = getEffectiveTargetKb();
@@ -346,21 +414,6 @@
 
     saveBackup();
     updateUI();
-
-    // ഫോട്ടോ എടുത്തയുടൻ ചോയ്സ് ബോക്സ് തുറക്കുന്നു
-    choiceModal.style.display = 'flex';
-  }
-
-  function proceedToCropFromChoice() {
-    choiceModal.style.display = 'none';
-    startBatchCrop(pagesList.length - 1);
-  }
-
-  function skipCropAndNextFromChoice() {
-    choiceModal.style.display = 'none';
-    setTimeout(() => {
-      triggerCamera();
-    }, 250);
   }
 
   function movePageLeft(index) {
@@ -706,7 +759,6 @@
     } else {
       statusPagesText.innerText = `ആകെ പേജുകൾ: ${pagesList.length}`;
       
-      // MB / KB കാൽക്കുലേഷൻ
       let sizeString = totalKb > 1024 ? `${(totalKb / 1024).toFixed(2)} MB (${totalKb} KB)` : `${totalKb} KB`;
       totalSizeText.innerText = `ആകെ സൈസ്: ${sizeString}`;
       totalSizeText.style.display = "inline-block";
