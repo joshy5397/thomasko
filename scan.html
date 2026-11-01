@@ -54,13 +54,13 @@
     .status { font-size: 13px; color: #334155; margin: 6px 0; font-weight: 500; min-height: 18px; }
     
     .footer-credit { font-size: 12px; color: #64748b; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 8px; line-height: 1.5; }
-    .counter-badge { display: inline-block; margin-top: 6px; padding: 3px 10px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 11px; color: #475569; font-weight: 600; }
+    .counter-badge { display: inline-block; padding: 3px 10px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 11px; color: #475569; font-weight: 600; }
   </style>
 </head>
 <body>
 
 <div class="card">
-  <!-- ഹെഡർ ഭാഗം -->
+  <!-- ഹെഡർ ഭാഗം (മുകളിൽ മാത്രം ക്രഡിറ്റ്) -->
   <div class="header-box">
     <h2 id="dispTitle">Low Size Scanner</h2>
     <div class="app-meta">
@@ -90,8 +90,9 @@
 
   <input type="file" id="cameraInput" accept="image/*" capture="environment">
 
-  <button class="btn btn-camera" onclick="triggerCamera()">
-    📷 അടുത്ത പേജ് ഫോട്ടോ എടുക്കുക
+  <!-- തുടക്കത്തിൽ "പേജ് ഫോട്ടോ എടുക്കുക" എന്ന് മാത്രം കാണിക്കും -->
+  <button class="btn btn-camera" id="cameraBtn" onclick="triggerCamera()">
+    📷 പേജ് ഫോട്ടോ എടുക്കുക
   </button>
 
   <div class="status" id="statusText">പേജുകളൊന്നും ചേർത്തിട്ടില്ല</div>
@@ -114,9 +115,8 @@
     എല്ലാം ഒഴിവാക്കുക
   </button>
 
-  <!-- ഫൂട്ടർ -->
+  <!-- ഫൂട്ടർ (ആവർത്തനം ഒഴിവാക്കി കൗണ്ടർ മാത്രം നൽകി) -->
   <div class="footer-credit">
-    <div>AI-യുടെ സഹായത്താൽ നിർമ്മിച്ചത്: <b id="dispFooterDev">Joshy Thomas K</b></div>
     <div class="counter-badge" id="visitorCounter">
       👀 Total Visits: <span id="visitCount">...</span>
     </div>
@@ -142,9 +142,6 @@
 </div>
 
 <script>
-  // ==============================================================
-  // പേരും വിവരങ്ങളും ഇവിടെ എഡിറ്റ് ചെയ്യാം
-  // ==============================================================
   const APP_METADATA = {
     scannerName: "Low Size Scanner",
     authorName: "Joshy Thomas K",
@@ -152,17 +149,12 @@
     subtitle: "ഓരോ പേജും നിശ്ചിത KB-യിൽ ഒതുക്കി PDF നിർമ്മിക്കുന്നു"
   };
 
-  // എലമെന്റുകൾ അപ്ഡേറ്റ് ചെയ്യുന്നു
   document.getElementById('webTitle').innerText = APP_METADATA.scannerName + " - " + APP_METADATA.version;
   document.getElementById('dispTitle').innerText = APP_METADATA.scannerName;
   document.getElementById('dispCreatedBy').innerText = "AI-യുടെ സഹായത്താൽ നിർമ്മിച്ചത്: " + APP_METADATA.authorName;
   document.getElementById('dispVersion').innerText = "Ver: " + APP_METADATA.version;
   document.getElementById('dispSubtitle').innerText = APP_METADATA.subtitle;
-  document.getElementById('dispFooterDev').innerText = APP_METADATA.authorName;
 
-  // ==============================================================
-  // ലൈവ് വിസിറ്റർ കൗണ്ടർ (ഇന്റർനെറ്റ് ഉണ്ടെങ്കിൽ മാത്രം കൗണ്ട് ചെയ്യും)
-  // ==============================================================
   async function loadVisitorCount() {
     try {
       const namespace = "joshy-thomasko-scanner";
@@ -180,8 +172,8 @@
   }
   loadVisitorCount();
 
-  // ==============================================================
   const cameraInput = document.getElementById('cameraInput');
+  const cameraBtn = document.getElementById('cameraBtn');
   const previewGrid = document.getElementById('previewGrid');
   const downloadSection = document.getElementById('downloadSection');
   const downloadBtn = document.getElementById('downloadBtn');
@@ -606,6 +598,14 @@
     });
 
     statusText.innerText = `ആകെ ചേർത്ത പേജുകൾ: ${pagesList.length}`;
+    
+    // പേജുകളുടെ എണ്ണം അനുസരിച്ച് ബട്ടൺ മാറ്റുന്നു
+    if (pagesList.length === 0) {
+      cameraBtn.innerText = "📷 പേജ് ഫോട്ടോ എടുക്കുക";
+    } else {
+      cameraBtn.innerText = "📷 അടുത്ത പേജ് ഫോട്ടോ എടുക്കുക";
+    }
+
     clearBtn.style.display = pagesList.length > 0 ? "block" : "none";
     reviewCropBtn.style.display = pagesList.length > 0 ? "block" : "none";
     downloadSection.style.display = pagesList.length > 0 ? "block" : "none";
