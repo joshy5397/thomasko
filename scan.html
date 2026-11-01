@@ -33,19 +33,6 @@
     .btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
     #cameraInput { display: none; }
 
-    /* ഫോട്ടോ എടുത്തയുടൻ കാണിക്കുന്ന OK / RETRY മോഡൽ */
-    #quickReviewModal { display: none; position: fixed; z-index: 9998; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.88); flex-direction: column; align-items: center; justify-content: center; padding: 14px; }
-    .review-box { background: #ffffff; border-radius: 12px; padding: 14px; width: 100%; max-width: 360px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); text-align: center; }
-    .review-img-wrap { width: 100%; height: 260px; background: #111; border-radius: 8px; overflow: hidden; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; }
-    .review-img-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
-    
-    .btn-row { display: flex; gap: 8px; }
-    .btn-row button { flex: 1; padding: 11px 8px; border-radius: 6px; font-weight: bold; border: none; font-size: 14px; cursor: pointer; }
-    .btn-retry { background: #dc2626; color: white; }
-    .btn-ok { background: #16a34a; color: white; }
-    .btn-next-step { background: #0284c7; color: white; }
-    .btn-close-step { background: #475569; color: white; }
-
     /* ഫുൾ സ്ക്രീൻ ക്രോപ്പർ */
     #cropModal { display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; flex-direction: column; }
     .crop-top-bar { display: flex; gap: 6px; padding: 10px; background: #0f172a; align-items: center; }
@@ -59,7 +46,7 @@
     .crop-body { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; touch-action: none; overflow: hidden; }
     #cropCanvas { display: block; touch-action: none; background: #000; }
 
-    /* പ്രിവ്യൂ കാർഡ് */
+    /* പ്രിവ്യൂ കാർഡ് & ക്രമീകരണ ബട്ടണുകൾ */
     .preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 12px 0; max-height: 290px; overflow-y: auto; background: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; }
     .preview-item { border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: #ffffff; display: flex; flex-direction: column; }
     .preview-item img { width: 100%; height: 115px; object-fit: contain; background: #111; }
@@ -71,6 +58,7 @@
     .del-btn { background: #ef4444; color: #fff; }
     .item-edit-btn { background: #0284c7; color: #fff; border: none; border-radius: 4px; padding: 6px 4px; font-size: 11px; font-weight: bold; cursor: pointer; flex: 1; }
 
+    /* തത്സമയ സ്റ്റാറ്റസ് & ടോട്ടൽ സൈസ് */
     .status-box { background: #f1f5f9; padding: 8px 10px; border-radius: 6px; margin: 8px 0; border: 1px solid #e2e8f0; font-size: 13px; color: #1e293b; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
     .total-badge { background: #0284c7; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
 
@@ -111,6 +99,7 @@
 
   <input type="file" id="cameraInput" accept="image/*" capture="environment">
 
+  <!-- തുടക്കത്തിൽ "പേജ് ഫോട്ടോ എടുക്കുക" എന്നും പിന്നീട് "അടുത്ത പേജ്..." എന്നും ഡൈനാമിക് ആയി മാറുന്ന ബട്ടൺ -->
   <button class="btn btn-camera" id="cameraBtn" onclick="triggerCamera()">
     📷 പേജ് ഫോട്ടോ എടുക്കുക
   </button>
@@ -142,32 +131,6 @@
   <div class="footer-credit">
     <div class="counter-badge" id="visitorCounter">
       👀 Total Visits: <span id="visitCount">...</span>
-    </div>
-  </div>
-</div>
-
-<!-- ഫോട്ടോ എടുത്തയുടൻ കാണിക്കുന്ന OK / RETRY മോഡൽ -->
-<div id="quickReviewModal">
-  <div class="review-box">
-    <h3 style="margin: 0 0 8px 0; font-size: 16px;">ഫോട്ടോ പരിശോധിക്കുക</h3>
-    <div class="review-img-wrap">
-      <img id="tempPreviewImg" src="">
-    </div>
-
-    <!-- സ്റ്റേജ് 1: OK അല്ലെങ്കിൽ Retry ബട്ടണുകൾ -->
-    <div id="stage1Buttons" class="btn-row">
-      <button class="btn-retry" onclick="retryCurrentPhoto()">🔁 Retry (വീണ്ടും)</button>
-      <button class="btn-ok" onclick="confirmOkPhoto()">✅ OK (ശരി)</button>
-    </div>
-
-    <!-- സ്റ്റേജ് 2: OK അടിച്ച ശേഷം തെളിയുന്ന Next / Close ചോയ്സ് -->
-    <div id="stage2Buttons" style="display: none;">
-      <p style="font-size: 13px; color: #475569; margin: 4px 0 10px 0;">ഈ പേജ് ചേർത്തു. അടുത്തത് എന്താണ് ചെയ്യേണ്ടത്?</p>
-      <div class="btn-row" style="margin-bottom: 8px;">
-        <button class="btn-next-step" onclick="handleChoiceNext()">➡️ Next (അടുത്തത്)</button>
-        <button class="item-edit-btn" style="padding: 11px 8px; font-size: 13px;" onclick="handleChoiceCrop()">✂️ Crop</button>
-      </div>
-      <button class="btn btn-close-step" style="padding: 10px; margin: 0;" onclick="handleChoiceClose()">⏹️ Close (പൂർത്തിയായി)</button>
     </div>
   </div>
 </div>
@@ -234,11 +197,6 @@
   const customKbInput = document.getElementById('customKbInput');
   const pdfFileNameInput = document.getElementById('pdfFileName');
 
-  const quickReviewModal = document.getElementById('quickReviewModal');
-  const tempPreviewImg = document.getElementById('tempPreviewImg');
-  const stage1Buttons = document.getElementById('stage1Buttons');
-  const stage2Buttons = document.getElementById('stage2Buttons');
-
   const cropModal = document.getElementById('cropModal');
   const cropCanvas = document.getElementById('cropCanvas');
   const ctx = cropCanvas.getContext('2d');
@@ -251,9 +209,8 @@
   let currentEditingIndex = 0;
   let activeImage = new Image();
   let currentRotation = 0;
-  let tempRawData = null; // പുതിയതായി എടുത്ത ഫോട്ടോയുടെ ഡാറ്റ താത്കാലികമായി വെക്കാൻ
 
-  // കോൾ വരുമ്പോൾ ഡാറ്റ പോകാതിരിക്കാൻ ബാക്കപ്പ് റീസ്റ്റോർ ചെയ്യുന്നു
+  // പേജുകൾ തനിയെ ലോക്കൽ സ്റ്റോറേജിൽ നിന്ന് റീസ്റ്റോർ ചെയ്യുന്നു
   window.addEventListener('load', () => {
     const saved = localStorage.getItem('scanned_pages_backup');
     if (saved) {
@@ -306,68 +263,25 @@
     document.getElementById('cameraInput').click();
   }
 
-  // ഫോട്ടോ എടുക്കുമ്പോൾ ക്വിക്ക് പ്രിവ്യൂ ബോക്സ് തുറക്കുന്നു
+  // ഫോട്ടോ എടുത്തയുടൻ ഡബിൾ കൺഫോം ചെയ്യാതെ ലിസ്റ്റിലേക്ക് ഡയറക്റ്റ് കയറ്റുന്നു
   cameraInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
 
+    statusPagesText.innerText = "പേജ് ചേർക്കുന്നു...";
+
     const reader = new FileReader();
     reader.onload = function(event) {
-      tempRawData = event.target.result;
-      tempPreviewImg.src = tempRawData;
-
-      // സ്റ്റേജ് 1 (OK / Retry) കാണിക്കുന്നു
-      stage1Buttons.style.display = 'flex';
-      stage2Buttons.style.display = 'none';
-      quickReviewModal.style.display = 'flex';
-
+      const rawData = event.target.result;
+      const img = new Image();
+      img.onload = function() {
+        compressInitialPage(img, rawData);
+      };
+      img.src = rawData;
       cameraInput.value = "";
     };
     reader.readAsDataURL(file);
   });
-
-  // Retry: വീണ്ടും ഫോട്ടോ എടുക്കുന്നു
-  function retryCurrentPhoto() {
-    tempRawData = null;
-    quickReviewModal.style.display = 'none';
-    setTimeout(() => {
-      triggerCamera();
-    }, 200);
-  }
-
-  // OK: സ്ഥിരീകരിച്ച് പേജ് ലിസ്റ്റിലേക്ക് കംപ്രസ് ചെയ്ത് ചേർക്കുന്നു
-  function confirmOkPhoto() {
-    if (!tempRawData) return;
-
-    statusPagesText.innerText = "പേജ് ചേർക്കുന്നു...";
-    const img = new Image();
-    img.onload = function() {
-      compressInitialPage(img, tempRawData);
-      // OK അടിച്ചയുടൻ സ്റ്റേജ് 2 ബട്ടണുകൾ (Next / Crop / Close) തുറക്കുന്നു
-      stage1Buttons.style.display = 'none';
-      stage2Buttons.style.display = 'block';
-    };
-    img.src = tempRawData;
-  }
-
-  // ചോയ്സ്: Next (അടുത്ത ഫോട്ടോ എടുക്കാൻ)
-  function handleChoiceNext() {
-    quickReviewModal.style.display = 'none';
-    setTimeout(() => {
-      triggerCamera();
-    }, 250);
-  }
-
-  // ചോയ്സ്: Crop
-  function handleChoiceCrop() {
-    quickReviewModal.style.display = 'none';
-    startBatchCrop(pagesList.length - 1);
-  }
-
-  // ചോയ്സ്: Close (സ്കാനിംഗ് പൂർത്തിയായി)
-  function handleChoiceClose() {
-    quickReviewModal.style.display = 'none';
-  }
 
   function compressInitialPage(img, rawData) {
     const targetKb = getEffectiveTargetKb();
