@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title id="webTitle">Service Book Scanner</title>
+  <title id="webTitle">Low Size Scanner</title>
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; touch-action: manipulation; }
     body { padding: 12px; background-color: #f1f5f9; text-align: center; margin: 0; color: #1e293b; }
-    .card { background: #ffffff; padding: 16px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-width: 480px; margin: auto; }
+    .card { background: #ffffff; padding: 18px 16px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-width: 480px; margin: auto; }
     
-    .header-box { margin-bottom: 12px; }
-    h2 { font-size: 20px; margin: 0 0 4px 0; color: #0f172a; }
-    .app-meta { font-size: 12px; color: #0369a1; font-weight: 600; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
-    .badge { background: #e0f2fe; padding: 2px 8px; border-radius: 12px; border: 1px solid #bae6fd; }
+    .header-box { margin-bottom: 14px; }
+    h2 { font-size: 21px; font-weight: 800; margin: 0 0 6px 0; color: #0f172a; }
+    .app-meta { font-size: 12px; color: #0369a1; font-weight: 600; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+    .badge { background: #e0f2fe; padding: 3px 10px; border-radius: 12px; border: 1px solid #bae6fd; }
     p.sub { font-size: 13px; color: #64748b; margin: 0; }
 
-    .settings-panel { background: #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; text-align: left; }
+    .settings-panel { background: #e2e8f0; padding: 10px 12px; border-radius: 8px; margin-bottom: 12px; font-size: 14px; text-align: left; }
     .settings-row { display: flex; align-items: center; justify-content: space-between; }
-    .settings-row label { font-weight: 600; color: #334155; }
-    .settings-row select, .settings-row input { padding: 6px 8px; font-size: 13px; font-weight: 600; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; }
+    .settings-row label { font-weight: 700; color: #1e293b; }
+    .settings-row select, .settings-row input { padding: 6px 10px; font-size: 14px; font-weight: 600; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; }
     .custom-kb-box { display: none; width: 85px; margin-left: 6px; }
 
     .file-input-box { width: 100%; padding: 10px; font-size: 14px; border-radius: 8px; border: 1.5px solid #cbd5e1; margin-bottom: 8px; font-weight: 500; text-align: left; }
@@ -59,18 +59,17 @@
 <body>
 
 <div class="card">
-  <!-- ഹെഡർ ഭാഗം -->
+  <!-- ഹെഡർ ഭാഗം (വൃത്തിയാക്കിയത്) -->
   <div class="header-box">
-    <h2 id="dispTitle">Service Book Scanner</h2>
+    <h2 id="dispTitle">Low Size Scanner</h2>
     <div class="app-meta">
-      <span class="badge" id="dispCreatedBy">Created by: Joshy</span>
-      <span class="badge" id="dispDevBy">Dev: Joshy</span>
-      <span class="badge" id="dispVersion">Gx</span>
+      <span class="badge" id="dispCreatedBy">Created by: Joshy Thomas K</span>
+      <span class="badge" id="dispVersion">Ver: V-1.0</span>
     </div>
     <p class="sub" id="dispSubtitle">ഓരോ പേജും നിശ്ചിത KB-യിൽ ഒതുക്കി PDF നിർമ്മിക്കുന്നു[cite: 1]</p>
   </div>
 
-  <!-- പേജ് സൈസ് സെറ്റിംഗ്സ് -->
+  <!-- പേജ് സൈസ് ക്രമീകരണം (Default 90 KB) -->
   <div class="settings-panel">
     <div class="settings-row">
       <label>പരമാവധി പേജ് സൈസ്:</label>
@@ -78,8 +77,8 @@
         <select id="targetSizeKb" onchange="toggleCustomKb(this.value)">
           <option value="60">60 KB</option>
           <option value="80">80 KB</option>
-          <option value="90">90 KB</option>
-          <option value="100" selected>100 KB</option>
+          <option value="90" selected>90 KB</option>
+          <option value="100">100 KB</option>
           <option value="custom">Custom</option>
         </select>
         <input type="number" id="customKbInput" class="custom-kb-box" placeholder="KB" min="20" max="500">
@@ -113,9 +112,9 @@
     എല്ലാം ഒഴിവാക്കുക
   </button>
 
-  <!-- ഫൂട്ടർ ക്രെഡിറ്റ് & കൗണ്ടർ -->
+  <!-- ഫൂട്ടർ -->
   <div class="footer-credit">
-    <div>Developed by: <b id="dispFooterDev">Joshy</b> | Version: <b id="dispFooterVer">Gx</b></div>
+    <div>Designed & Developed by: <b id="dispFooterDev">Joshy Thomas K</b></div>
     <div class="counter-badge" id="visitorCounter">
       👀 Total Visits: <span id="visitCount">...</span>
     </div>
@@ -142,32 +141,28 @@
 
 <script>
   // ==============================================================
-  // 👇 ആപ്പിന്റെ പേര്, വിവരങ്ങൾ, വേർഷൻ എന്നിവ ഇവിടെ ക്രമീകരിക്കാം 👇
+  // പേരും വിവരങ്ങളും ഇവിടെ എഡിറ്റ് ചെയ്യാം
   // ==============================================================
   const APP_METADATA = {
     scannerName: "Low Size Scanner",
-    createdBy: "Joshy Thomas K",
-    developedBy: " ",
+    authorName: "Joshy Thomas K",
     version: "V-1.0",
     subtitle: "ഓരോ പേജും നിശ്ചിത KB-യിൽ ഒതുക്കി PDF നിർമ്മിക്കുന്നു"
   };
 
-  // എലമെന്റുകളിലേക്ക് വിവരങ്ങൾ നൽകുന്നു
+  // എലമെന്റുകൾ അപ്ഡേറ്റ് ചെയ്യുന്നു
   document.getElementById('webTitle').innerText = APP_METADATA.scannerName + " - " + APP_METADATA.version;
   document.getElementById('dispTitle').innerText = APP_METADATA.scannerName;
-  document.getElementById('dispCreatedBy').innerText = "Created by: " + APP_METADATA.createdBy;
-  document.getElementById('dispDevBy').innerText = "Dev: " + APP_METADATA.developedBy;
+  document.getElementById('dispCreatedBy').innerText = "Created by: " + APP_METADATA.authorName;
   document.getElementById('dispVersion').innerText = "Ver: " + APP_METADATA.version;
   document.getElementById('dispSubtitle').innerText = APP_METADATA.subtitle;
-  document.getElementById('dispFooterDev').innerText = APP_METADATA.developedBy;
-  document.getElementById('dispFooterVer').innerText = APP_METADATA.version;
+  document.getElementById('dispFooterDev').innerText = APP_METADATA.authorName;
 
   // ==============================================================
-  // ലൈവ് വിസിറ്റർ കൗണ്ടർ (Visitor Counter Integration)
+  // ലൈവ് വിസിറ്റർ കൗണ്ടർ
   // ==============================================================
   async function loadVisitorCount() {
     try {
-      // GitHub റിപ്പോസിറ്ററി അധിഷ്ഠിതമായ യൂണീക് കീ
       const namespace = "joshy-thomasko-scanner";
       const key = "visits";
       const res = await fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`);
@@ -237,7 +232,7 @@
       const customVal = parseInt(customKbInput.value);
       return (customVal && customVal > 15) ? customVal : 90;
     }
-    return parseInt(targetSizeSelect.value) || 100;
+    return parseInt(targetSizeSelect.value) || 90;
   }
 
   function triggerCamera() {
@@ -279,7 +274,6 @@
     const outCtx = outCanvas.getContext('2d');
     outCtx.drawImage(img, 0, 0, outW, outH);
 
-    // ഗ്രേസ്കെയിൽ
     const imgData = outCtx.getImageData(0, 0, outW, outH);
     const d = imgData.data;
     for (let i = 0; i < d.length; i += 4) {
