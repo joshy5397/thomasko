@@ -4,19 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
-  <!-- ============================================================== -->
-  <!-- 👇 ഈ താഴെ കാണുന്ന ഭാഗത്ത് പേര്, വേർഷൻ എന്നിവ എഡിറ്റ് ചെയ്യാം 👇 -->
-  <!-- ============================================================== -->
   <script>
     window.APP_CONFIG = {
       appName: "Low Size Scanner",
-      version: "V-1.2",
+      version: "V-1.4",
       authorName: "Joshy Thomas K",
       subtitle: "ഓരോ പേജും നിശ്ചിത KB-യിൽ ഒതുക്കി PDF നിർമ്മിക്കുന്നു",
-      counterId: "joshy-scanner-thomasko-2026" // സന്ദർശകരെ എണ്ണാനുള്ള യുണീക് ഐഡി
+      counterId: "joshy-scanner-thomasko-2026"
     };
   </script>
-  <!-- ============================================================== -->
 
   <title id="webTitle">Document Scanner</title>
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -83,7 +79,6 @@
 <body>
 
 <div class="card">
-  <!-- ഹെഡർ (Config-ൽ നിന്ന് വിവരങ്ങൾ ഇവിടെ വരും) -->
   <div class="header-box">
     <h2 id="dispTitle">Scanner</h2>
     <div class="app-meta">
@@ -94,7 +89,6 @@
     <div class="offline-notice">🔒 തികച്ചും ഓഫ്‌ലൈൻ ആയി ഉപയോഗിക്കാവുന്നതാണ്</div>
   </div>
 
-  <!-- സെറ്റിംഗ്സ് -->
   <div class="settings-panel">
     <div class="settings-row">
       <label>പരമാവധി പേജ് സൈസ്:</label>
@@ -139,7 +133,6 @@
     എല്ലാം ഒഴിവാക്കുക
   </button>
 
-  <!-- വിസിറ്റർ കൗണ്ടർ -->
   <div class="footer-credit">
     <div class="counter-badge">
       <span>👀 സന്ദർശകർ:</span>
@@ -167,20 +160,17 @@
 </div>
 
 <script>
-  // മുകളിലെ കോൺഫിഗറേഷൻ എലമെന്റുകളിലേക്ക് ലിങ്ക് ചെയ്യുന്നു
   const conf = window.APP_CONFIG || {};
   document.getElementById('webTitle').innerText = (conf.appName || "Scanner") + " - " + (conf.version || "");
   document.getElementById('dispTitle').innerText = conf.appName || "Low Size Scanner";
   document.getElementById('dispCreatedBy').innerText = "AI-യുടെ സഹായത്താൽ നിർമ്മിച്ചത്: " + (conf.authorName || "Joshy Thomas K");
-  document.getElementById('dispVersion').innerText = "Ver: " + (conf.version || "V-1.0");
+  document.getElementById('dispVersion').innerText = "Ver: " + (conf.version || "V-1.3");
   document.getElementById('dispSubtitle').innerText = conf.subtitle || "";
 
-  // വിശ്വസനീയമായ പുതിയ വിസിറ്റർ കൗണ്ടർ (API + Local Backup Fallback)
   async function initVisitorCounter() {
     const cid = conf.counterId || "joshy-scanner-tracker";
     const visitElem = document.getElementById('visitCount');
     
-    // തത്സമയ അപ്‌ഡേറ്റിനായി ഒപ്റ്റിമൈസ് ചെയ്ത കൗണ്ടർ ഫെച്ച്
     try {
       const res = await fetch(`https://api.counterapi.dev/v1/scanner/${cid}/up`);
       const data = await res.json();
@@ -190,20 +180,9 @@
       }
     } catch (e) {}
 
-    // സെർവർ തടസ്സപ്പെട്ടാൽ ബാക്ക്-അപ്പ് കൗണ്ടർ (Hit Counter)
-    try {
-      const res2 = await fetch(`https://api.countapi.xyz/hit/thomasko-scanner/${cid}`);
-      const data2 = await res2.json();
-      if (data2 && data2.value) {
-        visitElem.innerText = Number(data2.value).toLocaleString('ml-IN');
-        return;
-      }
-    } catch (e) {}
-
-    // ഓഫ്ലൈൻ മോഡിൽ പ്രവർത്തിക്കാൻ ലോക്കൽ കൗണ്ട്
     let localHits = parseInt(localStorage.getItem('my_local_hits') || '0') + 1;
     localStorage.setItem('my_local_hits', localHits);
-    visitElem.innerText = localHits + " (Active)";
+    visitElem.innerText = localHits;
   }
   initVisitorCounter();
 
@@ -281,6 +260,13 @@
     return parseInt(targetSizeSelect.value) || 90;
   }
 
+  // Base64 സ്ട്രിംഗിന്റെ കൃത്യമായ ബൈറ്റ് സൈസ് കാൽക്കുലേഷൻ
+  function getExactKb(dataUrl) {
+    const base64Str = dataUrl.split(',')[1] || "";
+    const byteLength = (base64Str.length * 3) / 4 - (base64Str.endsWith('==') ? 2 : base64Str.endsWith('=') ? 1 : 0);
+    return Math.round(byteLength / 1024);
+  }
+
   function triggerCamera() {
     document.getElementById('cameraInput').click();
   }
@@ -323,6 +309,43 @@
     } catch (e) {}
   }
 
+  // തിരഞ്ഞെടുത്ത KB ഒട്ടും കവിയാതെ ഒതുക്കുന്ന കൃത്യമായ കംപ്രഷൻ ഫംഗ്ഷൻ
+  function compressCanvasUnderLimit(sourceCanvas, targetKb) {
+    let curCanvas = sourceCanvas;
+    let q = 0.65;
+    let dataUrl = curCanvas.toDataURL('image/jpeg', q);
+    let sizeKb = getExactKb(dataUrl);
+
+    // 1. ക്വാളിറ്റി ഘട്ടംഘട്ടമായി കുറച്ച് നോക്കുന്നു
+    while (sizeKb > targetKb && q > 0.15) {
+      q -= 0.05;
+      dataUrl = curCanvas.toDataURL('image/jpeg', q);
+      sizeKb = getExactKb(dataUrl);
+    }
+
+    // 2. ക്വാളിറ്റി കുറച്ചിട്ടും targetKb കവിയുകയാണെങ്കിൽ ഡൈമൻഷൻ ചെറുതാക്കുന്നു
+    while (sizeKb > targetKb && curCanvas.width > 500) {
+      const scaleCanvas = document.createElement('canvas');
+      scaleCanvas.width = Math.round(curCanvas.width * 0.88);
+      scaleCanvas.height = Math.round(curCanvas.height * 0.88);
+      const sCtx = scaleCanvas.getContext('2d');
+      sCtx.drawImage(curCanvas, 0, 0, scaleCanvas.width, scaleCanvas.height);
+      
+      curCanvas = scaleCanvas;
+      q = 0.45;
+      dataUrl = curCanvas.toDataURL('image/jpeg', q);
+      sizeKb = getExactKb(dataUrl);
+
+      while (sizeKb > targetKb && q > 0.12) {
+        q -= 0.05;
+        dataUrl = curCanvas.toDataURL('image/jpeg', q);
+        sizeKb = getExactKb(dataUrl);
+      }
+    }
+
+    return { dataUrl, sizeKb };
+  }
+
   function compressInitialPage(img) {
     const targetKb = getEffectiveTargetKb();
     const limitDim = 1500;
@@ -346,20 +369,12 @@
 
     applyDocumentSharpening(outCtx, outW, outH);
 
-    let q = 0.65;
-    let dataUrl = outCanvas.toDataURL('image/jpeg', q);
-    let sizeKb = Math.round(((dataUrl.length - dataUrl.indexOf(',') - 1) * 3/4) / 1024);
-
-    while (sizeKb > targetKb && q > 0.20) {
-      q -= 0.05;
-      dataUrl = outCanvas.toDataURL('image/jpeg', q);
-      sizeKb = Math.round(((dataUrl.length - dataUrl.indexOf(',') - 1) * 3/4) / 1024);
-    }
+    const result = compressCanvasUnderLimit(outCanvas, targetKb);
 
     pagesList.push({
-      rawDataUrl: dataUrl,
-      processedDataUrl: dataUrl,
-      sizeKb: sizeKb,
+      rawDataUrl: result.dataUrl,
+      processedDataUrl: result.dataUrl,
+      sizeKb: result.sizeKb,
       rotation: 0
     });
 
@@ -654,18 +669,10 @@
     applyDocumentSharpening(outCtx, outW, outH);
 
     const targetKb = getEffectiveTargetKb();
-    let q = 0.65;
-    let dataUrl = outCanvas.toDataURL('image/jpeg', q);
-    let sizeKb = Math.round(((dataUrl.length - dataUrl.indexOf(',') - 1) * 3/4) / 1024);
+    const result = compressCanvasUnderLimit(outCanvas, targetKb);
 
-    while (sizeKb > targetKb && q > 0.20) {
-      q -= 0.05;
-      dataUrl = outCanvas.toDataURL('image/jpeg', q);
-      sizeKb = Math.round(((dataUrl.length - dataUrl.indexOf(',') - 1) * 3/4) / 1024);
-    }
-
-    pagesList[currentEditingIndex].processedDataUrl = dataUrl;
-    pagesList[currentEditingIndex].sizeKb = sizeKb;
+    pagesList[currentEditingIndex].processedDataUrl = result.dataUrl;
+    pagesList[currentEditingIndex].sizeKb = result.sizeKb;
     pagesList[currentEditingIndex].rotation = currentRotation;
 
     saveBackup();
