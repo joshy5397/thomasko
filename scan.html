@@ -33,7 +33,7 @@
     .btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
     #cameraInput { display: none; }
 
-    /* ഫുൾ സ്ക്രീൻ ക്രോപ്പർ */
+    /* ക്രോപ്പർ */
     #cropModal { display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; flex-direction: column; }
     .crop-top-bar { display: flex; gap: 6px; padding: 10px; background: #0f172a; align-items: center; }
     .crop-top-bar button { flex: 1; padding: 9px 4px; border-radius: 6px; font-weight: bold; border: none; font-size: 12px; cursor: pointer; }
@@ -96,14 +96,12 @@
     </div>
   </div>
 
-  <!-- ക്യാമറ ഇൻപുട്ടിൽ പ്രോസസ്സിംഗ് ഭാരം കുറയ്ക്കാൻ direct capture ഒപ്റ്റിമൈസ് ചെയ്തു -->
-  <input type="file" id="cameraInput" accept="image/jpeg,image/png" capture="environment">
+  <input type="file" id="cameraInput" accept="image/*" capture="environment">
 
   <button class="btn btn-camera" id="cameraBtn" onclick="triggerCamera()">
     📷 പേജ് ഫോട്ടോ എടുക്കുക
   </button>
 
-  <!-- തത്സമയ സ്റ്റാറ്റസ് -->
   <div class="status-box" id="statusContainer">
     <span id="statusPagesText">പേജുകളൊന്നും ചേർത്തിട്ടില്ല</span>
     <span class="total-badge" id="totalSizeText" style="display: none;">ആകെ സൈസ്: 0 KB</span>
@@ -115,7 +113,6 @@
 
   <div class="preview-grid" id="previewGrid"></div>
 
-  <!-- ഫയൽ നെയിം ബോക്സ് -->
   <div id="downloadSection" style="display: none; margin-top: 12px;">
     <input type="text" id="pdfFileName" class="file-input-box" placeholder="ഫയലിന്റെ പേര് (നൽകിയില്ലെങ്കിൽ Date & Time വരും)">
     <button class="btn btn-download" id="downloadBtn" onclick="generatePDF()">
@@ -209,7 +206,6 @@
   let activeImage = new Image();
   let currentRotation = 0;
 
-  // പേജുകൾ ലോക്കൽ സ്റ്റോറേജിൽ നിന്ന് റീസ്റ്റോർ ചെയ്യുന്നു
   window.addEventListener('load', () => {
     const saved = localStorage.getItem('scanned_pages_backup');
     if (saved) {
@@ -262,41 +258,31 @@
     document.getElementById('cameraInput').click();
   }
 
+  // മെമ്മറി ലീക്ക് ഒഴിവാക്കിക്കൊണ്ട് ക്ലിയറായ ഫോട്ടോ പ്രോസസ്സ് ചെയ്യുന്നു
   cameraInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
 
     statusPagesText.innerText = "പേജ് ചേർക്കുന്നു...";
 
-    // മെമ്മറി ഉപയോഗം വളരെ കുറയ്ക്കാൻ image object നേരിട്ട് സ്ട്രീം ചെയ്യാതെ, ബ്ലോബ് റെൻഡറിംഗ് വേഗത്തിലാക്കുന്നു
     const blobUrl = URL.createObjectURL(file);
     const img = new Image();
     img.onload = function() {
-      compressInitialPage(img, blobUrl);
-      // ഉപയോഗം കഴിഞ്ഞയുടൻ താൽക്കാലിക മെമ്മറി സ്വതന്ത്രമാക്കുന്നു
+      compressInitialPage(img);
       URL.revokeObjectURL(blobUrl);
     };
     img.onerror = function() {
-      // ലോഡിൽ പരാജയപ്പെട്ടാൽ ബേസ് റീഡറിലേക്ക് മാറുന്നു
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const altImg = new Image();
-        altImg.onload = function() {
-          compressInitialPage(altImg, event.target.result);
-        };
-        altImg.src = event.target.result;
-      };
-      reader.readAsDataURL(file);
+      statusPagesText.innerText = "ചിത്രം എടുക്കാൻ സാധിച്ചില്ല";
     };
     img.src = blobUrl;
     cameraInput.value = "";
   });
 
-  function compressInitialPage(img, rawData) {
+  function compressInitialPage(img) {
     const targetKb = getEffectiveTargetKb();
     
-    // മെമ്മറി തികയാത്ത സാഹചര്യങ്ങളിൽ ചിത്രങ്ങളുടെ പരമാവധി വലിപ്പം 800px ആയി കുറയ്ക്കുന്നു
-    const limitDim = 800;
+    // വ്യക്തത നഷ്ടപ്പെടാതിരിക്കാൻ റെസല്യൂഷൻ 1200px ആക്കി ഉയർത്തി
+    const limitDim = 1200;
     let outW = img.width;
     let outH = img.height;
     if (outW > limitDim || outH > limitDim) {
@@ -315,34 +301,30 @@
     const outCtx = outCanvas.getContext('2d');
     outCtx.drawImage(img, 0, 0, outW, outH);
 
-    // ഗ്രേ സ്കെയിൽ മാറ്റം റാം ഓവർലോഡ് ചെയ്യാത്ത ലളിതമായ മാട്രിക്സ് ലൂപ്പിൽ ചെയ്യുന്നു
-    try {
-      const imgData = outCtx.getImageData(0, 0, outW, outH);
-      const d = imgData.data;
-      for (let i = 0; i < d.length; i += 4) {
-        const gray = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
-        d[i] = gray;
-        d[i + 1] = gray;
-        d[i + 2] = gray;
-      }
-      outCtx.putImageData(imgData, 0, 0);
-    } catch (err) {
-      // അപൂർവ്വമായി പരാജയപ്പെട്ടാൽ കളർ ഡ്രാവിംഗ് തന്നെ ഉപയോഗിക്കുന്നു
+    // ഗ്രേസ്കെയിൽ ഫിൽട്ടർ (ഡോക്യുമെന്റുകൾ കൂടുതൽ തെളിച്ചത്തോടെ വരാൻ കോൺട്രാസ്റ്റ് നിലനിർത്തുന്നു)
+    const imgData = outCtx.getImageData(0, 0, outW, outH);
+    const d = imgData.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const gray = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+      d[i] = gray;
+      d[i + 1] = gray;
+      d[i + 2] = gray;
     }
+    outCtx.putImageData(imgData, 0, 0);
 
-    let q = 0.40; // കുറഞ്ഞ സൈസിൽ കംപ്രഷൻ വേഗത്തിൽ തുടങ്ങാൻ ക്വാളിറ്റി സ്റ്റാർട്ട് കുറച്ചു
+    // ഉയർന്ന ക്വാളിറ്റിയിൽ തുടങ്ങി ആവശ്യാനുസരണം മാത്രം കുറയ്ക്കുന്നു
+    let q = 0.60;
     let dataUrl = outCanvas.toDataURL('image/jpeg', q);
     let sizeKb = Math.round(((dataUrl.length - dataUrl.indexOf(',') - 1) * 3/4) / 1024);
 
-    while (sizeKb > targetKb && q > 0.10) {
+    while (sizeKb > targetKb && q > 0.15) {
       q -= 0.05;
       dataUrl = outCanvas.toDataURL('image/jpeg', q);
       sizeKb = Math.round(((dataUrl.length - dataUrl.indexOf(',') - 1) * 3/4) / 1024);
     }
 
-    // പ്രോസസ് ചെയ്ത വിവരങ്ങൾ മാത്രമേ റാമിൽ സൂക്ഷിക്കൂ
     pagesList.push({
-      rawDataUrl: rawData.length < 500000 ? rawData : dataUrl, // rawData ലിങ്ക് ബേസ്ഡ് അല്ലെങ്കിലും മെമ്മറി ഓവർഹെഡ് കുറച്ചു
+      rawDataUrl: dataUrl, // ഉയർന്ന റെസല്യൂഷനിലുള്ള കംപ്രസ് ചെയ്ത ചിത്രം
       processedDataUrl: dataUrl,
       sizeKb: sizeKb,
       rotation: 0
@@ -617,7 +599,7 @@
     const realW = Math.max(50, maxX - minX);
     const realH = Math.max(50, maxY - minY);
 
-    const limitDim = 800;
+    const limitDim = 1200;
     let outW = realW;
     let outH = realH;
     if (outW > limitDim || outH > limitDim) {
@@ -637,23 +619,21 @@
     outCtx.drawImage(tCanvas, minX, minY, realW, realH, 0, 0, outW, outH);
 
     const targetKb = getEffectiveTargetKb();
-    try {
-      const imgData = outCtx.getImageData(0, 0, outW, outH);
-      const d = imgData.data;
-      for (let i = 0; i < d.length; i += 4) {
-        const gray = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
-        d[i] = gray;
-        d[i + 1] = gray;
-        d[i + 2] = gray;
-      }
-      outCtx.putImageData(imgData, 0, 0);
-    } catch (err) {}
+    const imgData = outCtx.getImageData(0, 0, outW, outH);
+    const d = imgData.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const gray = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+      d[i] = gray;
+      d[i + 1] = gray;
+      d[i + 2] = gray;
+    }
+    outCtx.putImageData(imgData, 0, 0);
 
-    let q = 0.45;
+    let q = 0.60;
     let dataUrl = outCanvas.toDataURL('image/jpeg', q);
     let sizeKb = Math.round(((dataUrl.length - dataUrl.indexOf(',') - 1) * 3/4) / 1024);
 
-    while (sizeKb > targetKb && q > 0.10) {
+    while (sizeKb > targetKb && q > 0.15) {
       q -= 0.05;
       dataUrl = outCanvas.toDataURL('image/jpeg', q);
       sizeKb = Math.round(((dataUrl.length - dataUrl.indexOf(',') - 1) * 3/4) / 1024);
