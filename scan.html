@@ -46,11 +46,18 @@
     .crop-body { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; touch-action: none; overflow: hidden; }
     #cropCanvas { display: block; touch-action: none; background: #000; }
 
-    .preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 12px 0; max-height: 280px; overflow-y: auto; background: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; }
+    /* പ്രിവ്യൂ കാർഡ് & കൺട്രോളുകൾ */
+    .preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 12px 0; max-height: 290px; overflow-y: auto; background: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; }
     .preview-item { border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: #ffffff; display: flex; flex-direction: column; }
-    .preview-item img { width: 100%; height: 120px; object-fit: contain; background: #111; }
+    .preview-item img { width: 100%; height: 115px; object-fit: contain; background: #111; }
     .page-tag { background: #0f172a; color: #fff; font-size: 11px; padding: 4px; font-weight: 500; }
-    .item-edit-btn { background: #0284c7; color: #fff; border: none; padding: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
+    
+    .item-controls { display: flex; gap: 2px; padding: 4px; background: #f1f5f9; align-items: center; }
+    .order-btn { background: #334155; color: #fff; border: none; border-radius: 4px; padding: 6px 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
+    .order-btn:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
+    .del-btn { background: #ef4444; color: #fff; }
+    .item-edit-btn { background: #0284c7; color: #fff; border: none; border-radius: 4px; padding: 6px 4px; font-size: 11px; font-weight: bold; cursor: pointer; flex: 1; }
+
     .status { font-size: 13px; color: #334155; margin: 6px 0; font-weight: 500; min-height: 18px; }
     
     .footer-credit { font-size: 12px; color: #64748b; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 8px; line-height: 1.5; }
@@ -60,7 +67,7 @@
 <body>
 
 <div class="card">
-  <!-- ഹെഡർ ഭാഗം (മുകളിൽ മാത്രം ക്രഡിറ്റ്) -->
+  <!-- ഹെഡർ -->
   <div class="header-box">
     <h2 id="dispTitle">Low Size Scanner</h2>
     <div class="app-meta">
@@ -71,7 +78,7 @@
     <div class="offline-notice">🔒 തികച്ചും ഓഫ്‌ലൈൻ ആയി ഉപയോഗിക്കാവുന്നതാണ്</div>
   </div>
 
-  <!-- പേജ് സൈസ് ക്രമീകരണം (Default 90 KB) -->
+  <!-- ക്രമീകരണം -->
   <div class="settings-panel">
     <div class="settings-row">
       <label>പരമാവധി പേജ് സൈസ്:</label>
@@ -90,7 +97,6 @@
 
   <input type="file" id="cameraInput" accept="image/*" capture="environment">
 
-  <!-- തുടക്കത്തിൽ "പേജ് ഫോട്ടോ എടുക്കുക" എന്ന് മാത്രം കാണിക്കും -->
   <button class="btn btn-camera" id="cameraBtn" onclick="triggerCamera()">
     📷 പേജ് ഫോട്ടോ എടുക്കുക
   </button>
@@ -103,7 +109,7 @@
 
   <div class="preview-grid" id="previewGrid"></div>
 
-  <!-- ഫയൽ നെയിം ബോക്സ് -->
+  <!-- ഫയൽ നെയിം സെക്ഷൻ -->
   <div id="downloadSection" style="display: none; margin-top: 12px;">
     <input type="text" id="pdfFileName" class="file-input-box" placeholder="ഫയലിന്റെ പേര് (നൽകിയില്ലെങ്കിൽ Date & Time വരും)">
     <button class="btn btn-download" id="downloadBtn" onclick="generatePDF()">
@@ -115,7 +121,7 @@
     എല്ലാം ഒഴിവാക്കുക
   </button>
 
-  <!-- ഫൂട്ടർ (ആവർത്തനം ഒഴിവാക്കി കൗണ്ടർ മാത്രം നൽകി) -->
+  <!-- ഫൂട്ടർ -->
   <div class="footer-credit">
     <div class="counter-badge" id="visitorCounter">
       👀 Total Visits: <span id="visitCount">...</span>
@@ -123,7 +129,7 @@
   </div>
 </div>
 
-<!-- ഫുൾ സ്ക്രീൻ ക്രോപ്പർ മോഡൽ -->
+<!-- ക്രോപ്പർ വിൻഡോ -->
 <div id="cropModal">
   <div class="crop-top-bar">
     <button class="btn-cancel" onclick="closeCropModal()">ക്ലോസ് ചെയ്യുക</button>
@@ -296,6 +302,32 @@
     });
 
     updateUI();
+  }
+
+  /* സ്ഥാനക്രമം മാറ്റാനുള്ള ഫംഗ്ഷനുകൾ */
+  function movePageLeft(index) {
+    if (index > 0) {
+      const temp = pagesList[index];
+      pagesList[index] = pagesList[index - 1];
+      pagesList[index - 1] = temp;
+      updateUI();
+    }
+  }
+
+  function movePageRight(index) {
+    if (index < pagesList.length - 1) {
+      const temp = pagesList[index];
+      pagesList[index] = pagesList[index + 1];
+      pagesList[index + 1] = temp;
+      updateUI();
+    }
+  }
+
+  function deletePage(index) {
+    if (confirm(`Page ${index + 1} നീക്കം ചെയ്യണമോ?`)) {
+      pagesList.splice(index, 1);
+      updateUI();
+    }
   }
 
   function startBatchCrop(index) {
@@ -592,14 +624,18 @@
       div.innerHTML = `
         <img src="${item.processedDataUrl}">
         <span class="page-tag">P.${index + 1} — <b>${item.sizeKb} KB</b></span>
-        <button class="item-edit-btn" onclick="startBatchCrop(${index})">✂️ Crop / Edit</button>
+        <div class="item-controls">
+          <button class="order-btn" onclick="movePageLeft(${index})" ${index === 0 ? 'disabled' : ''} title="മുന്നോട്ട്">◀</button>
+          <button class="item-edit-btn" onclick="startBatchCrop(${index})">✂️ Crop</button>
+          <button class="order-btn" onclick="movePageRight(${index})" ${index === pagesList.length - 1 ? 'disabled' : ''} title="പിന്നോട്ട്">▶</button>
+          <button class="order-btn del-btn" onclick="deletePage(${index})" title="ഒഴിവാക്കുക">🗑️</button>
+        </div>
       `;
       previewGrid.appendChild(div);
     });
 
     statusText.innerText = `ആകെ ചേർത്ത പേജുകൾ: ${pagesList.length}`;
     
-    // പേജുകളുടെ എണ്ണം അനുസരിച്ച് ബട്ടൺ മാറ്റുന്നു
     if (pagesList.length === 0) {
       cameraBtn.innerText = "📷 പേജ് ഫോട്ടോ എടുക്കുക";
     } else {
