@@ -3,19 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title id="webTitle">Document Scanner</title>
+  <title id="webTitle">Service Book Scanner</title>
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; touch-action: manipulation; }
     body { padding: 12px; background-color: #f1f5f9; text-align: center; margin: 0; color: #1e293b; }
     .card { background: #ffffff; padding: 16px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-width: 480px; margin: auto; }
-    h2 { font-size: 19px; margin: 0 0 2px 0; color: #0f172a; }
-    .author-badge { font-size: 12px; color: #0284c7; font-weight: 600; margin-bottom: 6px; }
-    p.sub { font-size: 13px; color: #64748b; margin: 0 0 12px 0; }
     
+    .header-box { margin-bottom: 12px; }
+    h2 { font-size: 20px; margin: 0 0 4px 0; color: #0f172a; }
+    .app-meta { font-size: 12px; color: #0369a1; font-weight: 600; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+    .badge { background: #e0f2fe; padding: 2px 8px; border-radius: 12px; border: 1px solid #bae6fd; }
+    p.sub { font-size: 13px; color: #64748b; margin: 0; }
+
     .settings-panel { background: #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; text-align: left; }
-    .settings-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .settings-row:last-child { margin-bottom: 0; }
+    .settings-row { display: flex; align-items: center; justify-content: space-between; }
     .settings-row label { font-weight: 600; color: #334155; }
     .settings-row select, .settings-row input { padding: 6px 8px; font-size: 13px; font-weight: 600; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; }
     .custom-kb-box { display: none; width: 85px; margin-left: 6px; }
@@ -50,18 +52,25 @@
     .item-edit-btn { background: #0284c7; color: #fff; border: none; padding: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
     .status { font-size: 13px; color: #334155; margin: 6px 0; font-weight: 500; min-height: 18px; }
     
-    .footer-credit { font-size: 12px; color: #64748b; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 8px; }
+    .footer-credit { font-size: 12px; color: #64748b; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 8px; line-height: 1.5; }
+    .counter-badge { display: inline-block; margin-top: 6px; padding: 3px 10px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 11px; color: #475569; font-weight: 600; }
   </style>
 </head>
 <body>
 
 <div class="card">
-  <!-- ടൈറ്റിലും സബ് ടൈറ്റിലും തനിയെ ഇവിടെ ലോഡ് ആകും -->
-  <h2 id="displayTitle">സർവീസ് ബുക്ക് സ്കാനർ</h2>
-  <div class="author-badge" id="displayAuthor">Created by Joshy</div>
-  <p class="sub" id="displaySubtitle">ഓരോ പേജും നിശ്ചിത KB-യിൽ ഒതുക്കി PDF നിർമ്മിക്കുന്നു[cite: 1]</p>
+  <!-- ഹെഡർ ഭാഗം -->
+  <div class="header-box">
+    <h2 id="dispTitle">Service Book Scanner</h2>
+    <div class="app-meta">
+      <span class="badge" id="dispCreatedBy">Created by: Joshy</span>
+      <span class="badge" id="dispDevBy">Dev: Joshy</span>
+      <span class="badge" id="dispVersion">Gx</span>
+    </div>
+    <p class="sub" id="dispSubtitle">ഓരോ പേജും നിശ്ചിത KB-യിൽ ഒതുക്കി PDF നിർമ്മിക്കുന്നു[cite: 1]</p>
+  </div>
 
-  <!-- സെറ്റിംഗ്സ് -->
+  <!-- പേജ് സൈസ് സെറ്റിംഗ്സ് -->
   <div class="settings-panel">
     <div class="settings-row">
       <label>പരമാവധി പേജ് സൈസ്:</label>
@@ -104,8 +113,12 @@
     എല്ലാം ഒഴിവാക്കുക
   </button>
 
-  <div class="footer-credit" id="displayFooterAuthor">
-    Application Developed by: <b>Joshy</b>
+  <!-- ഫൂട്ടർ ക്രെഡിറ്റ് & കൗണ്ടർ -->
+  <div class="footer-credit">
+    <div>Developed by: <b id="dispFooterDev">Joshy</b> | Version: <b id="dispFooterVer">Gx</b></div>
+    <div class="counter-badge" id="visitorCounter">
+      👀 Total Visits: <span id="visitCount">...</span>
+    </div>
   </div>
 </div>
 
@@ -128,24 +141,49 @@
 </div>
 
 <script>
-  // ==========================================
-  // 👇 ഇവിടെ നിങ്ങൾക്ക് പേരും ടൈറ്റിലും മാറ്റാം 👇
-  // ==========================================
-  const APP_CONFIG = {
-    title: "സർവീസ് ബുക്ക് സ്കാനർ",             // പ്രധാന ടൈറ്റിൽ
-    author: "Joshy",                          // നിങ്ങളുടെ പേര്
-    subtitle: "ഓരോ പേജും നിശ്ചിത KB-യിൽ ഒതുക്കി PDF നിർമ്മിക്കുന്നു" // സബ് ടൈറ്റിൽ
+  // ==============================================================
+  // 👇 ആപ്പിന്റെ പേര്, വിവരങ്ങൾ, വേർഷൻ എന്നിവ ഇവിടെ ക്രമീകരിക്കാം 👇
+  // ==============================================================
+  const APP_METADATA = {
+    scannerName: "സർവീസ് ബുക്ക് സ്കാനർ",
+    createdBy: "Joshy",
+    developedBy: "Joshy",
+    version: "Gx",
+    subtitle: "ഓരോ പേജും നിശ്ചിത KB-യിൽ ഒതുക്കി PDF നിർമ്മിക്കുന്നു"
   };
 
-  // പേജിലേക്ക് ടൈറ്റിലുകൾ നൽകുന്നു
-  document.getElementById('webTitle').innerText = APP_CONFIG.title;
-  document.getElementById('displayTitle').innerText = APP_CONFIG.title;
-  document.getElementById('displayAuthor').innerText = "Created by " + APP_CONFIG.author;
-  document.getElementById('displaySubtitle').innerText = APP_CONFIG.subtitle;
-  document.getElementById('displayFooterAuthor').innerHTML = "Application Developed by: <b>" + APP_CONFIG.author + "</b>";
+  // എലമെന്റുകളിലേക്ക് വിവരങ്ങൾ നൽകുന്നു
+  document.getElementById('webTitle').innerText = APP_METADATA.scannerName + " - " + APP_METADATA.version;
+  document.getElementById('dispTitle').innerText = APP_METADATA.scannerName;
+  document.getElementById('dispCreatedBy').innerText = "Created by: " + APP_METADATA.createdBy;
+  document.getElementById('dispDevBy').innerText = "Dev: " + APP_METADATA.developedBy;
+  document.getElementById('dispVersion').innerText = "Ver: " + APP_METADATA.version;
+  document.getElementById('dispSubtitle').innerText = APP_METADATA.subtitle;
+  document.getElementById('dispFooterDev').innerText = APP_METADATA.developedBy;
+  document.getElementById('dispFooterVer').innerText = APP_METADATA.version;
 
-  // ==========================================
+  // ==============================================================
+  // ലൈവ് വിസിറ്റർ കൗണ്ടർ (Visitor Counter Integration)
+  // ==============================================================
+  async function loadVisitorCount() {
+    try {
+      // GitHub റിപ്പോസിറ്ററി അധിഷ്ഠിതമായ യൂണീക് കീ
+      const namespace = "joshy-thomasko-scanner";
+      const key = "visits";
+      const res = await fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`);
+      const data = await res.json();
+      if (data && data.count) {
+        document.getElementById('visitCount').innerText = data.count;
+      } else {
+        document.getElementById('visitorCounter').style.display = 'none';
+      }
+    } catch (e) {
+      document.getElementById('visitorCounter').style.display = 'none';
+    }
+  }
+  loadVisitorCount();
 
+  // ==============================================================
   const cameraInput = document.getElementById('cameraInput');
   const previewGrid = document.getElementById('previewGrid');
   const downloadSection = document.getElementById('downloadSection');
