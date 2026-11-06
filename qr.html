@@ -194,8 +194,13 @@
         <h2>QR Code Studio</h2>
         
         <div class="form-group">
-            <label>Website URL or Text</label>
+            <label>Website URL or Text for QR</label>
             <input type="text" id="qrText" placeholder="https://www.example.com">
+        </div>
+
+        <div class="form-group">
+            <label>QR Code Caption / Label (Optional)</label>
+            <input type="text" id="qrCaption" placeholder="Enter text to show below QR">
         </div>
 
         <div class="form-group row">
@@ -224,7 +229,7 @@
             <canvas id="qrCanvas" width="300" height="300"></canvas>
         </div>
 
-        <button class="btn btn-success" id="downloadBtn" onclick="downloadQR()">Download PNG</button>
+        <button class="btn-success btn" id="downloadBtn" onclick="downloadQR()">Download PNG</button>
     </div>
 
     <script>
@@ -234,6 +239,7 @@
 
         async function generateQR() {
             let text = document.getElementById("qrText").value;
+            let caption = document.getElementById("qrCaption").value.trim();
             let color = document.getElementById("qrColor").value.substring(1);
             let size = parseInt(document.getElementById("qrSize").value);
             let logoFile = document.getElementById("logoInput").files[0];
@@ -243,12 +249,14 @@
             let downloadBtn = document.getElementById("downloadBtn");
 
             if (text.trim() === "") {
-                alert("Please enter some text or a link!");
+                alert("Please enter some text or a link for the QR code!");
                 return;
             }
 
+            // If caption is added, increase canvas height to fit text below QR
+            let extraHeight = caption ? 60 : 0;
             canvas.width = size;
-            canvas.height = size;
+            canvas.height = size + extraHeight;
 
             let qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=" + size + "x" + size + "&ecc=H&margin=10&color=" + color + "&data=" + encodeURIComponent(text);
 
@@ -259,8 +267,17 @@
                 qrImg.src = URL.createObjectURL(blob);
 
                 qrImg.onload = function() {
-                    ctx.clearRect(0, 0, size, size);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.drawImage(qrImg, 0, 0, size, size);
+
+                    // Draw caption text if provided
+                    if (caption) {
+                        ctx.fillStyle = "#1e293b";
+                        ctx.font = "bold 16px 'Segoe UI', Arial, sans-serif";
+                        ctx.textAlign = "center";
+                        ctx.fillText(caption, size / 2, size + 35);
+                    }
 
                     if (logoFile) {
                         let reader = new FileReader();
@@ -300,7 +317,7 @@
             let canvas = document.getElementById("qrCanvas");
             let downloadLink = document.createElement("a");
             downloadLink.href = canvas.toDataURL("image/png");
-            downloadLink.download = "qrcode.png";
+            downloadLink.download = "qrcode-with-caption.png";
             downloadLink.click();
         }
     </script>
